@@ -1,0 +1,440 @@
+import React from "react";
+import PassengerPanel from "./PassengerPanel.jsx";
+import FinancePanel from "./FinancePanel.jsx";
+import { getProfitStatus } from "../utils/profit.js";
+import {
+  buildContractAirline, buildContractTour, buildCostStatement,
+  buildPaymentRequest, buildLiquidation,
+  buildRefundVoucher, buildPassengerList, buildServiceVoucher, buildContractCombo,
+  downloadAsWord,
+} from "../print/index.jsx";
+import { openPrintWindow, buildConfirmation } from "../print/legacy.jsx";
+
+export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBack,onUpdate,onDelete,onAddVoucher,onApprove,onReject,pushNotif,currentRole,bankAccounts=[],currentUser,hdvList=[],credits=[],onUpdateCredits,bookings=[],customers=[],suppliers=[],onAddSupplier}){
+  const [showDeleteConfirm,setShowDeleteConfirm]=React.useState(false);
+  const [activeTab,setActiveTab]=React.useState("info");
+  const [showStatusMenu,setShowStatusMenu]=React.useState(false);
+
+  const STATUS_LABEL={pending_payment:"Chờ thanh toán",confirmed:"Đã xác nhận",in_progress:"Đang chạy",closed:"Đã đóng",cancelled:"Đã hủy"};
+  const STATUS_COLOR={pending_payment:"#d97706",confirmed:"#2563eb",in_progress:"#16a34a",closed:"#475569",cancelled:"#dc2626"};
+  const STATUS_BG={pending_payment:"#fef9c3",confirmed:"#dbeafe",in_progress:"#dcfce7",closed:"#f1f5f9",cancelled:"#fee2e2"};
+  const NEXT_STATUSES={pending_payment:["confirmed","cancelled"],confirmed:["in_progress","cancelled"],in_progress:["closed","cancelled"],closed:[],cancelled:[]};
+
+  const orderVouchers=(vouchers||[]).filter(v=>v.orderId===order?.id);
+  const totalPaid=orderVouchers.filter(v=>v.type==="thu"&&["approved","confirmed"].includes(v.status)).reduce((s,v)=>s+(v.amount||0),0);
+  const totalChi=orderVouchers.filter(v=>v.type==="chi"&&["approved","confirmed"].includes(v.status)).reduce((s,v)=>s+(v.amount||0),0);
+  const nccDebt=(bookings||[]).filter(b=>b.orderId===order?.id&&b.status!=="cancelled"&&b.status!=="paid").reduce((s,b)=>s+(b.amount||0),0);
+  const debt=(order?.totalPrice||0)-totalPaid;
+  const profit=(order?.totalPrice||0)-totalChi-(order?.costPrice||0);
+  const profitPct=order?.totalPrice?(profit/order.totalPrice*100):0;
+  const profitStatus=getProfitStatus(profitPct,order?.service);
+  const passengerCount=(order?.passengers||[]).length;
+  const missingCccdCount=(order?.passengers||[]).filter(p=>p.type!=="baby"&&!p.cccd).length;
+
+  const changeStatus=(status)=>{
+    if(status==="confirmed"&&missingCccdCount>0){
+      if(!window.confirm("Còn "+missingCccdCount+" khách thiếu CCCD. Vẫn xác nhận đơn?")) return;
+    }
+    onUpdate&&onUpdate({...order,status});
+    setShowStatusMenu(false);
+    pushNotif&&pushNotif("Cập nhật trạng thái: "+STATUS_LABEL[status]);
+  };
+
+  const fmtMoney=(n)=>(n||0).toLocaleString("vi-VN")+"₫";
+  const fmtDate=(s)=>s?new Date(s).toLocaleDateString("vi-VN"):"—";
+
+  const tabs=["info","passengers","finance","audit"];
+  const totalPaxCount = typeof order?.pax==="object"
+    ? (order.pax.adults||0)+(order.pax.child10||0)+(order.pax.child5||0)+(order.pax.child2||0)+(order.pax.infant||0)||(order.adultQty||1)
+    : (order?.adultQty||order?.pax||1);
+  const tabLabel={"info":"📋 Thông tin","passengers":"🪪 Hành khách ("+passengerCount+"/"+totalPaxCount+")","finance":"💰 Thu chi","audit":"📜 Lịch sử"};
+
+  return(
+    <div style={{padding:24,maxWidth:960,margin:"0 auto"}}>
+      {/* Header */}
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20,flexWrap:"wrap"}}>
+        <button onClick={onBack} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b"}}>←</button>
+        <div style={{flex:1}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+            <h2 style={{margin:0,fontSize:20,fontWeight:800,color:"#1e293b"}}>{order?.id}</h2>
+            <div style={{position:"relative"}}>
+              <button onClick={()=>setShowStatusMenu(v=>!v)} style={{background:STATUS_BG[order?.status]||"#f1f5f9",color:STATUS_COLOR[order?.status]||"#475569",border:"none",borderRadius:20,padding:"5px 14px",cursor:"pointer",fontWeight:700,fontSize:12}}>
+                {STATUS_LABEL[order?.status]||order?.status} ▾
+              </button>
+              {showStatusMenu&&(NEXT_STATUSES[order?.status]||[]).length>0&&(
+                <div style={{position:"absolute",top:"100%",left:0,background:"#fff",border:"1px solid #e2e8f0",borderRadius:10,boxShadow:"0 4px 16px rgba(0,0,0,.12)",zIndex:100,marginTop:4,minWidth:160}}>
+                  {(NEXT_STATUSES[order?.status]||[]).map(s=>(
+                    <div key={s} onClick={()=>changeStatus(s)} style={{padding:"10px 16px",cursor:"pointer",fontSize:13,fontWeight:600,color:STATUS_COLOR[s]||"#475569"}}
+                      onMouseEnter={e=>e.currentTarget.style.background="#f8fafc"} onMouseLeave={e=>e.currentTarget.style.background=""}>
+                      → {STATUS_LABEL[s]}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            {missingCccdCount>0&&(
+              <span style={{background:"#fee2e2",color:"#dc2626",borderRadius:20,padding:"4px 12px",fontSize:11,fontWeight:700}}>⚠️ Thiếu {missingCccdCount} CCCD</span>
+            )}
+          </div>
+          <div style={{fontSize:13,color:"#64748b",marginTop:2}}>Tạo: {fmtDate(order?.createdAt)} · NV: {order?.sale}</div>
+        </div>
+        {/* Nút xóa đơn — chỉ Giám đốc */}
+        {currentRole==="manager"&&onDelete&&(
+          <button onClick={()=>setShowDeleteConfirm(true)} style={{background:"#fef2f2",color:"#dc2626",border:"1px solid #fecaca",borderRadius:9,padding:"8px 16px",cursor:"pointer",fontWeight:700,fontSize:13,display:"flex",alignItems:"center",gap:6}}>
+            <i className="ti ti-trash" style={{fontSize:16}}/> Xóa đơn
+          </button>
+        )}
+      </div>
+
+      {/* Modal xác nhận xóa */}
+      {showDeleteConfirm&&(
+        <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&setShowDeleteConfirm(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div style={{background:"#fff",borderRadius:16,padding:28,width:420,maxWidth:"90vw",textAlign:"center",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
+            <div style={{fontSize:40,marginBottom:12}}>🗑️</div>
+            <div style={{fontSize:18,fontWeight:800,color:"#0f172a",marginBottom:8}}>Xóa đơn {order?.id}?</div>
+            <div style={{fontSize:14,color:"#64748b",marginBottom:8,lineHeight:1.6}}>
+              Đơn của <strong>{order?.customerName}</strong> — {order?.tourName||order?.serviceName}<br/>
+              Giá trị: <strong style={{color:"#dc2626"}}>{fmtMoney(order?.totalPrice)}</strong>
+            </div>
+            <div style={{fontSize:13,color:"#dc2626",background:"#fef2f2",borderRadius:8,padding:"10px 14px",marginBottom:20,fontWeight:600}}>
+              ⚠️ Hành động này KHÔNG thể hoàn tác. Đơn sẽ bị xóa vĩnh viễn khỏi hệ thống.
+            </div>
+            <div style={{display:"flex",gap:10}}>
+              <button onClick={()=>setShowDeleteConfirm(false)} style={{flex:1,padding:"11px",border:"1.5px solid #e2e8f0",borderRadius:10,background:"#fff",fontWeight:600,fontSize:14,cursor:"pointer",color:"#64748b"}}>Hủy</button>
+              <button onClick={()=>{setShowDeleteConfirm(false);onDelete(order);}} style={{flex:1,padding:"11px",border:"none",borderRadius:10,background:"#dc2626",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer"}}>Xóa vĩnh viễn</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* KPI bar */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:12,marginBottom:20}}>
+        {[["Doanh thu",fmtMoney(order?.totalPrice),"#2563eb"],["Đã thu (duyệt)",fmtMoney(totalPaid),"#16a34a"],["Công nợ KH",fmtMoney(debt),debt>0?"#dc2626":"#16a34a"],["Công nợ NCC",fmtMoney(nccDebt),nccDebt>0?"#dc2626":"#16a34a"],["Lợi nhuận",fmtMoney(profit),profit>0?"#7c3aed":"#dc2626"]].map(([label,val,color])=>(
+          <div key={label} style={{background:"#fff",borderRadius:12,padding:"14px 16px",boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
+            <div style={{fontSize:11,color:"#64748b",fontWeight:600}}>{label}</div>
+            <div style={{fontSize:17,fontWeight:800,color,marginTop:4}}>{val}</div>
+          </div>
+        ))}
+        <div style={{background:profitStatus.bg,borderRadius:12,padding:"14px 16px",boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
+          <div style={{fontSize:11,color:profitStatus.color,fontWeight:600}}>Tỷ suất LN {profitStatus.icon}</div>
+          <div style={{fontSize:17,fontWeight:800,color:profitStatus.color,marginTop:4}}>{profitPct.toFixed(1)}% · {profitStatus.label}</div>
+        </div>
+      </div>
+
+      {/* Quick links bar */}
+      {(()=>{
+        const qlBtn=(bg,color)=>({display:"inline-flex",alignItems:"center",gap:5,padding:"5px 12px",borderRadius:20,fontSize:12,fontWeight:500,background:bg,color,border:"none",cursor:"pointer"});
+        const orderBookings=(bookings||[]).filter(b=>b.orderId===order?.id&&b.status!=="cancelled");
+        const orderExpenses=(expenses||[]).filter(e=>e.orderId===order?.id);
+        const pendingExp=orderExpenses.filter(e=>["pending_kt","pending_gd","pending_pay"].includes(e.status));
+        return(
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",padding:"10px 0",borderBottom:"0.5px solid #e2e8f0",marginBottom:16}}>
+            {order?.customerPhone&&(()=>{
+              const c=(customers||[]).find(x=>x.phone===order.customerPhone||x.sdt===order.customerPhone);
+              return(<button onClick={()=>c?pushNotif?.("Xem hồ sơ KH trong CRM","info"):pushNotif?.("Khách hàng chưa có hồ sơ trong CRM","warn")} style={qlBtn("#E6F1FB","#185FA5")}><i className="ti ti-user" style={{fontSize:14}}/>Hồ sơ KH</button>);
+            })()}
+            {orderBookings.length===0
+              ?<button onClick={()=>pushNotif?.("Chưa có booking NCC — vào module NCC để tạo","warn")} style={qlBtn("#FCEBEB","#A32D2D")}><i className="ti ti-building-off" style={{fontSize:14}}/>Chưa booking NCC</button>
+              :<span style={{...qlBtn("#E1F5EE","#085041"),cursor:"default"}}><i className="ti ti-building-check" style={{fontSize:14}}/>{orderBookings.length} NCC đã booking</span>
+            }
+            {order?.hdvId
+              ?<span style={{...qlBtn("#EEEDFE","#534AB7"),cursor:"default"}}><i className="ti ti-user-check" style={{fontSize:14}}/>HDV: {order.hdvName||(hdvList||[]).find(h=>h.id===order.hdvId)?.name||order.hdvId}</span>
+              :<span style={{...qlBtn("#f8fafc","#94a3b8"),cursor:"default"}}><i className="ti ti-user-off" style={{fontSize:14}}/>Chưa có HDV</span>
+            }
+            {pendingExp.length>0&&<span style={{...qlBtn("#FAEEDA","#633806"),cursor:"default"}}><i className="ti ti-clock" style={{fontSize:14}}/>{pendingExp.length} phiếu chi chờ duyệt</span>}
+            {pendingExp.length===0&&orderExpenses.length>0&&<span style={{...qlBtn("#E1F5EE","#085041"),cursor:"default"}}><i className="ti ti-check" style={{fontSize:14}}/>{orderExpenses.length} phiếu chi đã xử lý</span>}
+          </div>
+        );
+      })()}
+
+      {/* Tabs */}
+      <div style={{display:"flex",gap:4,marginBottom:16,borderBottom:"2px solid #e2e8f0",paddingBottom:0}}>
+        {tabs.map(t=>(
+          <button key={t} onClick={()=>setActiveTab(t)} style={{padding:"10px 18px",border:"none",background:"none",cursor:"pointer",fontWeight:600,fontSize:13,color:activeTab===t?"#2563eb":"#64748b",borderBottom:activeTab===t?"2px solid #2563eb":"2px solid transparent",marginBottom:-2,transition:"all .15s"}}>
+            {tabLabel[t]}
+          </button>
+        ))}
+      </div>
+
+      {/* INFO TAB */}
+      {activeTab==="info"&&(
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+          <div style={{background:"#fff",borderRadius:14,padding:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
+            <div style={{fontWeight:700,marginBottom:14,fontSize:14,color:"#374151"}}>👤 Khách hàng</div>
+            {[["Họ tên",order?.customerName||order?.customer],["SĐT",order?.customerPhone],["Email",order?.customerEmail||"—"],["Nguồn",order?.source||"—"]].map(([k,v])=>(
+              <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:"1px solid #f1f5f9",fontSize:13}}>
+                <span style={{color:"#64748b"}}>{k}</span><span style={{fontWeight:600}}>{v||"—"}</span>
+              </div>
+            ))}
+          </div>
+          {(()=>{
+            const svc=(order?.service||order?.serviceType||"").toLowerCase();
+            const isAirline=svc.includes("ve_may_bay")||svc.includes("may_bay");
+            const isCruise=svc.includes("cruise")||svc.includes("thuyen");
+            const isCombo=svc.includes("hotel_flight")||svc.includes("combo");
+            const isHotel=!isCombo&&(svc.includes("hotel")||svc.includes("khach_san"));
+            // pax có thể là số hoặc object {adults,children,babies}
+            const paxStr=typeof order?.pax==="object"&&order?.pax!==null
+              ? [order.pax.adults&&`${order.pax.adults} NL`,order.pax.children&&`${order.pax.children} TE`,order.pax.babies&&`${order.pax.babies} Em bé`].filter(Boolean).join(" · ")||"—"
+              : (order?.pax||"—");
+            const nights=(order?.departDate&&order?.returnDate)
+              ? Math.round((new Date(order.returnDate)-new Date(order.departDate))/(86400000))
+              : null;
+
+            let icon,title,rows;
+            if(isAirline){
+              icon="✈️"; title="Chi tiết vé máy bay";
+              rows=[
+                ["Hành trình",   order?.serviceName||order?.tourName||"—"],
+                ["Ngày đi",      fmtDate(order?.departDate)],
+                ["Ngày về",      fmtDate(order?.returnDate)],
+                ["Số khách",     paxStr],
+                ["Hạng vé",      order?.seatClass||"—"],
+                ["Mã PNR",       order?.pnrCode||order?.pnr||"—"],
+                ["Hành lý ký gửi",order?.baggage||"—"],
+              ];
+            } else if(isCruise){
+              icon="🛳️"; title="Chi tiết du thuyền";
+              rows=[
+                ["Du thuyền",    order?.serviceName||"—"],
+                ["Hành trình",   order?.route||"—"],
+                ["Ngày đi",      fmtDate(order?.departDate)],
+                ["Ngày về",      fmtDate(order?.returnDate)],
+                nights?["Số đêm",`${nights} đêm`]:null,
+                ["Số khách",     paxStr],
+                ["Loại cabin",   order?.cabinType||"—"],
+              ].filter(Boolean);
+            } else if(isCombo){
+              icon="🌏"; title="Chi tiết combo";
+              rows=[
+                ["Dịch vụ",      order?.serviceName||"—"],
+                ["Ngày đi",      fmtDate(order?.departDate)],
+                ["Ngày về",      fmtDate(order?.returnDate)],
+                nights?["Số đêm",`${nights} đêm`]:null,
+                ["Số khách",     paxStr],
+                ["Điểm đến",     order?.destination||"—"],
+                ["Khách sạn",    order?.hotelName||"—"],
+              ].filter(Boolean);
+            } else if(isHotel){
+              icon="🏨"; title="Chi tiết khách sạn";
+              rows=[
+                ["Khách sạn",    order?.serviceName||"—"],
+                ["Check-in",     fmtDate(order?.departDate)],
+                ["Check-out",    fmtDate(order?.returnDate)],
+                nights?["Số đêm",`${nights} đêm`]:null,
+                ["Số khách",     paxStr],
+                ["Loại phòng",   order?.roomType||"—"],
+                ["Số phòng",     order?.roomCount||"—"],
+              ].filter(Boolean);
+            } else {
+              // Tour trọn gói (mặc định)
+              icon="🗺️"; title="Chi tiết tour";
+              rows=[
+                ["Tour",         order?.tourName||order?.serviceName||"—"],
+                ["Ngày đi",      fmtDate(order?.departDate)],
+                ["Ngày về",      fmtDate(order?.returnDate)],
+                nights?["Số đêm",`${nights} đêm`]:null,
+                ["Số khách",     paxStr],
+                ["HDV",          order?.hdvName||"Chưa phân công"],
+              ].filter(Boolean);
+            }
+            const muted="#94a3b8";
+            return(
+              <div style={{background:"#fff",borderRadius:14,padding:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
+                <div style={{fontWeight:700,marginBottom:14,fontSize:14,color:"#374151"}}>{icon} {title}</div>
+                {rows.map(([k,v])=>(
+                  <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:"1px solid #f1f5f9",fontSize:13}}>
+                    <span style={{color:"#64748b"}}>{k}</span>
+                    <span style={{fontWeight:600,color:v==="—"||v==="Chưa phân công"?muted:"#1e293b"}}>{v}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+          {order?.note&&(
+            <div style={{gridColumn:"1/-1",background:"#fffbeb",borderRadius:12,padding:16,border:"1px solid #fde68a"}}>
+              <div style={{fontSize:12,fontWeight:700,color:"#92400e",marginBottom:4}}>📝 GHI CHÚ</div>
+              <div style={{fontSize:13,color:"#78350f"}}>{order.note}</div>
+            </div>
+          )}
+          {/* ── TÀI LIỆU IN ── */}
+          {(()=>{
+            // ── Tính toán số tiền theo từng giai đoạn ──────────
+            const orderVouchers = (vouchers||[]).filter(v=>v.orderId===order?.id&&v.type==="thu"&&["approved","confirmed"].includes(v.status));
+            const totalPaid     = orderVouchers.reduce((s,v)=>s+(v.amount||0),0);
+            const totalPrice    = order?.totalPrice||0;
+            const depositAmt    = order?.depositAmount||Math.round(totalPrice*0.3); // Dùng số cọc thực tế từ đơn
+            const remainingAmt  = Math.max(0, totalPrice - totalPaid);              // Còn phải thu
+            const overpayAmt    = Math.max(0, totalPaid - totalPrice);              // Thu thừa
+            const refundRecord  = (refunds||[]).find(r=>r.orderId===order?.id);
+
+            // Số tiền yêu cầu TT lần 2: còn lại sau khi đã cọc
+            const finalPayAmt = Math.max(0, totalPrice - depositAmt);
+
+            // Tên file
+            const fid = order?.orderNo||order?.id||"";
+            const isTour = ["tour","tour_package","tour_ghep"].includes(order?.service)||
+                           (order?.tourName||order?.serviceName||"").toLowerCase().includes("tour");
+
+            // Params dùng chung
+            const baseOrder = {
+              ...order,
+              pricing:{ ...order?.pricing, totalRevenue: totalPrice },
+              customer:{ name:order?.customerName, phone:order?.customerPhone, email:order?.customerEmail },
+            };
+
+            const DocBtn = ({label, bg, color, border, onClick, onWord, wordFile}) => (
+              <div style={{display:"inline-flex",alignItems:"stretch",borderRadius:8,overflow:"hidden",border:`1px solid ${border}`}}>
+                <button onClick={onClick} style={{padding:"8px 12px",background:bg,color,border:"none",borderRight:`1px solid ${border}`,cursor:"pointer",fontSize:12,fontWeight:600,display:"inline-flex",alignItems:"center",gap:4}}>
+                  {label} &nbsp;🖨
+                </button>
+                <button onClick={onWord} style={{padding:"8px 10px",background:bg,color,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,opacity:.8}}>
+                  📝 Word
+                </button>
+              </div>
+            );
+
+            return (
+              <div style={{gridColumn:"1/-1",background:"#fff",borderRadius:14,padding:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
+                <div style={{fontWeight:700,marginBottom:4,fontSize:14,color:"#374151"}}>🖨️ Tài liệu & In ấn</div>
+
+                {/* Tóm tắt số tiền theo giai đoạn */}
+                <div style={{display:"flex",gap:10,marginBottom:14,padding:"10px 14px",background:"#f8fafc",borderRadius:10,fontSize:12,flexWrap:"wrap"}}>
+                  {[
+                    {label:"Giá trị đơn",   val:totalPrice,   color:"#1e3a8a"},
+                    {label:"Tiền cọc",       val:depositAmt,   color:"#d97706"},
+                    {label:"Còn lại đợt 2",  val:finalPayAmt,  color:"#7c3aed"},
+                    {label:"Đã thu thực tế", val:totalPaid,    color:"#059669"},
+                    {label:"Còn phải thu",   val:remainingAmt, color:remainingAmt>0?"#dc2626":"#059669"},
+                    ...(overpayAmt>0?[{label:"Thu thừa (cần hoàn)", val:overpayAmt, color:"#9333ea"}]:[]),
+                  ].map(k=>(
+                    <div key={k.label} style={{textAlign:"center",minWidth:90}}>
+                      <div style={{fontSize:10,color:"#94a3b8",fontWeight:600,textTransform:"uppercase",marginBottom:2}}>{k.label}</div>
+                      <div style={{fontSize:13,fontWeight:700,color:k.color}}>{(k.val||0).toLocaleString("vi-VN")}đ</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+
+                  {/* 1. Phiếu xác nhận — luôn hiển thị */}
+                  <DocBtn label="📋 Phiếu xác nhận dịch vụ" bg="#eff6ff" color="#1e3a8a" border="#bfdbfe"
+                    onClick={()=>openPrintWindow(buildConfirmation(order,vouchers,null))}
+                    onWord={()=>downloadAsWord(buildConfirmation(order,vouchers,null),"Phieu-xac-nhan-"+fid)}/>
+
+                  {/* 2. Hợp đồng — chọn đúng loại */}
+                  {isTour ? (
+                    <DocBtn label="📝 Hợp đồng tour" bg="#f0fdf4" color="#15803d" border="#bbf7d0"
+                      onClick={()=>openPrintWindow(buildContractTour({order:baseOrder,issuerName:currentUser?.name}))}
+                      onWord={()=>downloadAsWord(buildContractTour({order:baseOrder,issuerName:currentUser?.name}),"HopDong-Tour-"+fid)}/>
+                  ):(
+                    <DocBtn label="📝 Hợp đồng dịch vụ" bg="#f0fdf4" color="#15803d" border="#bbf7d0"
+                      onClick={()=>openPrintWindow(buildContractAirline({order:baseOrder,issuerName:currentUser?.name}))}
+                      onWord={()=>downloadAsWord(buildContractAirline({order:baseOrder,issuerName:currentUser?.name}),"HopDong-DichVu-"+fid)}/>
+                  )}
+
+                  {/* 3. Yêu cầu TT đặt cọc — dùng đúng số tiền cọc từ đơn */}
+                  <DocBtn label={`💳 YCTT đặt cọc (${depositAmt.toLocaleString("vi-VN")}đ)`}
+                    bg="#fef9c3" color="#92400e" border="#fde68a"
+                    onClick={()=>openPrintWindow(buildPaymentRequest({order:baseOrder,stage:"deposit",requestAmount:depositAmt,issuerName:currentUser?.name}))}
+                    onWord={()=>downloadAsWord(buildPaymentRequest({order:baseOrder,stage:"deposit",requestAmount:depositAmt,issuerName:currentUser?.name}),"YCTT-DatCoc-"+fid)}/>
+
+                  {/* 4. Yêu cầu TT đợt 2 — hiển thị khi còn tiền phải thu */}
+                  {remainingAmt>0&&(
+                    <DocBtn label={`💳 YCTT còn lại (${remainingAmt.toLocaleString("vi-VN")}đ)`}
+                      bg="#fff7ed" color="#9a3412" border="#fed7aa"
+                      onClick={()=>openPrintWindow(buildPaymentRequest({order:baseOrder,stage:"final",requestAmount:remainingAmt,issuerName:currentUser?.name}))}
+                      onWord={()=>downloadAsWord(buildPaymentRequest({order:baseOrder,stage:"final",requestAmount:remainingAmt,issuerName:currentUser?.name}),"YCTT-ConLai-"+fid)}/>
+                  )}
+
+                  {/* 5. Bảng kê chi phí — nội bộ */}
+                  <DocBtn label="🧾 Bảng kê chi phí" bg="#faf5ff" color="#7c3aed" border="#e9d5ff"
+                    onClick={()=>openPrintWindow(buildCostStatement({order:baseOrder,items:expenses.filter(e=>e.orderId===order?.id),issuerName:currentUser?.name}))}
+                    onWord={()=>downloadAsWord(buildCostStatement({order:baseOrder,items:expenses.filter(e=>e.orderId===order?.id),issuerName:currentUser?.name}),"BangKe-ChiPhi-"+fid)}/>
+
+                  {/* 6. Biên bản thanh lý — dùng số tiền đã thu thực tế */}
+                  <DocBtn label="📃 Biên bản thanh lý HĐ" bg="#fff1f2" color="#be123c" border="#fecdd3"
+                    onClick={()=>openPrintWindow(buildLiquidation({order:baseOrder,totalPaid,issuerName:currentUser?.name}))}
+                    onWord={()=>downloadAsWord(buildLiquidation({order:baseOrder,totalPaid,issuerName:currentUser?.name}),"BienBan-ThanhLy-"+fid)}/>
+
+                  {/* 9. Danh sách hành khách */}
+                  <DocBtn label="👥 Danh sách hành khách" bg="#f0fdf4" color="#166534" border="#bbf7d0"
+                    onClick={()=>openPrintWindow(buildPassengerList({order,passengers:order?.passengers||[],issuerName:currentUser?.name}))}
+                    onWord={()=>downloadAsWord(buildPassengerList({order,passengers:order?.passengers||[],issuerName:currentUser?.name}),"DanhSach-HanhKhach-"+fid)}/>
+
+                  {/* 10. Voucher dịch vụ NCC */}
+                  {(()=>{
+                    const bk=(bookings||[]).find(b=>b.orderId===order?.id&&b.status!=="cancelled");
+                    const sup=bk?.supplierId?(suppliers||[]).find(s=>s.id===bk.supplierId):null;
+                    const svcType=order?.service==="hotel"?"hotel":order?.service==="flight"?"flight":order?.service==="cruise"?"cruise":"other";
+                    const vParams={order,booking:bk||{},supplier:sup||{},serviceType:svcType,issuerName:currentUser?.name,paxCount:order?.adultQty||1};
+                    return(
+                      <DocBtn label="🎫 Voucher dịch vụ NCC" bg="#ecfdf5" color="#065f46" border="#6ee7b7"
+                        onClick={()=>openPrintWindow(buildServiceVoucher(vParams))}
+                        onWord={()=>downloadAsWord(buildServiceVoucher(vParams),"Voucher-DichVu-"+fid)}/>
+                    );
+                  })()}
+
+                  {/* 11. Hợp đồng tổng hợp Combo */}
+                  {order?.service==="combo"&&(
+                    <DocBtn label="📦 HĐ tổng hợp (Combo)" bg="#faf5ff" color="#6d28d9" border="#ddd6fe"
+                      onClick={()=>openPrintWindow(buildContractCombo({order:baseOrder,issuerName:currentUser?.name}))}
+                      onWord={()=>downloadAsWord(buildContractCombo({order:baseOrder,issuerName:currentUser?.name}),"HopDong-Combo-"+fid)}/>
+                  )}
+
+                  {/* 7. Phiếu hoàn trả — chỉ hiện khi thu thừa hoặc có refund record */}
+                  {(overpayAmt>0||refundRecord)&&(()=>{
+                    const params={
+                      order, issuerName:currentUser?.name,
+                      customerName:order?.customerName, customerPhone:order?.customerPhone,
+                      totalPaid,
+                      refundAmount: refundRecord?.refundAmount || overpayAmt,
+                      deductAmount: refundRecord?.feeAmount || 0,
+                      deductReason: refundRecord?.policyNote || "",
+                      refundReason: refundRecord?.reasonNote || (overpayAmt>0?"Khách chuyển khoản thừa":"Hoàn tiền theo yêu cầu"),
+                      refundMethod: refundRecord?.method || "transfer",
+                      refundType:   refundRecord ? (order?.status==="cancelled"?"cancel":"partial") : "overpay",
+                      note: refundRecord?.note || "",
+                    };
+                    return(
+                      <DocBtn label={`💜 Phiếu hoàn trả (${(params.refundAmount||0).toLocaleString("vi-VN")}đ)`}
+                        bg="#f5f3ff" color="#7c3aed" border="#c4b5fd"
+                        onClick={()=>openPrintWindow(buildRefundVoucher(params))}
+                        onWord={()=>downloadAsWord(buildRefundVoucher(params),"PhieuHoanTra-"+fid)}/>
+                    );
+                  })()}
+
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* PASSENGERS TAB */}
+      {activeTab==="passengers"&&(
+        <PassengerPanel order={order} onUpdate={onUpdate} pushNotif={pushNotif} customers={customers}/>
+      )}
+
+      {/* FINANCE TAB */}
+      {activeTab==="finance"&&(
+        <FinancePanel order={order} vouchers={vouchers} onAddVoucher={onAddVoucher} onApprove={onApprove} onReject={onReject} pushNotif={pushNotif} currentRole={currentRole} currentUser={currentUser} bankAccounts={bankAccounts} expenses={expenses} suppliers={suppliers} onAddSupplier={onAddSupplier}/>
+      )}
+
+      {/* AUDIT TAB */}
+      {activeTab==="audit"&&(
+        <div style={{background:"#fff",borderRadius:14,padding:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
+          <div style={{fontWeight:700,marginBottom:14}}>Lịch sử thao tác</div>
+          {(order?.auditLog||[]).length===0&&<div style={{color:"#94a3b8",textAlign:"center",padding:32}}>Chưa có lịch sử</div>}
+          {(order?.auditLog||[]).map((log,i)=>(
+            <div key={i} style={{padding:"10px 0",borderBottom:"1px solid #f1f5f9",fontSize:13}}>
+              <span style={{color:"#64748b"}}>{new Date(log.ts||log.time||0).toLocaleString("vi-VN")}</span>
+              <span style={{marginLeft:12,fontWeight:600}}>{log.by||log.user}</span>
+              <span style={{marginLeft:8,color:"#475569"}}>{log.action||log.note}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
