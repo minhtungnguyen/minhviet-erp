@@ -1,5 +1,6 @@
 import React from "react";
 import { downloadCSV } from "../utils/csv.js";
+import { Btn } from "../components/ui.jsx";
 
 export default function ReportModule({ orders, vouchers, expenses, personalTargets=[], currentRole, hdvList=[], customers=[], userAccounts=[], bookings=[] }){
   const [tab,setTab]=React.useState("overview");
@@ -149,19 +150,19 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
   // ── Funnel đơn hàng ──────────────────────────────────────
   const funnelTotal=allOrders.length||1;
   const funnel=[
-    {label:"Tổng tạo",count:allOrders.length,color:"#2563eb",bg:"#eff6ff"},
-    {label:"Đã xác nhận",count:allOrders.filter(o=>["confirmed","in_progress","closed"].includes(o.status)).length,color:"#7c3aed",bg:"#f5f3ff"},
-    {label:"Đang chạy",count:allOrders.filter(o=>o.status==="in_progress").length,color:"#d97706",bg:"#fffbeb"},
-    {label:"Đã đóng",count:closedOrders.length,color:"#059669",bg:"#ecfdf5"},
-    {label:"Hủy",count:cancelledOrders.length,color:"#dc2626",bg:"#fef2f2"},
+    {label:"Tổng tạo",count:allOrders.length,color:"var(--c-primary-mid)",bg:"var(--c-primary-light)"},
+    {label:"Đã xác nhận",count:allOrders.filter(o=>["confirmed","in_progress","closed"].includes(o.status)).length,color:"var(--c-purple)",bg:"var(--c-purple-bg)"},
+    {label:"Đang chạy",count:allOrders.filter(o=>o.status==="in_progress").length,color:"var(--c-warning-mid)",bg:"var(--c-warning-bg)"},
+    {label:"Đã đóng",count:closedOrders.length,color:"var(--c-success-mid)",bg:"var(--c-success-bg)"},
+    {label:"Hủy",count:cancelledOrders.length,color:"var(--c-danger-mid)",bg:"var(--c-danger-bg)"},
   ];
 
   // ── Style helpers ─────────────────────────────────────────
-  const card={background:"#fff",borderRadius:14,padding:"18px 20px",boxShadow:"0 2px 10px rgba(0,0,0,.07)"};
-  const secTitle={fontWeight:700,fontSize:15,color:"#0f172a",marginBottom:14,display:"flex",alignItems:"center",gap:8};
+  const card={background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:"18px 20px",boxShadow:"var(--sh-sm)"};
+  const secTitle={fontWeight:700,fontSize:"var(--text-lg)",color:"var(--c-text)",marginBottom:14,display:"flex",alignItems:"center",gap:8};
   const Bar=({val,max,color,height=8})=>(
-    <div style={{background:"#f1f5f9",borderRadius:99,height,overflow:"hidden"}}>
-      <div style={{background:color,height:"100%",borderRadius:99,width:pct(val,max)+"%",transition:"width .5s"}}/>
+    <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-pill)",height,overflow:"hidden"}}>
+      <div style={{background:color,height:"100%",borderRadius:"var(--r-pill)",width:pct(val,max)+"%",transition:"width .5s"}}/>
     </div>
   );
 
@@ -174,32 +175,32 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
   ];
 
   return(
-    <div style={{padding:24,background:"#f1f5f9",minHeight:"100vh"}}>
+    <div style={{padding:24,background:"var(--c-bg)",minHeight:"100vh"}}>
 
       {/* HEADER */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20,flexWrap:"wrap",gap:12}}>
         <div>
-          <h2 style={{margin:0,fontSize:22,fontWeight:800,color:"#0f172a",display:"flex",alignItems:"center",gap:10}}>
-            <div style={{width:40,height:40,borderRadius:12,background:"linear-gradient(135deg,#7c3aed,#a78bfa)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <h2 style={{margin:0,fontSize:"var(--text-2xl)",fontWeight:800,color:"var(--c-text)",display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:40,height:40,borderRadius:"var(--r-md)",background:"linear-gradient(135deg,var(--c-purple),#a78bfa)",display:"flex",alignItems:"center",justifyContent:"center"}}>
               <i className="ti ti-chart-bar" style={{fontSize:22,color:"#fff"}}/>
             </div>
             Báo cáo & Phân tích
           </h2>
-          <div style={{fontSize:13,color:"#64748b",marginTop:4,marginLeft:50}}>Dữ liệu kinh doanh · {period==="month"?"Tháng này":period==="quarter"?"Quý này":period==="year"?"Năm nay":period==="custom"?"Tùy chỉnh":"Tất cả"}</div>
+          <div style={{fontSize:"var(--text-base)",color:"var(--c-text-3)",marginTop:4,marginLeft:50}}>Dữ liệu kinh doanh · {period==="month"?"Tháng này":period==="quarter"?"Quý này":period==="year"?"Năm nay":period==="custom"?"Tùy chỉnh":"Tất cả"}</div>
         </div>
         {/* Period selector */}
         <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
           {[["month","Tháng"],["quarter","Quý"],["year","Năm"],["all","Tất cả"],["custom","Tùy chỉnh"]].map(([k,l])=>(
             <button key={k} onClick={()=>setPeriod(k)}
-              style={{padding:"8px 16px",borderRadius:10,border:"none",cursor:"pointer",fontWeight:600,fontSize:13,background:period===k?"linear-gradient(135deg,#7c3aed,#6d28d9)":"#fff",color:period===k?"#fff":"#64748b",boxShadow:period===k?"0 2px 8px rgba(124,58,237,.3)":"0 1px 4px rgba(0,0,0,.06)"}}>
+              style={{padding:"8px 16px",borderRadius:"var(--r-md)",border:"none",cursor:"pointer",fontWeight:600,fontSize:"var(--text-base)",background:period===k?"linear-gradient(135deg,var(--c-purple),#6d28d9)":"var(--c-surface)",color:period===k?"#fff":"var(--c-text-3)",boxShadow:period===k?"0 2px 8px rgba(124,58,237,.3)":"var(--sh-xs)"}}>
               {l}
             </button>
           ))}
           {period==="custom"&&(
             <div style={{display:"flex",gap:6,alignItems:"center"}}>
-              <input type="date" value={customFrom} onChange={e=>setCustomFrom(e.target.value)} style={{border:"1.5px solid #e2e8f0",borderRadius:9,padding:"7px 10px",fontSize:13,outline:"none"}}/>
-              <span style={{color:"#94a3b8"}}>→</span>
-              <input type="date" value={customTo} onChange={e=>setCustomTo(e.target.value)} style={{border:"1.5px solid #e2e8f0",borderRadius:9,padding:"7px 10px",fontSize:13,outline:"none"}}/>
+              <input type="date" value={customFrom} onChange={e=>setCustomFrom(e.target.value)} style={{border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-md)",padding:"7px 10px",fontSize:"var(--text-base)",outline:"none"}}/>
+              <span style={{color:"var(--c-text-muted)"}}>→</span>
+              <input type="date" value={customTo} onChange={e=>setCustomTo(e.target.value)} style={{border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-md)",padding:"7px 10px",fontSize:"var(--text-base)",outline:"none"}}/>
             </div>
           )}
         </div>
@@ -208,25 +209,25 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
       {/* KPI CARDS */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14,marginBottom:20}}>
         {[
-          {label:"Doanh thu",val:fmtM(totalRevenue)+"₫",sub:period!=="all"?`${revGrowth>=0?"▲":"▼"} ${Math.abs(revGrowth).toFixed(0)}% vs kỳ trước`:closedOrders.length+" đơn đã đóng",subColor:revGrowth>=0?"#059669":"#dc2626",bg:"linear-gradient(135deg,#2563eb,#1d4ed8)",icon:"ti-trending-up"},
-          {label:"Lợi nhuận",val:fmtM(profit)+"₫",sub:`Biên: ${margin.toFixed(1)}%`,subColor:"rgba(255,255,255,.7)",bg:profit>=0?"linear-gradient(135deg,#059669,#047857)":"linear-gradient(135deg,#dc2626,#b91c1c)",icon:"ti-chart-pie"},
-          {label:"Đơn hàng",val:allOrders.length+" đơn",sub:period!=="all"?`${orderGrowth>=0?"▲":"▼"} ${Math.abs(orderGrowth).toFixed(0)}% vs kỳ trước`:`Chốt: ${closedOrders.length}`,subColor:"rgba(255,255,255,.7)",bg:"linear-gradient(135deg,#7c3aed,#5b21b6)",icon:"ti-file-text"},
-          {label:"GT trung bình",val:fmtM(avgOrderVal)+"₫",sub:`${closedOrders.length} đơn đã đóng`,subColor:"rgba(255,255,255,.7)",bg:"linear-gradient(135deg,#d97706,#b45309)",icon:"ti-coin"},
+          {label:"Doanh thu",val:fmtM(totalRevenue)+"₫",sub:period!=="all"?`${revGrowth>=0?"▲":"▼"} ${Math.abs(revGrowth).toFixed(0)}% vs kỳ trước`:closedOrders.length+" đơn đã đóng",subColor:revGrowth>=0?"#a7f3d0":"#fecaca",bg:"linear-gradient(135deg,var(--c-primary-mid),var(--c-primary-hover))",icon:"ti-trending-up"},
+          {label:"Lợi nhuận",val:fmtM(profit)+"₫",sub:`Biên: ${margin.toFixed(1)}%`,subColor:"rgba(255,255,255,.7)",bg:profit>=0?"linear-gradient(135deg,var(--c-success-mid),#047857)":"linear-gradient(135deg,var(--c-danger-mid),#b91c1c)",icon:"ti-chart-pie"},
+          {label:"Đơn hàng",val:allOrders.length+" đơn",sub:period!=="all"?`${orderGrowth>=0?"▲":"▼"} ${Math.abs(orderGrowth).toFixed(0)}% vs kỳ trước`:`Chốt: ${closedOrders.length}`,subColor:"rgba(255,255,255,.7)",bg:"linear-gradient(135deg,var(--c-purple),#5b21b6)",icon:"ti-file-text"},
+          {label:"GT trung bình",val:fmtM(avgOrderVal)+"₫",sub:`${closedOrders.length} đơn đã đóng`,subColor:"rgba(255,255,255,.7)",bg:"linear-gradient(135deg,var(--c-warning-mid),#b45309)",icon:"ti-coin"},
         ].map(k=>(
-          <div key={k.label} style={{background:k.bg,borderRadius:14,padding:"18px 22px",boxShadow:"0 4px 14px rgba(0,0,0,.13)",position:"relative",overflow:"hidden"}}>
+          <div key={k.label} style={{background:k.bg,borderRadius:"var(--r-lg)",padding:"18px 22px",boxShadow:"var(--sh-md)",position:"relative",overflow:"hidden"}}>
             <div style={{position:"absolute",right:16,top:14,fontSize:30,opacity:.2}}><i className={`ti ${k.icon}`}/></div>
-            <div style={{fontSize:12,color:"rgba(255,255,255,.75)",fontWeight:600,marginBottom:6,textTransform:"uppercase",letterSpacing:.5}}>{k.label}</div>
-            <div style={{fontSize:24,fontWeight:800,color:"#fff",lineHeight:1,marginBottom:4}}>{k.val}</div>
-            <div style={{fontSize:12,color:k.subColor||"rgba(255,255,255,.65)",fontWeight:500}}>{k.sub}</div>
+            <div style={{fontSize:"var(--text-sm)",color:"rgba(255,255,255,.75)",fontWeight:600,marginBottom:6,textTransform:"uppercase",letterSpacing:.5}}>{k.label}</div>
+            <div style={{fontSize:"var(--text-2xl)",fontWeight:800,color:"#fff",lineHeight:1,marginBottom:4}}>{k.val}</div>
+            <div style={{fontSize:"var(--text-sm)",color:k.subColor||"rgba(255,255,255,.65)",fontWeight:500}}>{k.sub}</div>
           </div>
         ))}
       </div>
 
       {/* TABS */}
-      <div style={{display:"flex",gap:4,background:"#fff",borderRadius:14,padding:6,marginBottom:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)",width:"fit-content"}}>
+      <div style={{display:"flex",gap:4,background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:6,marginBottom:20,boxShadow:"var(--sh-sm)",width:"fit-content"}}>
         {TABS.map(t=>(
           <button key={t.k} onClick={()=>setTab(t.k)}
-            style={{padding:"10px 18px",border:"none",borderRadius:10,cursor:"pointer",fontWeight:600,fontSize:13,display:"flex",alignItems:"center",gap:6,background:tab===t.k?"linear-gradient(135deg,#7c3aed,#6d28d9)":"transparent",color:tab===t.k?"#fff":"#64748b",transition:"all .15s"}}>
+            style={{padding:"10px 18px",border:"none",borderRadius:"var(--r-md)",cursor:"pointer",fontWeight:600,fontSize:"var(--text-base)",display:"flex",alignItems:"center",gap:6,background:tab===t.k?"linear-gradient(135deg,var(--c-purple),#6d28d9)":"transparent",color:tab===t.k?"#fff":"var(--c-text-3)",transition:"all .15s"}}>
             <i className={`ti ${t.icon}`} style={{fontSize:16}}/>{t.label}
           </button>
         ))}
@@ -239,16 +240,16 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
 
             {/* Trend 12 tháng */}
             <div style={card}>
-              <div style={secTitle}><i className="ti ti-chart-line" style={{color:"#7c3aed",fontSize:18}}/>Xu hướng doanh thu 12 tháng</div>
+              <div style={secTitle}><i className="ti ti-chart-line" style={{color:"var(--c-purple)",fontSize:18}}/>Xu hướng doanh thu 12 tháng</div>
               <div style={{display:"flex",alignItems:"flex-end",gap:6,height:120}}>
                 {monthlyTrend.map((mo,i)=>{
                   const h=Math.max(4,Math.round((mo.revenue/maxTrend)*100));
                   const isLast=i===monthlyTrend.length-1;
                   return(
                     <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
-                      {mo.revenue>0&&<div style={{fontSize:9,color:isLast?"#7c3aed":"#94a3b8",fontWeight:700}}>{fmtM(mo.revenue)}</div>}
-                      <div style={{width:"80%",height:h,borderRadius:"4px 4px 0 0",background:isLast?"linear-gradient(180deg,#7c3aed,#5b21b6)":"linear-gradient(180deg,#c4b5fd,#a78bfa)",transition:"height .4s"}}/>
-                      <div style={{fontSize:10,color:isLast?"#7c3aed":"#94a3b8",fontWeight:isLast?700:400}}>{mo.label}</div>
+                      {mo.revenue>0&&<div style={{fontSize:9,color:isLast?"var(--c-purple)":"var(--c-text-muted)",fontWeight:700}}>{fmtM(mo.revenue)}</div>}
+                      <div style={{width:"80%",height:h,borderRadius:"4px 4px 0 0",background:isLast?"linear-gradient(180deg,var(--c-purple),#5b21b6)":"linear-gradient(180deg,var(--c-purple-border),#a78bfa)",transition:"height .4s"}}/>
+                      <div style={{fontSize:10,color:isLast?"var(--c-purple)":"var(--c-text-muted)",fontWeight:isLast?700:400}}>{mo.label}</div>
                     </div>
                   );
                 })}
@@ -257,15 +258,15 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
 
             {/* Funnel đơn hàng */}
             <div style={card}>
-              <div style={secTitle}><i className="ti ti-filter" style={{color:"#2563eb",fontSize:18}}/>Phễu đơn hàng</div>
+              <div style={secTitle}><i className="ti ti-filter" style={{color:"var(--c-primary-mid)",fontSize:18}}/>Phễu đơn hàng</div>
               <div style={{display:"flex",flexDirection:"column",gap:10}}>
                 {funnel.map(f=>(
                   <div key={f.label}>
                     <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
-                      <span style={{fontSize:13,fontWeight:600,color:"#374151"}}>{f.label}</span>
+                      <span style={{fontSize:"var(--text-base)",fontWeight:600,color:"var(--c-text-2)"}}>{f.label}</span>
                       <div style={{display:"flex",alignItems:"center",gap:10}}>
-                        <span style={{fontSize:13,fontWeight:700,color:f.color}}>{f.count} đơn</span>
-                        <span style={{fontSize:11,background:f.bg,color:f.color,padding:"2px 8px",borderRadius:99,fontWeight:600}}>{pct(f.count,funnelTotal)}%</span>
+                        <span style={{fontSize:"var(--text-base)",fontWeight:700,color:f.color}}>{f.count} đơn</span>
+                        <span style={{fontSize:"var(--text-xs)",background:f.bg,color:f.color,padding:"2px 8px",borderRadius:"var(--r-pill)",fontWeight:600}}>{pct(f.count,funnelTotal)}%</span>
                       </div>
                     </div>
                     <Bar val={f.count} max={funnelTotal} color={f.color} height={8}/>
@@ -276,25 +277,25 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
 
             {/* Cash flow */}
             <div style={card}>
-              <div style={secTitle}><i className="ti ti-arrows-exchange" style={{color:"#059669",fontSize:18}}/>Dòng tiền 6 tháng</div>
+              <div style={secTitle}><i className="ti ti-arrows-exchange" style={{color:"var(--c-success-mid)",fontSize:18}}/>Dòng tiền 6 tháng</div>
               <div style={{display:"flex",alignItems:"flex-end",gap:8,height:100,marginBottom:8}}>
                 {cashFlow.map((mo,i)=>(
                   <div key={i} style={{flex:1,display:"flex",alignItems:"flex-end",gap:2,height:"100%"}}>
                     <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
-                      <div style={{width:"100%",height:Math.max(3,Math.round(mo.thu/maxCF*90)),background:"linear-gradient(180deg,#059669,#047857)",borderRadius:"3px 3px 0 0"}}/>
+                      <div style={{width:"100%",height:Math.max(3,Math.round(mo.thu/maxCF*90)),background:"linear-gradient(180deg,var(--c-success-mid),#047857)",borderRadius:"3px 3px 0 0"}}/>
                     </div>
                     <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
-                      <div style={{width:"100%",height:Math.max(3,Math.round(mo.chi/maxCF*90)),background:"linear-gradient(180deg,#dc2626,#b91c1c)",borderRadius:"3px 3px 0 0"}}/>
+                      <div style={{width:"100%",height:Math.max(3,Math.round(mo.chi/maxCF*90)),background:"linear-gradient(180deg,var(--c-danger-mid),#b91c1c)",borderRadius:"3px 3px 0 0"}}/>
                     </div>
                   </div>
                 ))}
               </div>
               <div style={{display:"flex",gap:4,justifyContent:"space-between",marginBottom:8}}>
-                {cashFlow.map((mo,i)=><div key={i} style={{flex:1,textAlign:"center",fontSize:10,color:"#94a3b8",fontWeight:600}}>{mo.label}</div>)}
+                {cashFlow.map((mo,i)=><div key={i} style={{flex:1,textAlign:"center",fontSize:10,color:"var(--c-text-muted)",fontWeight:600}}>{mo.label}</div>)}
               </div>
-              <div style={{display:"flex",gap:16,fontSize:12,color:"#64748b"}}>
-                <span style={{display:"flex",alignItems:"center",gap:4}}><span style={{width:10,height:10,borderRadius:2,background:"#059669",display:"inline-block"}}/>Thu vào</span>
-                <span style={{display:"flex",alignItems:"center",gap:4}}><span style={{width:10,height:10,borderRadius:2,background:"#dc2626",display:"inline-block"}}/>Chi ra</span>
+              <div style={{display:"flex",gap:16,fontSize:"var(--text-sm)",color:"var(--c-text-3)"}}>
+                <span style={{display:"flex",alignItems:"center",gap:4}}><span style={{width:10,height:10,borderRadius:2,background:"var(--c-success-mid)",display:"inline-block"}}/>Thu vào</span>
+                <span style={{display:"flex",alignItems:"center",gap:4}}><span style={{width:10,height:10,borderRadius:2,background:"var(--c-danger-mid)",display:"inline-block"}}/>Chi ra</span>
               </div>
             </div>
           </div>
@@ -303,34 +304,34 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
           <div style={{display:"flex",flexDirection:"column",gap:16}}>
             {/* Công nợ */}
             <div style={card}>
-              <div style={secTitle}><i className="ti ti-credit-card" style={{color:"#dc2626",fontSize:18}}/>Công nợ KH ({debtOrders.length})</div>
-              <div style={{fontSize:20,fontWeight:800,color:"#dc2626",marginBottom:4}}>{fmtMoney(totalDebt)}</div>
-              <div style={{fontSize:12,color:"#64748b",marginBottom:14}}>Tổng công nợ chưa thu</div>
+              <div style={secTitle}><i className="ti ti-credit-card" style={{color:"var(--c-danger-mid)",fontSize:18}}/>Công nợ KH ({debtOrders.length})</div>
+              <div style={{fontSize:"var(--text-xl)",fontWeight:800,color:"var(--c-danger-mid)",marginBottom:4}}>{fmtMoney(totalDebt)}</div>
+              <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)",marginBottom:14}}>Tổng công nợ chưa thu</div>
               {debtOrders.slice(0,6).map((o,i)=>(
-                <div key={o.id} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:i<Math.min(5,debtOrders.length-1)?"1px solid #f8fafc":"none"}}>
+                <div key={o.id} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:i<Math.min(5,debtOrders.length-1)?"1px solid var(--c-border)":"none"}}>
                   <div style={{minWidth:0}}>
-                    <div style={{fontSize:13,fontWeight:600,color:"#0f172a",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.customerName||"—"}</div>
-                    <div style={{fontSize:11,color:"#64748b"}}>{o.id}</div>
+                    <div style={{fontSize:"var(--text-base)",fontWeight:600,color:"var(--c-text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.customerName||"—"}</div>
+                    <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{o.id}</div>
                   </div>
-                  <div style={{fontSize:13,fontWeight:700,color:"#dc2626",flexShrink:0,marginLeft:8}}>{fmtM(o.debt)}₫</div>
+                  <div style={{fontSize:"var(--text-base)",fontWeight:700,color:"var(--c-danger-mid)",flexShrink:0,marginLeft:8}}>{fmtM(o.debt)}₫</div>
                 </div>
               ))}
-              {debtOrders.length===0&&<div style={{textAlign:"center",padding:"16px 0",color:"#059669",fontWeight:600,fontSize:13}}>✓ Không có công nợ</div>}
+              {debtOrders.length===0&&<div style={{textAlign:"center",padding:"16px 0",color:"var(--c-success-mid)",fontWeight:600,fontSize:"var(--text-base)"}}>✓ Không có công nợ</div>}
             </div>
 
             {/* Tỷ lệ dịch vụ */}
             <div style={card}>
-              <div style={secTitle}><i className="ti ti-chart-donut" style={{color:"#d97706",fontSize:18}}/>Cơ cấu dịch vụ</div>
+              <div style={secTitle}><i className="ti ti-chart-donut" style={{color:"var(--c-warning-mid)",fontSize:18}}/>Cơ cấu dịch vụ</div>
               {serviceStats.slice(0,5).map((s,i)=>(
                 <div key={s.name} style={{marginBottom:12}}>
                   <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                    <span style={{fontSize:12,fontWeight:600,color:"#374151"}}>{s.name}</span>
-                    <span style={{fontSize:12,color:"#64748b"}}>{pct(s.revenue,totalRevenue||1)}%</span>
+                    <span style={{fontSize:"var(--text-sm)",fontWeight:600,color:"var(--c-text-2)"}}>{s.name}</span>
+                    <span style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)"}}>{pct(s.revenue,totalRevenue||1)}%</span>
                   </div>
-                  <Bar val={s.revenue} max={maxSvcRev} color={["#2563eb","#7c3aed","#059669","#d97706","#dc2626"][i]} height={6}/>
+                  <Bar val={s.revenue} max={maxSvcRev} color={["var(--c-primary-mid)","var(--c-purple)","var(--c-success-mid)","var(--c-warning-mid)","var(--c-danger-mid)"][i]} height={6}/>
                 </div>
               ))}
-              {serviceStats.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:16,fontSize:13}}>Không có dữ liệu</div>}
+              {serviceStats.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:16,fontSize:"var(--text-base)"}}>Không có dữ liệu</div>}
             </div>
           </div>
         </div>
@@ -341,43 +342,43 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
           {/* Ranking doanh thu */}
           <div style={card}>
-            <div style={secTitle}><i className="ti ti-trophy" style={{color:"#d97706",fontSize:18}}/>Ranking doanh thu</div>
-            {saleStats.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:32}}>Không có dữ liệu</div>}
+            <div style={secTitle}><i className="ti ti-trophy" style={{color:"var(--c-warning-mid)",fontSize:18}}/>Ranking doanh thu</div>
+            {saleStats.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:32}}>Không có dữ liệu</div>}
             {saleStats.map((s,i)=>(
-              <div key={s.name} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 0",borderBottom:i<saleStats.length-1?"1px solid #f8fafc":"none"}}>
-                <div style={{width:28,height:28,borderRadius:"50%",background:i===0?"#f59e0b":i===1?"#94a3b8":i===2?"#92400e":"#e2e8f0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:800,color:i<3?"#fff":"#64748b",flexShrink:0}}>{i+1}</div>
+              <div key={s.name} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 0",borderBottom:i<saleStats.length-1?"1px solid var(--c-border)":"none"}}>
+                <div style={{width:28,height:28,borderRadius:"50%",background:i===0?"#f59e0b":i===1?"var(--c-text-muted)":i===2?"var(--c-warning)":"var(--c-border)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"var(--text-base)",fontWeight:800,color:i<3?"#fff":"var(--c-text-3)",flexShrink:0}}>{i+1}</div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontWeight:700,fontSize:14,color:"#0f172a"}}>{s.name}</div>
-                  <div style={{fontSize:11,color:"#64748b",marginTop:2}}>{s.orders} đơn · GT TB: {fmtM(s.avgVal)}₫</div>
+                  <div style={{fontWeight:700,fontSize:"var(--text-md)",color:"var(--c-text)"}}>{s.name}</div>
+                  <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginTop:2}}>{s.orders} đơn · GT TB: {fmtM(s.avgVal)}₫</div>
                   <div style={{marginTop:6}}>
-                    <Bar val={s.revenue} max={maxSaleRev} color={i===0?"#f59e0b":i===1?"#7c3aed":"#2563eb"} height={6}/>
+                    <Bar val={s.revenue} max={maxSaleRev} color={i===0?"#f59e0b":i===1?"var(--c-purple)":"var(--c-primary-mid)"} height={6}/>
                   </div>
                 </div>
                 <div style={{textAlign:"right",flexShrink:0}}>
-                  <div style={{fontWeight:800,fontSize:15,color:"#2563eb"}}>{fmtM(s.revenue)}₫</div>
-                  <div style={{fontSize:11,color:"#64748b"}}>{pct(s.revenue,totalRevenue||1)}% tổng</div>
+                  <div style={{fontWeight:800,fontSize:"var(--text-lg)",color:"var(--c-primary-mid)"}}>{fmtM(s.revenue)}₫</div>
+                  <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{pct(s.revenue,totalRevenue||1)}% tổng</div>
                 </div>
               </div>
             ))}
           </div>
           {/* KPI tháng này */}
           <div style={card}>
-            <div style={secTitle}><i className="ti ti-target" style={{color:"#059669",fontSize:18}}/>KPI tháng {thisMonthStr}</div>
-            {kpiStats.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:32}}>Chưa có dữ liệu KPI</div>}
+            <div style={secTitle}><i className="ti ti-target" style={{color:"var(--c-success-mid)",fontSize:18}}/>KPI tháng {thisMonthStr}</div>
+            {kpiStats.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:32}}>Chưa có dữ liệu KPI</div>}
             {kpiStats.map((u,i)=>(
-              <div key={u.name} style={{padding:"12px 0",borderBottom:i<kpiStats.length-1?"1px solid #f8fafc":"none"}}>
+              <div key={u.name} style={{padding:"12px 0",borderBottom:i<kpiStats.length-1?"1px solid var(--c-border)":"none"}}>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
                   <div>
-                    <div style={{fontWeight:700,fontSize:14,color:"#0f172a"}}>{u.name}</div>
-                    <div style={{fontSize:11,color:"#64748b",marginTop:1}}>{fmtM(u.revenue)}₫ / {fmtM(u.target)||"Chưa set"}₫</div>
+                    <div style={{fontWeight:700,fontSize:"var(--text-md)",color:"var(--c-text)"}}>{u.name}</div>
+                    <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginTop:1}}>{fmtM(u.revenue)}₫ / {fmtM(u.target)||"Chưa set"}₫</div>
                   </div>
                   <div style={{textAlign:"right"}}>
-                    <div style={{fontWeight:800,fontSize:18,color:u.pct>=100?"#059669":u.pct>=70?"#d97706":"#dc2626"}}>{u.pct}%</div>
-                    <div style={{fontSize:10,color:"#94a3b8"}}>{u.orders} đơn</div>
+                    <div style={{fontWeight:800,fontSize:"var(--text-xl)",color:u.pct>=100?"var(--c-success-mid)":u.pct>=70?"var(--c-warning-mid)":"var(--c-danger-mid)"}}>{u.pct}%</div>
+                    <div style={{fontSize:10,color:"var(--c-text-muted)"}}>{u.orders} đơn</div>
                   </div>
                 </div>
-                <div style={{background:"#f1f5f9",borderRadius:99,height:8,overflow:"hidden"}}>
-                  <div style={{width:Math.min(100,u.pct)+"%",height:8,borderRadius:99,background:u.pct>=100?"linear-gradient(90deg,#059669,#34d399)":u.pct>=70?"linear-gradient(90deg,#d97706,#fbbf24)":"linear-gradient(90deg,#dc2626,#f87171)",transition:"width .5s"}}/>
+                <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-pill)",height:8,overflow:"hidden"}}>
+                  <div style={{width:Math.min(100,u.pct)+"%",height:8,borderRadius:"var(--r-pill)",background:u.pct>=100?"linear-gradient(90deg,var(--c-success-mid),#34d399)":u.pct>=70?"linear-gradient(90deg,var(--c-warning-mid),#fbbf24)":"linear-gradient(90deg,var(--c-danger-mid),#f87171)",transition:"width .5s"}}/>
                 </div>
               </div>
             ))}
@@ -388,37 +389,37 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
       {/* ── TAB: DỊCH VỤ ── */}
       {tab==="service"&&(
         <div style={card}>
-          <div style={secTitle}><i className="ti ti-package" style={{color:"#2563eb",fontSize:18}}/>Phân tích theo loại dịch vụ</div>
-          {serviceStats.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:48}}>Không có dữ liệu</div>}
+          <div style={secTitle}><i className="ti ti-package" style={{color:"var(--c-primary-mid)",fontSize:18}}/>Phân tích theo loại dịch vụ</div>
+          {serviceStats.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:48}}>Không có dữ liệu</div>}
           <table style={{width:"100%",borderCollapse:"collapse"}}>
             <thead>
-              <tr style={{background:"#f8fafc"}}>
+              <tr style={{background:"var(--c-surface-2)"}}>
                 {["Dịch vụ","Số đơn","Doanh thu","Tỷ trọng","Biểu đồ"].map(h=>(
-                  <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:12,fontWeight:700,color:"#64748b",textTransform:"uppercase",letterSpacing:.5,borderBottom:"1px solid #f1f5f9"}}>{h}</th>
+                  <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:"var(--text-sm)",fontWeight:700,color:"var(--c-text-3)",textTransform:"uppercase",letterSpacing:.5,borderBottom:"1px solid var(--c-border)"}}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {serviceStats.map((s,i)=>(
-                <tr key={s.name} style={{borderBottom:"1px solid #f8fafc"}}>
-                  <td style={{padding:"12px 14px",fontWeight:700,fontSize:14,color:"#0f172a"}}>{s.name}</td>
-                  <td style={{padding:"12px 14px",fontSize:13,color:"#374151"}}>{s.orders} đơn</td>
-                  <td style={{padding:"12px 14px",fontWeight:700,fontSize:14,color:"#2563eb"}}>{fmtMoney(s.revenue)}</td>
+                <tr key={s.name} style={{borderBottom:"1px solid var(--c-border)"}}>
+                  <td style={{padding:"12px 14px",fontWeight:700,fontSize:"var(--text-md)",color:"var(--c-text)"}}>{s.name}</td>
+                  <td style={{padding:"12px 14px",fontSize:"var(--text-base)",color:"var(--c-text-2)"}}>{s.orders} đơn</td>
+                  <td style={{padding:"12px 14px",fontWeight:700,fontSize:"var(--text-md)",color:"var(--c-primary-mid)"}}>{fmtMoney(s.revenue)}</td>
                   <td style={{padding:"12px 14px"}}>
-                    <span style={{background:"#eff6ff",color:"#2563eb",borderRadius:99,fontSize:12,padding:"3px 10px",fontWeight:700}}>{pct(s.revenue,totalRevenue||1)}%</span>
+                    <span style={{background:"var(--c-primary-light)",color:"var(--c-primary-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-sm)",padding:"3px 10px",fontWeight:700}}>{pct(s.revenue,totalRevenue||1)}%</span>
                   </td>
                   <td style={{padding:"12px 14px",width:"30%"}}>
-                    <Bar val={s.revenue} max={maxSvcRev} color={["#2563eb","#7c3aed","#059669","#d97706","#dc2626","#0891b2","#ec4899"][i%7]} height={8}/>
+                    <Bar val={s.revenue} max={maxSvcRev} color={["var(--c-primary-mid)","var(--c-purple)","var(--c-success-mid)","var(--c-warning-mid)","var(--c-danger-mid)","var(--c-info)","#ec4899"][i%7]} height={8}/>
                   </td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr style={{background:"#f0f4ff"}}>
-                <td style={{padding:"12px 14px",fontWeight:700,fontSize:14,color:"#1e40af"}}>Tổng cộng</td>
-                <td style={{padding:"12px 14px",fontWeight:700,color:"#1e40af"}}>{closedOrders.length} đơn</td>
-                <td style={{padding:"12px 14px",fontWeight:800,fontSize:15,color:"#1e40af"}}>{fmtMoney(totalRevenue)}</td>
-                <td style={{padding:"12px 14px",fontWeight:700,color:"#1e40af"}}>100%</td>
+              <tr style={{background:"var(--c-primary-light)"}}>
+                <td style={{padding:"12px 14px",fontWeight:700,fontSize:"var(--text-md)",color:"var(--c-primary-hover)"}}>Tổng cộng</td>
+                <td style={{padding:"12px 14px",fontWeight:700,color:"var(--c-primary-hover)"}}>{closedOrders.length} đơn</td>
+                <td style={{padding:"12px 14px",fontWeight:800,fontSize:"var(--text-lg)",color:"var(--c-primary-hover)"}}>{fmtMoney(totalRevenue)}</td>
+                <td style={{padding:"12px 14px",fontWeight:700,color:"var(--c-primary-hover)"}}>100%</td>
                 <td/>
               </tr>
             </tfoot>
@@ -430,32 +431,32 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
       {tab==="customer"&&(
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
           <div style={card}>
-            <div style={secTitle}><i className="ti ti-crown" style={{color:"#d97706",fontSize:18}}/>Top 10 khách hàng</div>
-            {topCustomers.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:32}}>Không có dữ liệu</div>}
+            <div style={secTitle}><i className="ti ti-crown" style={{color:"var(--c-warning-mid)",fontSize:18}}/>Top 10 khách hàng</div>
+            {topCustomers.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:32}}>Không có dữ liệu</div>}
             {topCustomers.map((c,i)=>(
-              <div key={c.phone||c.name} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 0",borderBottom:i<topCustomers.length-1?"1px solid #f8fafc":"none"}}>
-                <div style={{width:28,height:28,borderRadius:"50%",background:i===0?"#f59e0b":i===1?"#94a3b8":i===2?"#92400e":"#e2e8f0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:i<3?"#fff":"#64748b",flexShrink:0}}>{i+1}</div>
+              <div key={c.phone||c.name} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 0",borderBottom:i<topCustomers.length-1?"1px solid var(--c-border)":"none"}}>
+                <div style={{width:28,height:28,borderRadius:"50%",background:i===0?"#f59e0b":i===1?"var(--c-text-muted)":i===2?"var(--c-warning)":"var(--c-border)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"var(--text-sm)",fontWeight:800,color:i<3?"#fff":"var(--c-text-3)",flexShrink:0}}>{i+1}</div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontWeight:700,fontSize:13,color:"#0f172a",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
-                  <div style={{fontSize:11,color:"#64748b"}}>{c.phone} · {c.orders} đơn</div>
+                  <div style={{fontWeight:700,fontSize:"var(--text-sm)",color:"var(--c-text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                  <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{c.phone} · {c.orders} đơn</div>
                 </div>
-                <div style={{fontWeight:800,fontSize:14,color:"#d97706",flexShrink:0}}>{fmtM(c.revenue)}₫</div>
+                <div style={{fontWeight:800,fontSize:"var(--text-md)",color:"var(--c-warning-mid)",flexShrink:0}}>{fmtM(c.revenue)}₫</div>
               </div>
             ))}
           </div>
           <div style={card}>
-            <div style={secTitle}><i className="ti ti-users" style={{color:"#2563eb",fontSize:18}}/>Thống kê khách hàng</div>
+            <div style={secTitle}><i className="ti ti-users" style={{color:"var(--c-primary-mid)",fontSize:18}}/>Thống kê khách hàng</div>
             {[
-              {label:"Tổng KH trong hệ thống",val:customers.length,color:"#2563eb"},
-              {label:"KH tạo kỳ này",val:customers.filter(c=>filterByPeriod(c.createdAt||c.firstOrderDate)).length,color:"#059669"},
-              {label:"KH có đơn kỳ này",val:new Set(allOrders.map(o=>o.customerPhone||o.customerName).filter(Boolean)).size,color:"#7c3aed"},
-              {label:"KH mua lại (≥2 đơn)",val:Object.values(Object.fromEntries(orders.map(o=>[o.customerPhone||o.customerName,[]]))).filter(a=>a.length>=2).length||topCustomers.filter(c=>c.orders>=2).length,color:"#d97706"},
-              {label:"Giá trị đơn TB",val:fmtMoney(avgOrderVal),color:"#0891b2",isString:true},
-              {label:"Tỷ lệ chốt đơn",val:pct(closedOrders.length,allOrders.length||1)+"%",color:"#059669",isString:true},
+              {label:"Tổng KH trong hệ thống",val:customers.length,color:"var(--c-primary-mid)"},
+              {label:"KH tạo kỳ này",val:customers.filter(c=>filterByPeriod(c.createdAt||c.firstOrderDate)).length,color:"var(--c-success-mid)"},
+              {label:"KH có đơn kỳ này",val:new Set(allOrders.map(o=>o.customerPhone||o.customerName).filter(Boolean)).size,color:"var(--c-purple)"},
+              {label:"KH mua lại (≥2 đơn)",val:Object.values(Object.fromEntries(orders.map(o=>[o.customerPhone||o.customerName,[]]))).filter(a=>a.length>=2).length||topCustomers.filter(c=>c.orders>=2).length,color:"var(--c-warning-mid)"},
+              {label:"Giá trị đơn TB",val:fmtMoney(avgOrderVal),color:"var(--c-info)",isString:true},
+              {label:"Tỷ lệ chốt đơn",val:pct(closedOrders.length,allOrders.length||1)+"%",color:"var(--c-success-mid)",isString:true},
             ].map(k=>(
-              <div key={k.label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 0",borderBottom:"1px solid #f8fafc"}}>
-                <span style={{fontSize:13,color:"#374151",fontWeight:500}}>{k.label}</span>
-                <span style={{fontSize:16,fontWeight:800,color:k.color}}>{k.val}</span>
+              <div key={k.label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 0",borderBottom:"1px solid var(--c-border)"}}>
+                <span style={{fontSize:"var(--text-base)",color:"var(--c-text-2)",fontWeight:500}}>{k.label}</span>
+                <span style={{fontSize:"var(--text-lg)",fontWeight:800,color:k.color}}>{k.val}</span>
               </div>
             ))}
           </div>
@@ -466,49 +467,49 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
       {tab==="cashflow"&&(
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
           <div style={card}>
-            <div style={secTitle}><i className="ti ti-receipt" style={{color:"#059669",fontSize:18}}/>Tổng hợp thu chi</div>
+            <div style={secTitle}><i className="ti ti-receipt" style={{color:"var(--c-success-mid)",fontSize:18}}/>Tổng hợp thu chi</div>
             {[
-              {label:"Tổng thu (phiếu thu duyệt)",val:totalPaid,color:"#059669",icon:"ti-arrow-down-circle"},
-              {label:"Tổng chi (phiếu chi + NCC)",val:totalCost,color:"#dc2626",icon:"ti-arrow-up-circle"},
-              {label:"Thực thu thuần",val:totalPaid-totalCost,color:totalPaid-totalCost>=0?"#2563eb":"#dc2626",icon:"ti-equal"},
-              {label:"Doanh thu (đơn đã đóng)",val:totalRevenue,color:"#7c3aed",icon:"ti-chart-bar"},
-              {label:"Lợi nhuận ước tính",val:profit,color:profit>=0?"#059669":"#dc2626",icon:"ti-trending-up"},
+              {label:"Tổng thu (phiếu thu duyệt)",val:totalPaid,color:"var(--c-success-mid)",icon:"ti-arrow-down-circle"},
+              {label:"Tổng chi (phiếu chi + NCC)",val:totalCost,color:"var(--c-danger-mid)",icon:"ti-arrow-up-circle"},
+              {label:"Thực thu thuần",val:totalPaid-totalCost,color:totalPaid-totalCost>=0?"var(--c-primary-mid)":"var(--c-danger-mid)",icon:"ti-equal"},
+              {label:"Doanh thu (đơn đã đóng)",val:totalRevenue,color:"var(--c-purple)",icon:"ti-chart-bar"},
+              {label:"Lợi nhuận ước tính",val:profit,color:profit>=0?"var(--c-success-mid)":"var(--c-danger-mid)",icon:"ti-trending-up"},
             ].map(k=>(
-              <div key={k.label} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 0",borderBottom:"1px solid #f8fafc"}}>
-                <div style={{width:36,height:36,borderRadius:10,background:k.color+"15",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <div key={k.label} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 0",borderBottom:"1px solid var(--c-border)"}}>
+                <div style={{width:36,height:36,borderRadius:"var(--r-md)",background:k.color+"22",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
                   <i className={`ti ${k.icon}`} style={{fontSize:18,color:k.color}}/>
                 </div>
                 <div style={{flex:1}}>
-                  <div style={{fontSize:12,color:"#64748b",fontWeight:600}}>{k.label}</div>
-                  <div style={{fontSize:18,fontWeight:800,color:k.color,marginTop:2}}>{fmtMoney(k.val)}</div>
+                  <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)",fontWeight:600}}>{k.label}</div>
+                  <div style={{fontSize:"var(--text-xl)",fontWeight:800,color:k.color,marginTop:2}}>{fmtMoney(k.val)}</div>
                 </div>
               </div>
             ))}
           </div>
           <div style={card}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-              <div style={{...secTitle,margin:0}}><i className="ti ti-list-details" style={{color:"#7c3aed",fontSize:18}}/>Chi tiết phiếu thu kỳ này</div>
-              <button onClick={()=>downloadCSV(approvedVouchers.filter(v=>v.type==="thu").map(v=>({Mã_phiếu:v.id,Khách_hàng:v.customerName||"",Đơn_hàng:v.orderId||"",Ngày:v.date?new Date(v.date).toLocaleDateString("vi-VN"):"",Số_tiền:v.amount||0,Hình_thức:v.method==="cash"?"Tiền mặt":"Chuyển khoản",Ghi_chú:v.note||""})),"phieu-thu-ky-nay.csv")} style={{background:"#7c3aed",color:"#fff",border:"none",borderRadius:8,padding:"6px 12px",fontSize:12,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:5,flexShrink:0}}>📊 Xuất CSV</button>
+              <div style={{...secTitle,margin:0}}><i className="ti ti-list-details" style={{color:"var(--c-purple)",fontSize:18}}/>Chi tiết phiếu thu kỳ này</div>
+              <Btn size="sm" style={{background:"var(--c-purple)"}} onClick={()=>downloadCSV(approvedVouchers.filter(v=>v.type==="thu").map(v=>({Mã_phiếu:v.id,Khách_hàng:v.customerName||"",Đơn_hàng:v.orderId||"",Ngày:v.date?new Date(v.date).toLocaleDateString("vi-VN"):"",Số_tiền:v.amount||0,Hình_thức:v.method==="cash"?"Tiền mặt":"Chuyển khoản",Ghi_chú:v.note||""})),"phieu-thu-ky-nay.csv")}>📊 Xuất CSV</Btn>
             </div>
-            <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:"var(--text-base)"}}>
               <thead>
-                <tr style={{background:"#f8fafc"}}>
+                <tr style={{background:"var(--c-surface-2)"}}>
                   {["Mã phiếu","Khách hàng","Số tiền","Trạng thái"].map(h=>(
-                    <th key={h} style={{padding:"8px 12px",textAlign:"left",fontSize:11,fontWeight:700,color:"#64748b",textTransform:"uppercase",borderBottom:"1px solid #f1f5f9"}}>{h}</th>
+                    <th key={h} style={{padding:"8px 12px",textAlign:"left",fontSize:"var(--text-xs)",fontWeight:700,color:"var(--c-text-3)",textTransform:"uppercase",borderBottom:"1px solid var(--c-border)"}}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {approvedVouchers.filter(v=>v.type==="thu").slice(0,10).map((v,i)=>(
-                  <tr key={v.id} style={{borderBottom:"1px solid #f8fafc",background:i%2===0?"#fff":"#fafafa"}}>
-                    <td style={{padding:"8px 12px",fontWeight:600,color:"#2563eb"}}>{v.id}</td>
-                    <td style={{padding:"8px 12px",color:"#374151"}}>{v.customerName||"—"}</td>
-                    <td style={{padding:"8px 12px",fontWeight:700,color:"#059669"}}>{fmtMoney(v.amount)}</td>
-                    <td style={{padding:"8px 12px"}}><span style={{background:"#ecfdf5",color:"#059669",borderRadius:99,fontSize:11,padding:"2px 8px",fontWeight:600}}>✓ Duyệt</span></td>
+                  <tr key={v.id} style={{borderBottom:"1px solid var(--c-border)",background:i%2===0?"var(--c-surface)":"var(--c-bg)"}}>
+                    <td style={{padding:"8px 12px",fontWeight:600,color:"var(--c-primary-mid)"}}>{v.id}</td>
+                    <td style={{padding:"8px 12px",color:"var(--c-text-2)"}}>{v.customerName||"—"}</td>
+                    <td style={{padding:"8px 12px",fontWeight:700,color:"var(--c-success-mid)"}}>{fmtMoney(v.amount)}</td>
+                    <td style={{padding:"8px 12px"}}><span style={{background:"var(--c-success-bg)",color:"var(--c-success-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",padding:"2px 8px",fontWeight:600}}>✓ Duyệt</span></td>
                   </tr>
                 ))}
                 {approvedVouchers.filter(v=>v.type==="thu").length===0&&(
-                  <tr><td colSpan={4} style={{textAlign:"center",padding:"24px",color:"#94a3b8"}}>Không có phiếu thu</td></tr>
+                  <tr><td colSpan={4} style={{textAlign:"center",padding:"24px",color:"var(--c-text-muted)"}}>Không có phiếu thu</td></tr>
                 )}
               </tbody>
             </table>
