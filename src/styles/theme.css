@@ -1,0 +1,224 @@
+/* ═══════════════════════════════════════════════════════════
+   MINH VIỆT ERP — Design System Tokens v2
+   Font: Be Vietnam Pro (Vietnamese-optimized)
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Typography ───────────────────────────────────────── */
+  --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+
+  /* Font sizes */
+  --text-2xs:  10px;
+  --text-xs:   11px;
+  --text-sm:   12px;
+  --text-base: 13px;
+  --text-md:   14px;
+  --text-lg:   15px;
+  --text-xl:   17px;
+  --text-2xl:  20px;
+  --text-3xl:  24px;
+
+  /* Line heights */
+  --lh-tight:  1.3;
+  --lh-base:   1.55;
+  --lh-loose:  1.75;
+
+  /* Font weights */
+  --fw-normal:  400;
+  --fw-medium:  500;
+  --fw-semi:    600;
+  --fw-bold:    700;
+  --fw-black:   800;
+
+  /* Letter spacing — Vietnamese cần rộng hơn một chút */
+  --ls-tight:  -0.01em;
+  --ls-base:    0.005em;
+  --ls-wide:    0.03em;
+  --ls-wider:   0.06em;  /* labels, tags */
+
+  /* ── Brand palette ────────────────────────────────────── */
+  --c-primary:        #1e3a8a;   /* Navy đậm — heading, icon */
+  --c-primary-dark:   #172554;   /* Hover state */
+  --c-primary-mid:    #2563eb;   /* CTA, link, active */
+  --c-primary-hover:  #1d4ed8;   /* Button hover */
+  --c-primary-light:  #eff6ff;   /* Tint surface */
+  --c-primary-pale:   #dbeafe;   /* Border, divider */
+  --c-primary-xpale:  #f0f6ff;   /* Row hover */
+
+  /* Accent */
+  --c-accent:         #6366f1;   /* Indigo — secondary action */
+  --c-accent-bg:      #eef2ff;
+  --c-accent-border:  #c7d2fe;
+
+  /* ── Semantic ─────────────────────────────────────────── */
+  --c-success:        #15803d;
+  --c-success-mid:    #16a34a;
+  --c-success-bg:     #f0fdf4;
+  --c-success-border: #bbf7d0;
+
+  --c-warning:        #92400e;
+  --c-warning-mid:    #d97706;
+  --c-warning-bg:     #fffbeb;
+  --c-warning-border: #fde68a;
+
+  --c-danger:         #991b1b;
+  --c-danger-mid:     #dc2626;
+  --c-danger-bg:      #fff1f2;
+  --c-danger-border:  #fecaca;
+
+  --c-info:           #0369a1;
+  --c-info-bg:        #f0f9ff;
+  --c-info-border:    #bae6fd;
+
+  --c-purple:         #6d28d9;
+  --c-purple-bg:      #f5f3ff;
+  --c-purple-border:  #ddd6fe;
+
+  --c-teal:           #0f766e;
+  --c-teal-bg:        #f0fdfa;
+  --c-teal-border:    #99f6e4;
+
+  /* ── Neutrals (Slate scale) ───────────────────────────── */
+  --c-bg:             #f8fafc;   /* Nền toàn trang */
+  --c-bg-alt:         #f1f5f9;   /* Nền thứ cấp */
+  --c-surface:        #ffffff;   /* Card, panel, modal */
+  --c-surface-2:      #f8fafc;   /* Input bg, zebra */
+  --c-surface-3:      #f1f5f9;   /* Hover row bg */
+
+  --c-border:         #e2e8f0;   /* Divider nhẹ */
+  --c-border-mid:     #cbd5e1;   /* Input border */
+  --c-border-strong:  #94a3b8;   /* Focus, emphasis */
+
+  --c-text:           #0f172a;   /* Heading, primary — đậm hơn để dễ đọc */
+  --c-text-2:         #334155;   /* Body text */
+  --c-text-3:         #64748b;   /* Secondary label */
+  --c-text-muted:     #94a3b8;   /* Placeholder, disabled */
+  --c-text-inverse:   #ffffff;
+
+  /* ── Sidebar ──────────────────────────────────────────── */
+  --c-sidebar-bg:       #0f172a;             /* Slate 900 */
+  --c-sidebar-border:   rgba(255,255,255,.06);
+  --c-sidebar-text:     #94a3b8;             /* Slate 400 */
+  --c-sidebar-text-hover: #e2e8f0;
+  --c-sidebar-hover:    rgba(255,255,255,.06);
+  --c-sidebar-active:   #3b82f6;
+  --c-sidebar-activebg: rgba(59,130,246,.15);
+  --c-sidebar-activetext: #ffffff;
+
+  /* ── Layout dimensions ────────────────────────────────── */
+  --sidebar-w:    240px;    /* +20px so chữ tiếng Việt không bị cắt */
+  --topbar-h:     56px;
+  --content-max:  1320px;
+  --card-radius:  12px;
+
+  /* ── Spacing (4px grid) ───────────────────────────────── */
+  --sp-0-5:  2px;
+  --sp-1:    4px;
+  --sp-1-5:  6px;
+  --sp-2:    8px;
+  --sp-2-5:  10px;
+  --sp-3:    12px;
+  --sp-4:    16px;
+  --sp-5:    20px;
+  --sp-6:    24px;
+  --sp-7:    28px;
+  --sp-8:    32px;
+  --sp-10:   40px;
+  --sp-12:   48px;
+
+  /* ── Border radius ────────────────────────────────────── */
+  --r-xs:   4px;
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   14px;
+  --r-xl:   18px;
+  --r-2xl:  24px;
+  --r-pill: 9999px;
+
+  /* ── Shadows ──────────────────────────────────────────── */
+  --sh-xs:    0 1px 2px rgba(0,0,0,.05);
+  --sh-sm:    0 1px 4px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --sh-md:    0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --sh-lg:    0 8px 24px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.05);
+  --sh-xl:    0 16px 48px rgba(0,0,0,.12), 0 8px 16px rgba(0,0,0,.06);
+  --sh-modal: 0 24px 64px rgba(0,0,0,.18), 0 8px 24px rgba(0,0,0,.10);
+  --sh-inset: inset 0 1px 3px rgba(0,0,0,.06);
+  --sh-focus: 0 0 0 3px rgba(37,99,235,.20);
+
+  /* ── Transitions ──────────────────────────────────────── */
+  --t-instant: 80ms ease;
+  --t-fast:    140ms ease;
+  --t-base:    200ms ease;
+  --t-slow:    300ms cubic-bezier(.4,0,.2,1);
+  --t-bounce:  280ms cubic-bezier(.22,.68,0,1.2);
+
+  /* ── Z-index layers ───────────────────────────────────── */
+  --z-base:    1;
+  --z-dropdown: 100;
+  --z-sticky:  200;
+  --z-sidebar: 200;
+  --z-topbar:  210;
+  --z-modal:   500;
+  --z-toast:   600;
+  --z-tooltip: 700;
+}
+
+/* ── Global typography ───────────────────────────────────── */
+html, body, #root {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--lh-base);
+  color: var(--c-text-2);
+  letter-spacing: var(--ls-base);
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  color: var(--c-text);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  font-weight: var(--fw-bold);
+}
+
+/* Số, mã, ID dùng mono */
+code, kbd, .mono {
+  font-family: var(--font-mono);
+  font-size: .9em;
+  letter-spacing: 0;
+}
+
+/* ── Utility classes ─────────────────────────────────────── */
+.truncate       { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sr-only        { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+.text-muted     { color: var(--c-text-muted); }
+.text-secondary { color: var(--c-text-3); }
+.font-mono      { font-family: var(--font-mono); }
+.uppercase      { text-transform: uppercase; letter-spacing: var(--ls-wider); }
+
+/* ── Global animations ───────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.anim-fade     { animation: fadeIn   var(--t-base) both; }
+.anim-up       { animation: slideUp  var(--t-base) both; }
+.anim-scale    { animation: scaleIn  var(--t-bounce) both; }

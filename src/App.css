@@ -1,0 +1,130 @@
+/* App.css — ERP utility classes & micro-animations
+   Không dùng Vite boilerplate ở đây nữa */
+
+/* ── Page transitions ───────────────────────────────────── */
+.page-enter {
+  animation: pageSlideIn 220ms cubic-bezier(.22,.68,0,1.2) both;
+}
+@keyframes pageSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Table row hover ─────────────────────────────────────── */
+.table-row-hover:hover { background: #f0f6ff !important; }
+
+/* ── Status dot pulse ────────────────────────────────────── */
+.dot-pulse {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .5; transform: scale(.85); }
+}
+
+/* ── Skeleton loader ─────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  border-radius: 6px;
+  animation: skeleton 1.4s ease infinite;
+}
+@keyframes skeleton {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Number badge ────────────────────────────────────────── */
+.badge-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ── Drawer overlay ──────────────────────────────────────── */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 300;
+  animation: fadeIn 180ms ease both;
+}
+.drawer-panel {
+  position: fixed;
+  top: 0; right: 0;
+  height: 100vh;
+  background: #fff;
+  z-index: 301;
+  box-shadow: -8px 0 40px rgba(0,0,0,.14);
+  animation: drawerIn 240ms cubic-bezier(.22,.68,0,1.08) both;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+@keyframes drawerIn {
+  from { transform: translateX(100%); opacity: .6; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* ── Modal ───────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 160ms ease both;
+}
+.modal-panel {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.22);
+  animation: scaleIn 200ms cubic-bezier(.22,.68,0,1.2) both;
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(.94) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Toast ───────────────────────────────────────────────── */
+.toast-enter {
+  animation: toastIn 280ms cubic-bezier(.22,.68,0,1.2) both;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(100%) scale(.9); }
+  to   { opacity: 1; transform: translateX(0)    scale(1); }
+}
+
+/* ── Focus ring override ─────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Scrollbar slim ──────────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }

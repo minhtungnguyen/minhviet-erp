@@ -1,0 +1,506 @@
+function HDVModule({hdvList,onUpdate,pushNotif,orders=[]}){
+  const [view,setView]=useState("list"); // list | detail | form
+  const [selected,setSelected]=useState(null);
+  const [editItem,setEditItem]=useState(null);
+  const [search,setSearch]=useState("");
+  const [filterLang,setFilterLang]=useState("all");
+  const [filterStatus,setFilterStatus]=useState("all");
+  const [filterSpecialty,setFilterSpecialty]=useState("all");
+  const [sortBy,setSortBy]=useState("rating"); // rating | trips | name
+  // Review form
+  const [showReview,setShowReview]=useState(false);
+  const [rvRating,setRvRating]=useState(5);
+  const [rvNote,setRvNote]=useState("");
+  const [rvOrder,setRvOrder]=useState("");
+
+  // ── Derived ──────────────────────────────────────────────
+  const allSpecialties=useMemo(()=>{
+    const s=new Set();
+    hdvList.forEach(h=>(h.specialties||[]).forEach(x=>s.add(x)));
+    return [...s].sort();
+  },[hdvList]);
+
+  const allLangs=useMemo(()=>{
+    const s=new Set();
+    hdvList.forEach(h=>(h.lang||[]).forEach(l=>s.add(l)));
+    return [...s].sort();
+  },[hdvList]);
+
+  const displayed=useMemo(()=>{
+    const q=search.trim().toLowerCase();
+    let list=hdvList.filter(h=>{
+      if(filterStatus!=="all"&&h.status!==filterStatus) return false;
+      if(filterLang!=="all"&&!(h.lang||[]).includes(filterLang)) return false;
+      if(filterSpecialty!=="all"&&!(h.specialties||[]).includes(filterSpecialty)) return false;
+      if(q&&!h.name.toLowerCase().includes(q)&&!h.phone.includes(q)&&!(h.baseCity||"").toLowerCase().includes(q)) return false;
+      return true;
+    });
+    if(sortBy==="rating")  list=[...list].sort((a,b)=>(b.rating||0)-(a.rating||0));
+    if(sortBy==="trips")   list=[...list].sort((a,b)=>(b.totalTrips||0)-(a.totalTrips||0));
+    if(sortBy==="name")    list=[...list].sort((a,b)=>a.name.localeCompare(b.name,"vi"));
+    return list;
+  },[hdvList,search,filterStatus,filterLang,filterSpecialty,sortBy]);
+
+  const stats=useMemo(()=>({
+    total:   hdvList.length,
+    active:  hdvList.filter(h=>h.status==="active").length,
+    busy:    hdvList.filter(h=>h.status==="busy").length,
+    avgRating: hdvList.length>0?(hdvList.reduce((s,h)=>s+(h.rating||0),0)/hdvList.length).toFixed(1):0,
+    totalTrips: hdvList.reduce((s,h)=>s+(h.totalTrips||0),0),
+  }),[hdvList]);
+
+  // ── Handlers ──────────────────────────────────────────────
+  const handleSaveReview=()=>{
+    if(!rvRating){pushNotif("Chọn số sao đánh giá","error");return;}
+    const entry={orderId:rvOrder,rating:rvRating,note:rvNote,date:new Date(NOW_ISO).toISOString().slice(0,10)};
+    const reviews=[...(selected.reviews||[]),entry];
+    const avgRating=+(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1);
+    const updated={...selected,reviews,rating:avgRating};
+    onUpdate(hdvList.map(h=>h.id===updated.id?updated:h));
+    setSelected(updated);
+    setShowReview(false); setRvRating(5); setRvNote(""); setRvOrder("");
+    pushNotif(`Đã đánh giá ${selected.name} — ${rvRating} sao`,"success");
+  };
+
+  const handleSaveForm=(form)=>{
+    const isNew=!form.id;
+    const entry={
+      ...form,
+      id: form.id||`HDV${String(hdvList.length+1).padStart(3,"0")}`,
+      rating: form.rating||0,
+      totalTrips: form.totalTrips||0,
+      reviews: form.reviews||[],
+      createdAt: form.createdAt||new Date(NOW_ISO).toISOString(),
+    };
+    onUpdate(isNew?[...hdvList,entry]:hdvList.map(h=>h.id===entry.id?entry:h));
+    pushNotif(isNew?`Đã thêm HDV ${entry.name}`:`Đã cập nhật ${entry.name}`,"success");
+    setView("list"); setEditItem(null);
+  };
+
+  const handleDelete=(id)=>{
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              sendTelegram(TG_MSG.callThankReminder(task),{event:"order"});
+              return [task,...tasks];
+            });
+          }
+        });
+        return prev;
+      });
+
+      // 2) Voucher sinh nhật: khớp tháng+ngày hôm nay
+      setCustomers(prev=>{
+        const todayMD=today.slice(5); // "MM-DD"
+        prev.filter(c=>c.dob&&c.dob.length>=7&&c.dob.slice(5)===todayMD).forEach(c=>{
+          setCareTasks(tasks=>{
+            if(tasks.find(t=>t.type==="birthday_voucher"&&t.customerId===c.id&&t.dueDate===today)) return tasks;
+            const rand=Math.random().toString(36).slice(2,6).toUpperCase();
+            const voucherCode=`BDAY-${(c.id||"KH").slice(-4).toUpperCase()}-${rand}`;
+            const voucherExpiry=`${today.slice(0,4)}-12-31`;
+            const task={id:`CT-BDAY-${c.id}-${today}`,type:"birthday_voucher",customerId:c.id,
+              customerName:c.name,customerPhone:c.phone||"",sale:c.assignedSale||"",dob:c.dob,
+              dueDate:today,createdAt:new Date().toISOString(),status:"pending",note:"",
+              voucherCode,voucherValue:500000,voucherExpiry};
+            pushToast(`🎂 Sinh nhật: ${c.name} hôm nay — gửi voucher!`,"info");
+            sendTelegram(TG_MSG.birthdayVoucher(task),{event:"order"});
+            return [task,...tasks];
+          });
+        });
+        return prev;
+      });
+    };
+    runDailyChecks();
+    // Kiểm tra lại mỗi giờ để bắt kịp ngày mới khi app mở lâu
+    const interval=setInterval(runDailyChecks, 60*60*1000);
+    return ()=>clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
+
+  if(!currentUser){
+    return <LoginPageComponent onLogin={(user)=>{saveSession(user);setCurrentUser(user);setView("dashboard");}} userAccounts={userAccounts}/>;
+  }
+
+  const handleUpdateOrder=(updated)=>{
+    // Ghi audit log tự động khi trạng thái đổi
+    let finalOrder = updated;
+    const prevOrder = orders.find(o=>o.id===updated.id);
+    if(prevOrder&&updated.status!==prevOrder.status){
+      const entry={ts:new Date().toISOString(),actor:currentUser?.name||"?",role:currentRole,
+        action:"status_change",note:"Đổi trạng thái: "+
+          (ORDER_STATUS[prevOrder.status]?.label||prevOrder.status)+" → "+
+          (ORDER_STATUS[updated.status]?.label||updated.status)};
+      finalOrder={...updated,auditLog:[...(updated.auditLog||[]),entry]};
+
+      // Khi hủy đơn: hoàn ngược CRM stats về trạng thái trước đó
+      if(updated.status==="cancelled"&&prevOrder.status!=="cancelled"){
+        setCustomers(cs=>cs.map(c=>{
+          if(c.phone!==prevOrder.customer?.phone) return c;
+          const rev = prevOrder.pricing?.totalRevenue||0;
+          const profit = prevOrder.pricing?.profit||0;
+          return {
+            ...c,
+            totalOrders:  Math.max(0,(c.totalOrders||0)-1),
+            totalRevenue: Math.max(0,(c.totalRevenue||0)-rev),
+            totalProfit:  Math.max(0,(c.totalProfit||0)-profit),
+          };
+        }));
+      }
+    }
+    setOrders(p=>p.map(o=>o.id===finalOrder.id?finalOrder:o));
+    setSelected(finalOrder);
+  };
+
+  const handleAddVoucher=(v)=>{
+    setVouchers(p=>[...p,v]);
+    if(v.type==="thu"){pushNotif(v.id+": "+v.customerName+" — "+fmt(v.amount)+" đ chờ KT xác nhận","payment",{role:"accountant"});sendTelegram(TG_MSG.newVoucherThu(v),{event:"voucher"});}
+    if(v.type==="chi"){pushNotif(v.id+": Yêu cầu chi "+v.ncc+" — "+fmt(v.amount)+" đ chờ phê duyệt","expense",{role:"manager"});sendTelegram(TG_MSG.newVoucherChi(v),{event:"voucher"});}
+  };
+
+  const handleApprove=(voucherId,type,amount)=>{
+    const updatedVouchers = vouchers.map(v=>
+      v.id===voucherId ? {...v,status:"approved",approvedBy:currentUser?.name||"KT"} : v
+    );
+    setVouchers(updatedVouchers);
+
+    if(type==="thu"){
+      setOrders(os=>os.map(o=>{
+        const thuOk = updatedVouchers
+          .filter(v=>v.orderId===o.id&&v.type==="thu"&&v.status==="approved")
+          .reduce((s,v)=>s+v.amount,0);
+        const orderTotal = calcOrderTotal(o);
+        const newStatus = thuOk>=orderTotal?"full_paid":thuOk>0?"partial_paid":"pending_payment";
+        return {...o, totalPaid:thuOk, status:newStatus};
+      }));
+      // Thông báo cho Sale biết phiếu đã duyệt
+      const v = vouchers.find(x=>x.id===voucherId);
+      if(v){pushNotif("✅ "+voucherId+" đã được KT duyệt — "+fmt(v.amount)+" đ","success");sendTelegram(TG_MSG.voucherApproved({...v,approvedBy:currentUser?.name||"KT"}),{event:"voucher"});}
+    }
+  };
+
+  const handleReject=(voucherId)=>{
+    const vRej=vouchers.find(x=>x.id===voucherId);
+    if(vRej) sendTelegram(TG_MSG.voucherRejected(vRej),{event:"voucher"});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  } = useSupabase();
+
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [dupOrderDlg, setDupOrderDlg] = useState(null); // {dupOrder, pendingData}
+  const [view,setView]        =useState("dashboard");
+  const [approvalThreshold, setApprovalThreshold] = useState(20000000);
+  const [bookings, setBookings] = useState(SEED_NCC_BOOKINGS);
+  const [tourGhepProducts, setTourGhepProducts] = useState(SEED_TOUR_GHEP_PRODUCTS);
+  const [deploySteps, setDeploySteps] = useState({});
+  const [quotes,setQuotes]=useState([]);
+  const [credits,setCredits]=useState(SEED_CREDITS);
+  const [tourPrograms,setTourPrograms]=useState(SEED_TOUR_PROGRAMS);
+  const [bankAccounts,setBankAccounts]=useState(SEED_BANK_ACCOUNTS);
+  const [personalTargets,setPersonalTargets]=useState(SEED_PERSONAL_TARGETS);
+  const [outputInvoices,setOutputInvoices]=useState(SEED_OUTPUT_INVOICES);
+  const [inputInvoices, setInputInvoices] =useState(SEED_INPUT_INVOICES);
+  const [hdvList,setHdvList]=useState(HDV_LIST);
+  const [notifs,setNotifs]    =useState(SEED_NOTIFS);
+  const [toasts,setToasts]    =useState([]);
+  const [selected,setSelected]=useState(null);
+  const [showNotif,setShowNotif]=useState(false);
+  const [showSearch,setShowSearch]=useState(false);
+  const [careTasks,setCareTasks]=useState(()=>{
+    try{return JSON.parse(localStorage.getItem("mv_erp_care_tasks")||"[]");}catch{return [];}
+  });
+  const [msgHistory,setMsgHistory]=useState(()=>{
+    try{return JSON.parse(localStorage.getItem("mv_erp_msg_history")||"[]");}catch{return [];}
+  });
+
+  // Persist careTasks to localStorage
+  useEffect(()=>{
+    localStorage.setItem("mv_erp_care_tasks",JSON.stringify(careTasks));
+  },[careTasks]);
+              <option value="">— Chọn ngôn ngữ —</option>
+              {Object.entries(LANG_LABELS).map(([k,v])=><option key={k} value={k}>{v}</option>)}
+            </Sel>
+            <Btn size="sm" variant="outline" onClick={()=>addTag("lang",langInput,setLangInput)}>+</Btn>
+          </div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:4,marginTop:6}}>
+            {(f.lang||[]).map(l=>(
+              <span key={l} style={{display:"inline-flex",alignItems:"center",gap:4,padding:"2px 8px",borderRadius:"var(--r-pill)",
+                background:"var(--c-accent-bg)",color:"var(--c-accent)",fontSize:"var(--text-xs)",fontWeight:600}}>
+                {LANG_LABELS[l]||l}<button onClick={()=>removeTag("lang",l)} style={{background:"none",border:"none",cursor:"pointer",color:"inherit",padding:0,fontSize:10}}>✕</button>
+              </span>
+            ))}
+          </div>
+        </FieldWrap>
+        <div style={{gridColumn:"1/-1"}}>
+          <TagInput label="Chuyên điểm (Enter để thêm)" field="specialties" placeholder="VD: Đà Nẵng, Hội An..." input={specInput} setInput={setSpecInput}/>
+        </div>
+        <div style={{gridColumn:"1/-1"}}>
+          <TagInput label="Tuyến bay (Enter để thêm)" field="routes" placeholder="VD: HAN-DAD, SGN-PQC..." input={routeInput} setInput={setRouteInput}/>
+        </div>
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [dupOrderDlg, setDupOrderDlg] = useState(null); // {dupOrder, pendingData}
+  const [view,setView]        =useState("dashboard");
+  const [approvalThreshold, setApprovalThreshold] = useState(20000000);
+  // C5 — Khởi tạo bookings với remaining tính lại từ payments[] (tránh seed data tĩnh sai)
+          </FieldWrap>
+        </div>
+      </div>
+    </div>
+  );
+}

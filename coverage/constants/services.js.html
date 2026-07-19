@@ -1,0 +1,586 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for constants/services.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">constants</a> services.js</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>7/7</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>2/2</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>7/7</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export const SERVICES = [
+  { id:"ve_may_bay",        label:"Vé máy bay",          icon:"✈"  },
+  { id:"tour",              label:"Tour trọn gói",        icon:"🗺"  },
+  { id:"tour_ghep_nd",      label:"Tour ghép nội địa",   icon:"🚌"  },
+  { id:"tour_ghep_qt",      label:"Tour ghép quốc tế",   icon:"🌏"  },
+  { id:"cruise",            label:"Du thuyền",            icon:"🚢"  },
+  { id:"hotel_flight",      label:"Combo KS+Vé",         icon:"🏨"  },
+  { id:"ve_tham_quan",      label:"Vé tham quan",        icon:"🎟"  },
+  { id:"khach_san",         label:"Khách sạn",            icon:"🏩"  },
+  { id:"visa",              label:"Visa",                 icon:"🛂"  },
+  { id:"bao_hiem",          label:"Bảo hiểm du lịch",    icon:"🛡"  },
+  { id:"thue_xe",           label:"Thuê xe",              icon:"🚗"  },
+  { id:"mice_teambuilding", label:"MICE / Teambuilding",  icon:"🎯"  },
+];
+&nbsp;
+export const COST_GROUPS = [
+  { id:"transport",  label:"Vận chuyển",    icon:"🚌" },
+  { id:"hotel",      label:"Lưu trú",       icon:"🏨" },
+  { id:"food",       label:"Ăn uống",       icon:"🍽" },
+  { id:"sightseeing",label:"Tham quan",     icon:"🎟" },
+  { id:"guide",      label:"HDV &amp; Nhân sự", icon:"👤" },
+  { id:"event",      label:"Sự kiện / MICE",icon:"🎭" },
+  { id:"accessory",  label:"Phụ kiện",      icon:"🎁" },
+  { id:"other",      label:"Chi phí khác",  icon:"💰" },
+];
+&nbsp;
+export const CHECKLIST_TEMPLATES = {
+  ve_may_bay: [
+    { id:"c1",  phase:"Ngay sau xuất vé",   label:"Kiểm tra thông tin vé (tên, ngày, chặng, hạng vé)", req:true  },
+    { id:"c2",  phase:"Ngay sau xuất vé",   label:"Gửi vé cho khách (Zalo/Facebook/Email/SMS)",        req:true  },
+    { id:"c3",  phase:"Ngay sau xuất vé",   label:"Khách xác nhận đã nhận vé",                         req:true  },
+    { id:"c4",  phase:"Ngay sau xuất vé",   label:"Nhập mã booking (PNR) vào đơn",                    req:true  },
+    { id:"c5",  phase:"Trước ngày bay",     label:"Check-in online cho khách (cửa sổ 2h–24h trước bay)", req:true },
+    { id:"c6",  phase:"Trước ngày bay",     label:"Nhắc khách mang CCCD/Hộ chiếu bản gốc",            req:true  },
+    { id:"c7",  phase:"Trước ngày bay",     label:"Xác nhận hành lý (nếu khách có yêu cầu ký gửi)",   req:false },
+    { id:"c8",  phase:"Ngày bay",           label:"Nhắc giờ có mặt sân bay (nội địa 1.5–2h, QT 3h)",  req:true  },
+    { id:"c9",  phase:"Ngày bay",           label:"Xác nhận khách đã check-in thành công",              req:false },
+    { id:"c10", phase:"Chiều về (khứ hồi)", label:"Check-in online chiều về",                           req:false },
+    { id:"c11", phase:"Chiều về (khứ hồi)", label:"Nhắc giờ có mặt sân bay chiều về",                  req:false },
+    { id:"c12", phase:"Thông tin transit",  label:"Ghi rõ thời gian nối chuyến + sân bay trung chuyển",req:false },
+    { id:"c13", phase:"Thông tin transit",  label:"Nhắc khách không ra khỏi khu vực transit",           req:false },
+  ],
+  tour: [
+    { id:"t1",  phase:"D-7 Chuẩn bị",    label:"Danh sách đoàn đủ CCCD/Hộ chiếu",                    req:true  },
+    { id:"t2",  phase:"D-7 Chuẩn bị",    label:"Confirm khách sạn (voucher đã nhận)",                 req:true  },
+    { id:"t3",  phase:"D-7 Chuẩn bị",    label:"Confirm xe (biển số, tài xế, SĐT)",                   req:true  },
+    { id:"t4",  phase:"D-7 Chuẩn bị",    label:"Briefing HDV (lịch trình, yêu cầu đặc biệt)",         req:true  },
+    { id:"t5",  phase:"D-7 Chuẩn bị",    label:"Thanh toán NCC đủ chưa",                              req:true  },
+    { id:"t6",  phase:"D-7 Chuẩn bị",    label:"Kiểm tra vé tham quan/entry fee các điểm",            req:false },
+    { id:"t7",  phase:"D-1 Nhắc khách",  label:"Gửi lịch trình chi tiết cho khách",                   req:true  },
+    { id:"t8",  phase:"D-1 Nhắc khách",  label:"Nhắc giờ tập trung + địa điểm + cách đi",             req:true  },
+    { id:"t9",  phase:"D-1 Nhắc khách",  label:"HDV xác nhận sẵn sàng",                               req:true  },
+    { id:"t10", phase:"Ngày khởi hành",  label:"Điểm danh đủ khách",                                   req:true  },
+    { id:"t11", phase:"Ngày khởi hành",  label:"Phát tài liệu/mũ/phụ kiện tour",                      req:false },
+    { id:"t12", phase:"Ngày khởi hành",  label:"Khởi hành đúng giờ",                                  req:true  },
+    { id:"t13", phase:"Trong tour",      label:"Check-in khách sạn OK (số phòng đã cấp)",              req:true  },
+    { id:"t14", phase:"Trong tour",      label:"Các điểm tham quan theo đúng lịch trình",              req:false },
+    { id:"t15", phase:"Kết thúc tour",   label:"Toàn bộ khách về an toàn",                             req:true  },
+    { id:"t16", phase:"Kết thúc tour",   label:"Quyết toán HDV",                                       req:true  },
+    { id:"t17", phase:"Kết thúc tour",   label:"Thu feedback từ khách",                                req:false },
+  ],
+  cruise: [
+    { id:"cr1",  phase:"Chuẩn bị",       label:"Xác định loại tàu (tàu ngày / tàu đêm)",               req:true  },
+    { id:"cr2",  phase:"Chuẩn bị",       label:"Confirm cảng đón + giờ check-in tàu",                  req:true  },
+    { id:"cr3",  phase:"Chuẩn bị",       label:"Gửi danh sách khách + CCCD cho tàu",                   req:true  },
+    { id:"cr4",  phase:"Chuẩn bị",       label:"Thanh toán đủ theo deadline tàu quy định",             req:true  },
+    { id:"cr5",  phase:"Chuẩn bị",       label:"[Tàu đêm] Confirm cabin (số phòng, loại phòng)",       req:false },
+    { id:"cr6",  phase:"Chuẩn bị",       label:"Xác nhận meal plan + activities đã included",          req:true  },
+    { id:"cr7",  phase:"Chuẩn bị",       label:"Ghi nhận yêu cầu đặc biệt (ăn chay, dị ứng...)",       req:false },
+    { id:"cr8",  phase:"D-1 Nhắc khách", label:"Nhắc điểm tập trung + giờ (trước 30 phút)",            req:true  },
+    { id:"cr9",  phase:"D-1 Nhắc khách", label:"Nhắc mang CCCD bản gốc",                               req:true  },
+    { id:"cr10", phase:"Ngày đi",        label:"Xác nhận khách đã lên tàu đầy đủ",                     req:true  },
+    { id:"cr11", phase:"Kết thúc",       label:"Xác nhận khách về an toàn",                             req:true  },
+    { id:"cr12", phase:"Kết thúc",       label:"Quyết toán với tàu",                                    req:true  },
+  ],
+  tour_ghep_nd: [
+    { id:"tg1", phase:"D-7 Confirm",    label:"Gửi danh sách khách cho đơn vị tổ chức",               req:true  },
+    { id:"tg2", phase:"D-7 Confirm",    label:"Nhận xác nhận chỗ từ đơn vị tổ chức",                  req:true  },
+    { id:"tg3", phase:"D-7 Confirm",    label:"Xác nhận điểm đón + giờ đón chính xác",                req:true  },
+    { id:"tg4", phase:"D-7 Confirm",    label:"Lấy SĐT đầu mối bên đơn vị tổ chức",                   req:true  },
+    { id:"tg5", phase:"D-7 Confirm",    label:"Thanh toán cho đơn vị tổ chức",                        req:true  },
+    { id:"tg6", phase:"D-1 Nhắc khách",label:"Nhắc khách điểm đón + giờ đón",                         req:true  },
+    { id:"tg7", phase:"D-1 Nhắc khách",label:"Gửi SĐT đầu mối/HDV cho khách liên lạc",               req:true  },
+    { id:"tg8", phase:"Kết thúc",       label:"Xác nhận khách về an toàn",                             req:true  },
+    { id:"tg9", phase:"Kết thúc",       label:"Thu feedback",                                          req:false },
+  ],
+  ve_tham_quan: [
+    { id:"vt1", phase:"Đặt vé",  label:"Xác nhận loại vé (NL/TE/combo) + số lượng",            req:true  },
+    { id:"vt2", phase:"Đặt vé",  label:"Xác nhận ngày sử dụng + giờ vào (nếu có slot)",        req:true  },
+    { id:"vt3", phase:"Đặt vé",  label:"Thanh toán + nhận vé (giấy hoặc điện tử)",             req:true  },
+    { id:"vt4", phase:"Đặt vé",  label:"Ghi nhận hạn sử dụng vé",                              req:true  },
+    { id:"vt5", phase:"Giao vé", label:"Gửi vé cho khách (ảnh chụp/file PDF/QR code)",         req:true  },
+    { id:"vt6", phase:"Giao vé", label:"Khách xác nhận đã nhận vé",                            req:true  },
+    { id:"vt7", phase:"Nhắc nhở",label:"Nhắc khách ngày sử dụng vé + giờ vào",                 req:false },
+  ],
+  khach_san: [
+    { id:"ks1", phase:"Đặt phòng",      label:"Confirm booking (voucher KS đã nhận)",                  req:true  },
+    { id:"ks2", phase:"Đặt phòng",      label:"Xác nhận loại phòng, tên đặt, số đêm",                 req:true  },
+    { id:"ks3", phase:"Đặt phòng",      label:"Breakfast included? Ghi rõ",                           req:true  },
+    { id:"ks4", phase:"Đặt phòng",      label:"Cọc NCC: đã thanh toán chưa + deadline còn lại",       req:true  },
+    { id:"ks5", phase:"Trước check-in", label:"Gửi voucher KS cho khách",                             req:true  },
+    { id:"ks6", phase:"Trước check-in", label:"Nhắc giờ check-in (standard 14h, early nếu có)",       req:true  },
+    { id:"ks7", phase:"Trước check-in", label:"Xác nhận early check-in / late check-out nếu cần",     req:false },
+    { id:"ks8", phase:"Sau check-in",   label:"Khách check-in thành công",                            req:true  },
+    { id:"ks9", phase:"Checkout",       label:"Khách checkout OK + không phát sinh",                   req:false },
+  ],
+  visa: [
+    { id:"v1",  phase:"Nhận hồ sơ",label:"Nhận đủ hồ sơ từ khách (passport, ảnh, form...)",      req:true  },
+    { id:"v2",  phase:"Nhận hồ sơ",label:"Kiểm tra hộ chiếu còn hạn đủ 6 tháng",                 req:true  },
+    { id:"v3",  phase:"Nộp hồ sơ", label:"Nộp hồ sơ cho công ty dịch vụ visa",                   req:true  },
+    { id:"v4",  phase:"Nộp hồ sơ", label:"Ghi nhận ngày nộp + ngày nhận dự kiến",                req:true  },
+    { id:"v5",  phase:"Theo dõi",  label:"Theo dõi trạng thái hồ sơ",                             req:true  },
+    { id:"v6",  phase:"Nhận visa", label:"Nhận visa từ công ty dịch vụ",                          req:true  },
+    { id:"v7",  phase:"Nhận visa", label:"Kiểm tra thông tin visa (tên, ngày, loại)",              req:true  },
+    { id:"v8",  phase:"Giao khách",label:"Gửi/giao visa cho khách",                               req:true  },
+    { id:"v9",  phase:"Giao khách",label:"Khách xác nhận đã nhận",                                req:true  },
+  ],
+  bao_hiem: [
+    { id:"bh1", phase:"Phát hành",label:"Chọn đối tác (MIC / PTI-DBV)",                          req:true  },
+    { id:"bh2", phase:"Phát hành",label:"Xác nhận gói bảo hiểm + quyền lợi",                    req:true  },
+    { id:"bh3", phase:"Phát hành",label:"Thu thập thông tin khách (tên, CCCD, ngày sinh)",       req:true  },
+    { id:"bh4", phase:"Phát hành",label:"Phát hành hợp đồng/thẻ bảo hiểm",                      req:true  },
+    { id:"bh5", phase:"Phát hành",label:"Ghi nhận số hợp đồng + ngày hiệu lực → hết hạn",       req:true  },
+    { id:"bh6", phase:"Giao khách",label:"Gửi hợp đồng/thẻ BH cho khách",                        req:true  },
+    { id:"bh7", phase:"Giao khách",label:"Thông báo số hotline claim cho khách",                  req:true  },
+    { id:"bh8", phase:"Giao khách",label:"Khách xác nhận đã nhận",                                req:true  },
+  ],
+  thue_xe: [
+    { id:"tx1", phase:"Đặt xe",        label:"Xác nhận loại xe + số chỗ",             req:true  },
+    { id:"tx2", phase:"Đặt xe",        label:"Confirm tài xế (tên + SĐT)",             req:true  },
+    { id:"tx3", phase:"Đặt xe",        label:"Biển số xe",                            req:true  },
+    { id:"tx4", phase:"Đặt xe",        label:"Giờ đón + địa điểm đón chính xác",      req:true  },
+    { id:"tx5", phase:"Đặt xe",        label:"Lộ trình + điểm trả cuối",              req:true  },
+    { id:"tx6", phase:"Đặt xe",        label:"Thanh toán (cọc + còn lại khi nào)",    req:true  },
+    { id:"tx7", phase:"Nhắc khách",    label:"Gửi thông tin xe + tài xế cho khách",   req:true  },
+    { id:"tx8", phase:"Ngày thực hiện",label:"Xác nhận xe đón đúng giờ",              req:true  },
+    { id:"tx9", phase:"Hoàn thành",    label:"Khách về an toàn + thanh toán đủ",       req:true  },
+  ],
+  mice_teambuilding: [
+    { id:"m1",  phase:"Khởi động",    label:"Xác nhận số lượng người tham dự chính thức",           req:true  },
+    { id:"m2",  phase:"Khởi động",    label:"Confirm địa điểm tổ chức (voucher/hợp đồng)",          req:true  },
+    { id:"m3",  phase:"Khởi động",    label:"Chương trình activities đã duyệt",                     req:true  },
+    { id:"m4",  phase:"Khởi động",    label:"Catering/tiệc đã confirm (menu, số suất)",             req:true  },
+    { id:"m5",  phase:"Khởi động",    label:"Thiết bị (âm thanh, ánh sáng, backdrop, máy chiếu...)",req:true },
+    { id:"m6",  phase:"Khởi động",    label:"Nhân sự MC/Trainer/Facilitator đã confirm",            req:true  },
+    { id:"m7",  phase:"Khởi động",    label:"Thanh toán NCC các hạng mục",                          req:true  },
+    { id:"m8",  phase:"Chuẩn bị",     label:"Danh sách đoàn gửi cho địa điểm",                      req:true  },
+    { id:"m9",  phase:"Chuẩn bị",     label:"In ấn: tên bảng, backdrop, tài liệu...",               req:false },
+    { id:"m10", phase:"Chuẩn bị",     label:"Quà tặng/phần thưởng đã chuẩn bị",                    req:false },
+    { id:"m11", phase:"D-1 Chạy thử", label:"Chạy thử chương trình + setup địa điểm",              req:true  },
+    { id:"m12", phase:"D-1 Chạy thử", label:"Kiểm tra thiết bị âm thanh/ánh sáng",                 req:true  },
+    { id:"m13", phase:"D-1 Chạy thử", label:"Confirm lại toàn bộ nhân sự",                          req:true  },
+    { id:"m14", phase:"Ngày sự kiện", label:"Check-in đoàn",                                        req:true  },
+    { id:"m15", phase:"Ngày sự kiện", label:"Chương trình diễn ra đúng kế hoạch",                   req:true  },
+    { id:"m16", phase:"Ngày sự kiện", label:"Xử lý phát sinh (nếu có)",                             req:false },
+    { id:"m17", phase:"Kết thúc",     label:"Quyết toán tất cả NCC",                                req:true  },
+    { id:"m18", phase:"Kết thúc",     label:"Thu feedback từ khách hàng",                           req:true  },
+  ],
+};
+&nbsp;
+// Tour ghép quốc tế = checklist tour ghép nội địa
+CHECKLIST_TEMPLATES.tour_ghep_qt = CHECKLIST_TEMPLATES.tour_ghep_nd;
+// Combo = KS + vé máy bay
+CHECKLIST_TEMPLATES.hotel_flight = [
+  ...CHECKLIST_TEMPLATES.ve_may_bay.map(c =&gt; ({...c, id:"hf_v_"+c.id})),
+  ...CHECKLIST_TEMPLATES.khach_san.map(c  =&gt; ({...c, id:"hf_k_"+c.id})),
+];
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-06-15T02:26:13.186Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    
