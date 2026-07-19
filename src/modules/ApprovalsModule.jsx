@@ -1,13 +1,14 @@
 import React from "react";
 import { isBanGiamDoc } from "../utils/permissions.js";
+import { Btn } from "../components/ui.jsx";
 
 const EXP_PIPELINE_STATUS = {
-  draft:       { label:"Nháp",              color:"#888",    bg:"#f0f4ff",  dot:"#ccc"    },
-  pending_kt:  { label:"Chờ KT Trưởng",    color:"#7a5a00", bg:"#fef9e7",  dot:"#e8c53a" },
-  pending_gd:  { label:"Chờ Giám đốc",     color:"#5c2eb0", bg:"#f3f0ff",  dot:"#8b5cf6" },
-  pending_pay: { label:"Chờ chuyển tiền",  color:"#1a4d8f", bg:"#e6f1fb",  dot:"#3a8bd4" },
-  paid:        { label:"Đã chuyển tiền",   color:"#2563eb", bg:"#eff6ff",  dot:"#3b82f6" },
-  rejected:    { label:"Bị từ chối",       color:"#8b2a1a", bg:"#fdf0ee",  dot:"#e07060" },
+  draft:       { label:"Nháp",              color:"var(--c-text-muted)", bg:"var(--c-surface-2)",  dot:"var(--c-border-mid)"    },
+  pending_kt:  { label:"Chờ KT Trưởng",    color:"var(--c-warning)", bg:"var(--c-warning-bg)",  dot:"var(--c-warning-mid)" },
+  pending_gd:  { label:"Chờ Giám đốc",     color:"var(--c-purple)", bg:"var(--c-purple-bg)",  dot:"var(--c-purple)" },
+  pending_pay: { label:"Chờ chuyển tiền",  color:"var(--c-info)", bg:"var(--c-info-bg)",  dot:"var(--c-info)" },
+  paid:        { label:"Đã chuyển tiền",   color:"var(--c-primary-mid)", bg:"var(--c-primary-light)",  dot:"var(--c-primary-mid)" },
+  rejected:    { label:"Bị từ chối",       color:"var(--c-danger)", bg:"var(--c-danger-bg)",  dot:"var(--c-danger-mid)" },
 };
 
 function PipelineBar({exp}){
@@ -21,17 +22,17 @@ function PipelineBar({exp}){
         const isPast=exp.status!=="rejected"&&i<curIdx;
         const isCur=i===curIdx;
         const isRej=exp.status==="rejected"&&(exp.pipelineLog||[]).some(l=>l.status==="rejected");
-        const color=isPast||isCur?"#10b981":"#d1d5db";
+        const color=isPast||isCur?"var(--c-success-mid)":"var(--c-border-mid)";
         return(
           <React.Fragment key={s}>
             <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:1}}>
-              <div style={{width:32,height:32,borderRadius:"50%",background:isPast?"#10b981":isCur?EXP_PIPELINE_STATUS[s]?.dot||"#f59e0b":"#e2e8f0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:800,color:isPast||isCur?"#fff":"#94a3b8",border:isCur?`3px solid ${EXP_PIPELINE_STATUS[s]?.dot}`:isPast?"3px solid #10b981":"none",transition:"all .3s"}}>
+              <div style={{width:32,height:32,borderRadius:"50%",background:isPast?"var(--c-success-mid)":isCur?EXP_PIPELINE_STATUS[s]?.dot||"#f59e0b":"var(--c-border)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"var(--text-base)",fontWeight:800,color:isPast||isCur?"#fff":"var(--c-text-muted)",border:isCur?`3px solid ${EXP_PIPELINE_STATUS[s]?.dot}`:isPast?"3px solid var(--c-success-mid)":"none",transition:"all .3s"}}>
                 {isPast?"✓":i+1}
               </div>
-              <div style={{fontSize:11,color:isPast?"#10b981":isCur?"#1e293b":"#94a3b8",fontWeight:isCur?700:400,textAlign:"center",lineHeight:1.2}}>{STAGE_LABELS[i]}</div>
-              {log&&<div style={{fontSize:10,color:"#6b7280"}}>{log.by?.split(" ")[0]||""}</div>}
+              <div style={{fontSize:"var(--text-xs)",color:isPast?"var(--c-success-mid)":isCur?"var(--c-text)":"var(--c-text-muted)",fontWeight:isCur?700:400,textAlign:"center",lineHeight:1.2}}>{STAGE_LABELS[i]}</div>
+              {log&&<div style={{fontSize:10,color:"var(--c-text-3)"}}>{log.by?.split(" ")[0]||""}</div>}
             </div>
-            {i<STAGES.length-1&&<div style={{height:2,flex:0,width:24,background:isPast?"#10b981":"#e2e8f0",marginBottom:20}}/>}
+            {i<STAGES.length-1&&<div style={{height:2,flex:0,width:24,background:isPast?"var(--c-success-mid)":"var(--c-border)",marginBottom:20}}/>}
           </React.Fragment>
         );
       })}
@@ -64,10 +65,10 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
   const myCreated=chiExpenses.filter(e=>e.createdBy===currentUser?.name||e.sale===currentUser?.name);
 
   const tabs=[
-    ...(myStage?[{k:"mine",label:"Cần duyệt",count:myQueue.length,color:"#ef4444"}]:[]),
-    {k:"all_pending",label:"Đang chờ",count:allPending.length,color:"#f59e0b"},
-    {k:"done",label:"Hoàn tất",count:done.length,color:"#10b981"},
-    {k:"created",label:"Phiếu của tôi",count:myCreated.length,color:"#6366f1"},
+    ...(myStage?[{k:"mine",label:"Cần duyệt",count:myQueue.length,color:"var(--c-danger-mid)"}]:[]),
+    {k:"all_pending",label:"Đang chờ",count:allPending.length,color:"var(--c-warning-mid)"},
+    {k:"done",label:"Hoàn tất",count:done.length,color:"var(--c-success-mid)"},
+    {k:"created",label:"Phiếu của tôi",count:myCreated.length,color:"var(--c-accent)"},
   ];
 
   const activeTab=tab==="mine"&&!myStage?"all_pending":tab;
@@ -102,19 +103,19 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
 
   // Detail view
   if(detail){
-    const st=PS[detail.status]||{label:detail.status,color:"#64748b",bg:"#f1f5f9"};
+    const st=PS[detail.status]||{label:detail.status,color:"var(--c-text-3)",bg:"var(--c-surface-2)"};
     const isRejected=detail.status==="rejected";
     return(
       <div style={{padding:24,maxWidth:680,margin:"0 auto"}}>
-        <button onClick={()=>{setDetail(null);setShowReject(false);setRejectNote("");}} style={{background:"none",border:"none",color:"#2563eb",cursor:"pointer",fontSize:14,marginBottom:16,display:"flex",alignItems:"center",gap:6}}>← Quay lại</button>
-        <div style={{background:"#fff",borderRadius:16,padding:28,boxShadow:"0 2px 16px rgba(0,0,0,.09)"}}>
+        <button onClick={()=>{setDetail(null);setShowReject(false);setRejectNote("");}} style={{background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:"var(--text-md)",marginBottom:16,display:"flex",alignItems:"center",gap:6}}>← Quay lại</button>
+        <div style={{background:"var(--c-surface)",borderRadius:"var(--r-xl)",padding:28,boxShadow:"var(--sh-lg)"}}>
           {/* Header */}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
             <div>
-              <div style={{fontSize:22,fontWeight:900,color:"#0f172a"}}>{detail.id}</div>
-              <div style={{fontSize:13,color:"#64748b",marginTop:4}}>Tạo bởi <strong>{detail.createdBy||"—"}</strong> · {fmtDate(detail.createdAt)}</div>
+              <div style={{fontSize:"var(--text-2xl)",fontWeight:900,color:"var(--c-text)"}}>{detail.id}</div>
+              <div style={{fontSize:"var(--text-base)",color:"var(--c-text-3)",marginTop:4}}>Tạo bởi <strong>{detail.createdBy||"—"}</strong> · {fmtDate(detail.createdAt)}</div>
             </div>
-            <span style={{background:isRejected?"#fee2e2":st.bg,color:isRejected?"#dc2626":st.color,borderRadius:20,padding:"6px 16px",fontWeight:700,fontSize:13,whiteSpace:"nowrap"}}>
+            <span style={{background:isRejected?"var(--c-danger-bg)":st.bg,color:isRejected?"var(--c-danger-mid)":st.color,borderRadius:"var(--r-pill)",padding:"6px 16px",fontWeight:700,fontSize:"var(--text-base)",whiteSpace:"nowrap"}}>
               {isRejected?"❌ Bị từ chối":st.label}
             </span>
           </div>
@@ -122,25 +123,25 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
           {/* Pipeline bar */}
           {!isRejected&&<PipelineBar exp={detail}/>}
           {isRejected&&(
-            <div style={{background:"#fee2e2",borderRadius:10,padding:12,marginBottom:16,fontSize:13,color:"#991b1b"}}>
+            <div style={{background:"var(--c-danger-bg)",borderRadius:"var(--r-md)",padding:12,marginBottom:16,fontSize:"var(--text-base)",color:"var(--c-danger)"}}>
               ❌ Từ chối bởi <strong>{detail.rejectedBy||"—"}</strong> · {fmtDate(detail.rejectedAt)}
               {detail.rejectNote&&<div style={{marginTop:4}}>Lý do: {detail.rejectNote}</div>}
             </div>
           )}
 
           {/* Info rows */}
-          <div style={{background:"#f8fafc",borderRadius:10,overflow:"hidden",marginBottom:16}}>
+          <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-md)",overflow:"hidden",marginBottom:16}}>
             {[
               ["Loại chi","Phiếu chi NCC"],
               ["NCC / Đối tác",detail.nccName||detail.ncc||"—"],
-              ["Số tiền",<span style={{color:"#dc2626",fontWeight:800,fontSize:16}}>{fmtMoney(detail.amount)}</span>],
+              ["Số tiền",<span style={{color:"var(--c-danger-mid)",fontWeight:800,fontSize:"var(--text-lg)"}}>{fmtMoney(detail.amount)}</span>],
               ["Hình thức",detail.method==="cash"?"💵 Tiền mặt":"🏦 Chuyển khoản"],
               ["Đơn hàng",detail.orderId||"—"],
               ["Mã booking / PNR",detail.pnrCode||"—"],
               ["Ghi chú",detail.note||"—"],
             ].map(([k,v])=>(
-              <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"11px 14px",borderBottom:"1px solid #f1f5f9",fontSize:14}}>
-                <span style={{color:"#64748b"}}>{k}</span>
+              <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"11px 14px",borderBottom:"1px solid var(--c-border)",fontSize:"var(--text-md)"}}>
+                <span style={{color:"var(--c-text-3)"}}>{k}</span>
                 <span style={{fontWeight:600,textAlign:"right"}}>{v}</span>
               </div>
             ))}
@@ -149,15 +150,15 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
           {/* Pipeline log */}
           {(detail.pipelineLog||[]).length>0&&(
             <div style={{marginBottom:16}}>
-              <div style={{fontSize:12,color:"#94a3b8",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Lịch sử duyệt</div>
+              <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-muted)",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Lịch sử duyệt</div>
               {detail.pipelineLog.map((l,i)=>{
-                const s=PS[l.status]||{label:l.status,dot:"#94a3b8"};
+                const s=PS[l.status]||{label:l.status,dot:"var(--c-text-muted)"};
                 return(
                   <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:8}}>
-                    <div style={{width:8,height:8,borderRadius:"50%",background:l.status==="rejected"?"#ef4444":s.dot||"#10b981",marginTop:5,flexShrink:0}}/>
-                    <div style={{fontSize:13}}>
+                    <div style={{width:8,height:8,borderRadius:"50%",background:l.status==="rejected"?"var(--c-danger-mid)":s.dot||"var(--c-success-mid)",marginTop:5,flexShrink:0}}/>
+                    <div style={{fontSize:"var(--text-base)"}}>
                       <strong>{l.by||"—"}</strong> · {l.action==="approve"?s.label:"Từ chối"} · {fmtDate(l.at)}
-                      {l.note&&<div style={{color:"#ef4444",fontSize:12}}>Lý do: {l.note}</div>}
+                      {l.note&&<div style={{color:"var(--c-danger-mid)",fontSize:"var(--text-sm)"}}>Lý do: {l.note}</div>}
                     </div>
                   </div>
                 );
@@ -168,22 +169,22 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
           {/* Action buttons */}
           {canActOn(detail)&&!showReject&&(
             <div style={{display:"flex",gap:10,marginTop:8}}>
-              <button onClick={()=>doApprove(detail)} style={{flex:2,background:"linear-gradient(135deg,#16a34a,#15803d)",color:"#fff",border:"none",borderRadius:12,padding:"13px 0",cursor:"pointer",fontWeight:800,fontSize:15,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+              <Btn variant="success" size="lg" style={{flex:2,justifyContent:"center",background:"linear-gradient(135deg,var(--c-success-mid),var(--c-success))",color:"#fff",border:"none",fontWeight:800,fontSize:"var(--text-lg)"}} onClick={()=>doApprove(detail)}>
                 ✓ {approveLabel[currentRole]||"Duyệt"}
-              </button>
-              <button onClick={()=>setShowReject(true)} style={{flex:1,background:"#fff",color:"#dc2626",border:"2px solid #dc2626",borderRadius:12,padding:"13px 0",cursor:"pointer",fontWeight:700,fontSize:14}}>
+              </Btn>
+              <Btn variant="danger" size="lg" style={{flex:1,justifyContent:"center",border:"2px solid var(--c-danger-mid)"}} onClick={()=>setShowReject(true)}>
                 ✗ Từ chối
-              </button>
+              </Btn>
             </div>
           )}
           {showReject&&(
-            <div style={{marginTop:8,background:"#fff5f5",borderRadius:12,padding:16,border:"1px solid #fecaca"}}>
-              <div style={{fontSize:13,fontWeight:700,color:"#dc2626",marginBottom:8}}>Lý do từ chối</div>
+            <div style={{marginTop:8,background:"var(--c-danger-bg)",borderRadius:"var(--r-md)",padding:16,border:"1px solid var(--c-danger-border)"}}>
+              <div style={{fontSize:"var(--text-base)",fontWeight:700,color:"var(--c-danger-mid)",marginBottom:8}}>Lý do từ chối</div>
               <textarea value={rejectNote} onChange={e=>setRejectNote(e.target.value)} placeholder="Nhập lý do từ chối..." rows={3}
-                style={{width:"100%",border:"1px solid #fca5a5",borderRadius:8,padding:10,fontSize:13,fontFamily:"inherit",resize:"vertical",boxSizing:"border-box"}}/>
+                style={{width:"100%",border:"1px solid var(--c-danger-border)",borderRadius:"var(--r-sm)",padding:10,fontSize:"var(--text-base)",fontFamily:"inherit",resize:"vertical",boxSizing:"border-box"}}/>
               <div style={{display:"flex",gap:8,marginTop:10}}>
-                <button onClick={()=>doReject(detail,rejectNote)} style={{flex:1,background:"#dc2626",color:"#fff",border:"none",borderRadius:8,padding:10,cursor:"pointer",fontWeight:700}}>Xác nhận từ chối</button>
-                <button onClick={()=>{setShowReject(false);setRejectNote("");}} style={{flex:1,background:"#e2e8f0",color:"#475569",border:"none",borderRadius:8,padding:10,cursor:"pointer",fontWeight:700}}>Hủy</button>
+                <Btn variant="danger" style={{flex:1,justifyContent:"center",background:"var(--c-danger-mid)",color:"#fff",border:"none"}} onClick={()=>doReject(detail,rejectNote)}>Xác nhận từ chối</Btn>
+                <Btn variant="secondary" style={{flex:1,justifyContent:"center"}} onClick={()=>{setShowReject(false);setRejectNote("");}}>Hủy</Btn>
               </div>
             </div>
           )}
@@ -194,8 +195,8 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
 
   // List view
   const statusBadge=(exp)=>{
-    if(exp.status==="rejected") return{bg:"#fee2e2",c:"#dc2626",label:"Từ chối"};
-    const s=PS[exp.status]||{bg:"#f1f5f9",color:"#64748b",label:exp.status};
+    if(exp.status==="rejected") return{bg:"var(--c-danger-bg)",c:"var(--c-danger-mid)",label:"Từ chối"};
+    const s=PS[exp.status]||{bg:"var(--c-surface-2)",color:"var(--c-text-3)",label:exp.status};
     return{bg:s.bg,c:s.color,label:s.label};
   };
 
@@ -204,41 +205,41 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
       {/* Header */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
         <div>
-          <h2 style={{margin:0,fontSize:22,fontWeight:900}}>Phê duyệt phiếu chi</h2>
-          {myStage&&<div style={{fontSize:13,color:"#64748b",marginTop:2}}>Hàng đợi của bạn ({PS[myStage]?.label}): <strong style={{color:myQueue.length>0?"#ef4444":"#16a34a"}}>{myQueue.length} phiếu</strong></div>}
+          <h2 style={{margin:0,fontSize:"var(--text-2xl)",fontWeight:900,color:"var(--c-text)"}}>Phê duyệt phiếu chi</h2>
+          {myStage&&<div style={{fontSize:"var(--text-base)",color:"var(--c-text-3)",marginTop:2}}>Hàng đợi của bạn ({PS[myStage]?.label}): <strong style={{color:myQueue.length>0?"var(--c-danger-mid)":"var(--c-success-mid)"}}>{myQueue.length} phiếu</strong></div>}
         </div>
       </div>
 
       {/* Pipeline summary bar */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
         {[
-          {s:"pending_kt",label:"Chờ KT Trưởng",color:"#e8c53a",bg:"#fef9e7",tc:"#7a5a00"},
-          {s:"pending_gd",label:"Chờ GĐ",color:"#8b5cf6",bg:"#f3f0ff",tc:"#5c2eb0"},
-          {s:"pending_pay",label:"Chờ chuyển tiền",color:"#3a8bd4",bg:"#e6f1fb",tc:"#1a4d8f"},
-          {s:"paid",label:"Đã chuyển",color:"#10b981",bg:"#f0fdf4",tc:"#15803d"},
+          {s:"pending_kt",label:"Chờ KT Trưởng",color:"var(--c-warning-mid)",bg:"var(--c-warning-bg)",tc:"var(--c-warning)"},
+          {s:"pending_gd",label:"Chờ GĐ",color:"var(--c-purple)",bg:"var(--c-purple-bg)",tc:"var(--c-purple)"},
+          {s:"pending_pay",label:"Chờ chuyển tiền",color:"var(--c-info)",bg:"var(--c-info-bg)",tc:"var(--c-info)"},
+          {s:"paid",label:"Đã chuyển",color:"var(--c-success-mid)",bg:"var(--c-success-bg)",tc:"var(--c-success)"},
         ].map(({s,label,color,bg,tc})=>{
           const cnt=chiExpenses.filter(e=>e.status===s).length;
           const amt=chiExpenses.filter(e=>e.status===s).reduce((sum,e)=>sum+(e.amount||0),0);
           return(
-            <div key={s} style={{background:bg,borderRadius:12,padding:"14px 16px",borderLeft:`4px solid ${color}`,cursor:"pointer"}}
+            <div key={s} style={{background:bg,borderRadius:"var(--r-md)",padding:"14px 16px",borderLeft:`4px solid ${color}`,cursor:"pointer"}}
               onClick={()=>{setTab("all_pending");setFilterStatus(s);}}>
-              <div style={{fontSize:12,color:tc,fontWeight:700,marginBottom:4}}>{label}</div>
-              <div style={{fontSize:24,fontWeight:900,color:tc}}>{cnt}</div>
-              <div style={{fontSize:12,color:tc,opacity:.8}}>{(amt/1e6).toFixed(1)}tr</div>
+              <div style={{fontSize:"var(--text-sm)",color:tc,fontWeight:700,marginBottom:4}}>{label}</div>
+              <div style={{fontSize:"var(--text-2xl)",fontWeight:900,color:tc}}>{cnt}</div>
+              <div style={{fontSize:"var(--text-sm)",color:tc,opacity:.8}}>{(amt/1e6).toFixed(1)}tr</div>
             </div>
           );
         })}
       </div>
 
       {/* Tabs */}
-      <div style={{display:"flex",gap:4,marginBottom:16,background:"#f1f5f9",borderRadius:10,padding:4,width:"fit-content"}}>
+      <div style={{display:"flex",gap:4,marginBottom:16,background:"var(--c-surface-2)",borderRadius:"var(--r-md)",padding:4,width:"fit-content"}}>
         {tabs.map(({k,label,count,color})=>(
           <button key={k} onClick={()=>{setTab(k);setFilterStatus("all");}}
-            style={{padding:"8px 18px",borderRadius:8,border:"none",cursor:"pointer",fontWeight:600,fontSize:13,
-              background:activeTab===k?"#fff":"transparent",color:activeTab===k?"#1e293b":"#64748b",
-              boxShadow:activeTab===k?"0 1px 4px rgba(0,0,0,.1)":"none"}}>
+            style={{padding:"8px 18px",borderRadius:"var(--r-sm)",border:"none",cursor:"pointer",fontWeight:600,fontSize:"var(--text-base)",
+              background:activeTab===k?"var(--c-surface)":"transparent",color:activeTab===k?"var(--c-text)":"var(--c-text-3)",
+              boxShadow:activeTab===k?"var(--sh-xs)":"none"}}>
             {label}
-            {count>0&&<span style={{background:activeTab===k?color:"#e2e8f0",color:activeTab===k?"#fff":"#475569",borderRadius:20,padding:"1px 7px",fontSize:11,marginLeft:4}}>{count}</span>}
+            {count>0&&<span style={{background:activeTab===k?color:"var(--c-border)",color:activeTab===k?"#fff":"var(--c-text-2)",borderRadius:"var(--r-pill)",padding:"1px 7px",fontSize:"var(--text-xs)",marginLeft:4}}>{count}</span>}
           </button>
         ))}
       </div>
@@ -250,10 +251,10 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
             const info=s==="all"?{label:"Tất cả"}:PS[s]||{label:s};
             return(
               <button key={s} onClick={()=>setFilterStatus(s)}
-                style={{padding:"4px 12px",borderRadius:20,border:"1px solid",fontSize:12,cursor:"pointer",fontWeight:600,
-                  background:filterStatus===s?(s==="all"?"#1e293b":PS[s]?.dot||"#94a3b8"):"transparent",
-                  color:filterStatus===s?"#fff":(s==="all"?"#1e293b":PS[s]?.color||"#64748b"),
-                  borderColor:filterStatus===s?"transparent":(s==="all"?"#cbd5e1":PS[s]?.dot||"#cbd5e1")}}>
+                style={{padding:"4px 12px",borderRadius:"var(--r-pill)",border:"1px solid",fontSize:"var(--text-sm)",cursor:"pointer",fontWeight:600,
+                  background:filterStatus===s?(s==="all"?"var(--c-text)":PS[s]?.dot||"var(--c-text-muted)"):"transparent",
+                  color:filterStatus===s?"#fff":(s==="all"?"var(--c-text)":PS[s]?.color||"var(--c-text-3)"),
+                  borderColor:filterStatus===s?"transparent":(s==="all"?"var(--c-border-mid)":PS[s]?.dot||"var(--c-border-mid)")}}>
                 {info.label}
               </button>
             );
@@ -262,35 +263,33 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
       )}
 
       {/* List */}
-      <div style={{background:"#fff",borderRadius:14,boxShadow:"0 1px 6px rgba(0,0,0,.07)",overflow:"hidden"}}>
-        {list.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:56,fontSize:15}}>Không có phiếu nào</div>}
+      <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",boxShadow:"var(--sh-sm)",overflow:"hidden"}}>
+        {list.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:56,fontSize:"var(--text-lg)"}}>Không có phiếu nào</div>}
         {list.map(e=>{
           const badge=statusBadge(e);
           const actOn=canActOn(e);
           return(
-            <div key={e.id} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",borderBottom:"1px solid #f8fafc",cursor:"pointer",transition:"background .1s"}}
-              onMouseEnter={ev=>ev.currentTarget.style.background="#f8fafc"}
+            <div key={e.id} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",borderBottom:"1px solid var(--c-border)",cursor:"pointer",transition:"background .1s"}}
+              onMouseEnter={ev=>ev.currentTarget.style.background="var(--c-surface-2)"}
               onMouseLeave={ev=>ev.currentTarget.style.background=""}
               onClick={()=>setDetail(e)}>
               {/* Left indicator */}
-              <div style={{width:4,height:48,borderRadius:2,background:e.status==="rejected"?"#ef4444":PS[e.status]?.dot||"#94a3b8",flexShrink:0}}/>
+              <div style={{width:4,height:48,borderRadius:2,background:e.status==="rejected"?"var(--c-danger-mid)":PS[e.status]?.dot||"var(--c-text-muted)",flexShrink:0}}/>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontWeight:700,fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+                <div style={{fontWeight:700,fontSize:"var(--text-md)",display:"flex",alignItems:"center",gap:6}}>
                   {e.id}
-                  {actOn&&<span style={{background:"#fef3c7",color:"#d97706",fontSize:10,borderRadius:4,padding:"1px 6px",fontWeight:700}}>CẦN DUYỆT</span>}
+                  {actOn&&<span style={{background:"var(--c-warning-bg)",color:"var(--c-warning-mid)",fontSize:10,borderRadius:4,padding:"1px 6px",fontWeight:700}}>CẦN DUYỆT</span>}
                 </div>
-                <div style={{fontSize:12,color:"#64748b",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{e.nccName||e.ncc||e.note||"—"} · {e.orderId||"—"} · {e.createdBy||"—"}</div>
+                <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{e.nccName||e.ncc||e.note||"—"} · {e.orderId||"—"} · {e.createdBy||"—"}</div>
               </div>
               <div style={{textAlign:"right",flexShrink:0}}>
-                <div style={{fontWeight:800,fontSize:15,color:"#dc2626"}}>{fmtMoney(e.amount)}</div>
-                <span style={{fontSize:11,background:badge.bg,color:badge.c,borderRadius:20,padding:"2px 8px",fontWeight:600}}>{badge.label}</span>
+                <div style={{fontWeight:800,fontSize:"var(--text-lg)",color:"var(--c-danger-mid)"}}>{fmtMoney(e.amount)}</div>
+                <span style={{fontSize:"var(--text-xs)",background:badge.bg,color:badge.c,borderRadius:"var(--r-pill)",padding:"2px 8px",fontWeight:600}}>{badge.label}</span>
               </div>
               {actOn&&(
                 <div style={{display:"flex",gap:6,flexShrink:0}} onClick={ev=>{ev.stopPropagation();}}>
-                  <button onClick={ev=>{ev.stopPropagation();doApprove(e);}}
-                    style={{background:"#16a34a",color:"#fff",border:"none",borderRadius:8,padding:"7px 13px",cursor:"pointer",fontSize:12,fontWeight:700}}>✓</button>
-                  <button onClick={ev=>{ev.stopPropagation();setDetail(e);setShowReject(true);}}
-                    style={{background:"#fff",color:"#dc2626",border:"1px solid #dc2626",borderRadius:8,padding:"7px 13px",cursor:"pointer",fontSize:12,fontWeight:700}}>✗</button>
+                  <Btn size="sm" variant="success" style={{background:"var(--c-success-mid)",color:"#fff",border:"none"}} onClick={ev=>{ev.stopPropagation();doApprove(e);}}>✓</Btn>
+                  <Btn size="sm" variant="danger" onClick={ev=>{ev.stopPropagation();setDetail(e);setShowReject(true);}}>✗</Btn>
                 </div>
               )}
             </div>
@@ -304,49 +303,49 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
         if(pendingVouchers.length===0) return null;
         return(
           <div style={{marginTop:24}}>
-            <div style={{fontWeight:700,fontSize:15,color:"#0f172a",marginBottom:12,display:"flex",alignItems:"center",gap:8}}>
-              <i className="ti ti-receipt" style={{color:"#2563eb",fontSize:18}}/>
+            <div style={{fontWeight:700,fontSize:"var(--text-lg)",color:"var(--c-text)",marginBottom:12,display:"flex",alignItems:"center",gap:8}}>
+              <i className="ti ti-receipt" style={{color:"var(--c-primary-mid)",fontSize:18}}/>
               Phiếu thu / chi chờ duyệt
-              <span style={{background:"#fee2e2",color:"#dc2626",borderRadius:99,fontSize:12,fontWeight:700,padding:"2px 9px"}}>{pendingVouchers.length}</span>
+              <span style={{background:"var(--c-danger-bg)",color:"var(--c-danger-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-sm)",fontWeight:700,padding:"2px 9px"}}>{pendingVouchers.length}</span>
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {pendingVouchers.map(v=>{
                 const linkedOrder=orders.find(o=>o.id===v.orderId);
                 return(
-                  <div key={v.id} style={{background:"#fff",borderRadius:12,padding:"14px 18px",boxShadow:"0 1px 6px rgba(0,0,0,.07)",display:"flex",alignItems:"center",gap:14}}>
-                    <div style={{width:4,height:40,borderRadius:2,background:v.type==="thu"?"#2563eb":"#dc2626",flexShrink:0}}/>
+                  <div key={v.id} style={{background:"var(--c-surface)",borderRadius:"var(--r-md)",padding:"14px 18px",boxShadow:"var(--sh-sm)",display:"flex",alignItems:"center",gap:14}}>
+                    <div style={{width:4,height:40,borderRadius:2,background:v.type==="thu"?"var(--c-primary-mid)":"var(--c-danger-mid)",flexShrink:0}}/>
                     {v.billImg
-                      ? <img src={v.billImg} alt="bill" onClick={()=>setApprBill(v.billImg)} style={{width:52,height:52,objectFit:"cover",borderRadius:8,cursor:"zoom-in",border:"1px solid #e2e8f0",flexShrink:0}} title="Xem bill"/>
-                      : <div style={{width:52,height:52,borderRadius:8,background:"#f1f5f9",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#cbd5e1",flexShrink:0,textAlign:"center"}}>Không<br/>bill</div>}
+                      ? <img src={v.billImg} alt="bill" onClick={()=>setApprBill(v.billImg)} style={{width:52,height:52,objectFit:"cover",borderRadius:"var(--r-sm)",cursor:"zoom-in",border:"1px solid var(--c-border)",flexShrink:0}} title="Xem bill"/>
+                      : <div style={{width:52,height:52,borderRadius:"var(--r-sm)",background:"var(--c-surface-2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"var(--text-xs)",color:"var(--c-border-mid)",flexShrink:0,textAlign:"center"}}>Không<br/>bill</div>}
                     <div style={{flex:1,minWidth:0}}>
-                      <div style={{fontWeight:700,fontSize:14,color:"#0f172a"}}>{v.id}{v.billImg&&<span style={{marginLeft:6,fontSize:11,color:"#15803d"}}>📎 Có bill</span>}</div>
-                      <div style={{fontSize:12,color:"#64748b",marginTop:2}}>
+                      <div style={{fontWeight:700,fontSize:"var(--text-md)",color:"var(--c-text)"}}>{v.id}{v.billImg&&<span style={{marginLeft:6,fontSize:"var(--text-xs)",color:"var(--c-success)"}}>📎 Có bill</span>}</div>
+                      <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)",marginTop:2}}>
                         {v.type==="thu"?"📥 Phiếu thu":"📤 Phiếu chi"} · {v.method==="cash"?"Tiền mặt":"Chuyển khoản"} · {v.date}
                         {linkedOrder&&` · ${linkedOrder.customerName} — ${linkedOrder.tourName||linkedOrder.service}`}
                       </div>
-                      {v.note&&<div style={{fontSize:12,color:"#94a3b8",marginTop:2}}>{v.note}</div>}
-                      {v.createdBy&&<div style={{fontSize:11,color:"#2563eb",marginTop:2}}>Tạo bởi: {v.createdBy}</div>}
+                      {v.note&&<div style={{fontSize:"var(--text-sm)",color:"var(--c-text-muted)",marginTop:2}}>{v.note}</div>}
+                      {v.createdBy&&<div style={{fontSize:"var(--text-xs)",color:"var(--c-primary-mid)",marginTop:2}}>Tạo bởi: {v.createdBy}</div>}
                     </div>
                     <div style={{textAlign:"right",flexShrink:0}}>
-                      <div style={{fontWeight:800,fontSize:16,color:v.type==="thu"?"#2563eb":"#dc2626"}}>{fmtMoney(v.amount)}</div>
+                      <div style={{fontWeight:800,fontSize:"var(--text-lg)",color:v.type==="thu"?"var(--c-primary-mid)":"var(--c-danger-mid)"}}>{fmtMoney(v.amount)}</div>
                       {/* Phiếu chi: chỉ Ban GĐ duyệt | Phiếu thu: KT/thủ quỹ/Ban GĐ duyệt */}
                       {(v.type==="thu"?["accountant","cashier","manager","pho_giam_doc"].includes(currentRole):isBanGiamDoc(currentRole))?(
                         <div style={{display:"flex",gap:6,marginTop:8,justifyContent:"flex-end"}}>
-                          <button onClick={()=>{
+                          <Btn size="sm" variant="success" style={{background:"var(--c-success-mid)",color:"#fff",border:"none"}} onClick={()=>{
                             onVoucherUpdate&&onVoucherUpdate({...v,status:"approved",approvedBy:currentUser?.name,approvedAt:new Date().toISOString()});
                             pushNotif&&pushNotif("Đã duyệt "+v.id,"success");
-                          }} style={{background:"#16a34a",color:"#fff",border:"none",borderRadius:8,padding:"6px 16px",cursor:"pointer",fontWeight:700,fontSize:13}}>
+                          }}>
                             ✓ Duyệt
-                          </button>
-                          <button onClick={()=>{
+                          </Btn>
+                          <Btn size="sm" variant="danger" onClick={()=>{
                             onVoucherUpdate&&onVoucherUpdate({...v,status:"rejected",rejectedBy:currentUser?.name});
                             pushNotif&&pushNotif("Đã từ chối "+v.id,"warning");
-                          }} style={{background:"#fff",color:"#dc2626",border:"1px solid #dc2626",borderRadius:8,padding:"6px 12px",cursor:"pointer",fontWeight:700,fontSize:13}}>
+                          }}>
                             ✗
-                          </button>
+                          </Btn>
                         </div>
                       ):(
-                        <div style={{marginTop:8,fontSize:11,color:"#94a3b8",fontStyle:"italic"}}>{v.type==="chi"?"Chờ Ban Giám đốc duyệt":"Chờ duyệt"}</div>
+                        <div style={{marginTop:8,fontSize:"var(--text-xs)",color:"var(--c-text-muted)",fontStyle:"italic"}}>{v.type==="chi"?"Chờ Ban Giám đốc duyệt":"Chờ duyệt"}</div>
                       )}
                     </div>
                   </div>
@@ -359,8 +358,8 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
 
       {/* Lightbox xem bill trong Phê duyệt */}
       {apprBill&&(
-        <div onClick={()=>setApprBill(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",cursor:"zoom-out"}}>
-          <img src={apprBill} alt="bill" style={{maxWidth:"90vw",maxHeight:"90vh",borderRadius:8}}/>
+        <div onClick={()=>setApprBill(null)} style={{position:"fixed",inset:0,background:"rgba(15,23,42,.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",cursor:"zoom-out"}}>
+          <img src={apprBill} alt="bill" style={{maxWidth:"90vw",maxHeight:"90vh",borderRadius:"var(--r-md)"}}/>
           <button onClick={()=>setApprBill(null)} style={{position:"absolute",top:20,right:28,background:"rgba(255,255,255,.15)",border:"none",color:"#fff",borderRadius:"50%",width:36,height:36,fontSize:20,cursor:"pointer"}}>×</button>
         </div>
       )}
