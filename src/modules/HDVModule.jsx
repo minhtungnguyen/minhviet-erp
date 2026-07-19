@@ -15,8 +15,8 @@ export default function HDVModule({ hdvList=[], onUpdate, orders=[], pushNotif, 
   const CARD_TYPE_OPTS=[["domestic","Quốc nội"],["international","Quốc tế"]];
   const HDV_TYPE_OPTS=[["freelance","Freelance"],["partner","Cộng tác viên"],["fulltime","Toàn thời gian"]];
   const allLangs=[...new Set(hdvList.flatMap(h=>h.lang||[]))];
-  const inp={width:'100%',border:'1px solid #e2e8f0',borderRadius:8,padding:'9px 12px',fontSize:13,boxSizing:'border-box'};
-  const lbl={display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"#374151"};
+  const inp={width:'100%',border:'1px solid var(--c-border)',borderRadius:8,padding:'9px 12px',fontSize:13,boxSizing:'border-box'};
+  const lbl={display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"var(--c-text-2)"};
   const canEdit=currentRole==='manager'||currentRole==='dieu_hanh';
 
   const expiringHdvs=React.useMemo(()=>{
@@ -248,20 +248,20 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20,flexWrap:"wrap",gap:12}}>
         <div>
           <h2 style={{margin:0,fontSize:20,fontWeight:800}}>Hướng dẫn viên ({hdvList.length})</h2>
-          <div style={{fontSize:13,color:"#64748b",marginTop:2}}>{hdvList.filter(h=>h.available).length} đang rảnh · {hdvList.filter(h=>!h.available).length} đang bận</div>
+          <div style={{fontSize:13,color:"var(--c-text-3)",marginTop:2}}>{hdvList.filter(h=>h.available).length} đang rảnh · {hdvList.filter(h=>!h.available).length} đang bận</div>
         </div>
-        {canEdit&&<button onClick={()=>{setEditHdv(null);setForm(EMPTY);setShowForm(true)}} style={{background:'#2563eb',color:'#fff',border:'none',borderRadius:9,padding:'9px 18px',cursor:'pointer',fontWeight:700,fontSize:14}}>+ Thêm HDV</button>}
+        {canEdit&&<button onClick={()=>{setEditHdv(null);setForm(EMPTY);setShowForm(true)}} style={{background:'var(--c-primary-mid)',color:'var(--c-text-inverse)',border:'none',borderRadius:9,padding:'9px 18px',cursor:'pointer',fontWeight:700,fontSize:14}}>+ Thêm HDV</button>}
       </div>
 
       {/* Expiry warning banner */}
       {expiringHdvs.length>0&&(
-        <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:10,padding:"12px 16px",marginBottom:16,display:"flex",alignItems:"flex-start",gap:12}}>
+        <div style={{background:"var(--c-danger-bg)",border:"1px solid var(--c-danger-border)",borderRadius:10,padding:"12px 16px",marginBottom:16,display:"flex",alignItems:"flex-start",gap:12}}>
           <div style={{fontSize:20,flexShrink:0}}>🚨</div>
           <div>
-            <div style={{fontWeight:700,color:"#dc2626",fontSize:14,marginBottom:4}}>Thẻ HDV sắp hết hạn — cần gia hạn ngay!</div>
+            <div style={{fontWeight:700,color:"var(--c-danger-mid)",fontSize:14,marginBottom:4}}>Thẻ HDV sắp hết hạn — cần gia hạn ngay!</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
               {expiringHdvs.map(h=>(
-                <span key={h.id} style={{background:"#fee2e2",color:"#b91c1c",borderRadius:6,padding:"3px 10px",fontSize:12,fontWeight:600}}>
+                <span key={h.id} style={{background:"var(--c-danger-bg)",color:"var(--c-danger)",borderRadius:6,padding:"3px 10px",fontSize:12,fontWeight:600}}>
                   {h.name} — {h._daysLeft<=0?"ĐÃ HẾT HẠN":h._daysLeft+" ngày nữa"} ({new Date(h.cardExpiry).toLocaleDateString("vi-VN")})
                 </span>
               ))}
@@ -272,7 +272,7 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
 
       {/* Edit / Add form */}
       {showForm&&(
-        <div style={{background:'#fff',borderRadius:14,padding:24,marginBottom:20,boxShadow:'0 1px 6px rgba(0,0,0,.07)'}}>
+        <div style={{background:'var(--c-surface)',borderRadius:14,padding:24,marginBottom:20,boxShadow:'0 1px 6px rgba(0,0,0,.07)'}}>
           <h3 style={{marginTop:0,marginBottom:16}}>{editHdv?'Sửa HDV':'Thêm HDV mới'}</h3>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             <div><label style={lbl}>Họ tên *</label><input value={form.name} onChange={e=>set('name',e.target.value)} style={inp}/></div>
@@ -303,35 +303,35 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
               <label style={lbl}>Ngôn ngữ</label>
               <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                 {Object.entries(LANG_LABEL).map(([k,v])=>(
-                  <button key={k} onClick={()=>toggleLang(k)} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:(form.lang||[]).includes(k)?"#2563eb":"#f1f5f9",color:(form.lang||[]).includes(k)?"#fff":"#64748b"}}>{v}</button>
+                  <button key={k} onClick={()=>toggleLang(k)} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:(form.lang||[]).includes(k)?"var(--c-primary-mid)":"var(--c-surface-3)",color:(form.lang||[]).includes(k)?"var(--c-text-inverse)":"var(--c-text-3)"}}>{v}</button>
                 ))}
               </div>
             </div>
             <div>
               <label style={lbl}>Ảnh đại diện</label>
               <div style={{display:"flex",alignItems:"center",gap:12}}>
-                {form.photo&&<img src={form.photo} alt="" style={{width:52,height:52,borderRadius:"50%",objectFit:"cover",border:"2px solid #e2e8f0"}}/>}
-                <label style={{padding:"7px 14px",background:"#f1f5f9",border:"1px dashed #cbd5e1",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600}}>
+                {form.photo&&<img src={form.photo} alt="" style={{width:52,height:52,borderRadius:"50%",objectFit:"cover",border:"2px solid var(--c-border)"}}/>}
+                <label style={{padding:"7px 14px",background:"var(--c-surface-3)",border:"1px dashed var(--c-border-mid)",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600}}>
                   {form.photo?"Đổi ảnh":"📷 Tải ảnh lên"}<input type="file" accept="image/*" onChange={e=>handleImg('photo',e)} style={{display:"none"}}/>
                 </label>
-                {form.photo&&<button onClick={()=>set('photo',null)} style={{border:"none",background:"none",cursor:"pointer",color:"#ef4444",fontSize:12}}>Xóa</button>}
+                {form.photo&&<button onClick={()=>set('photo',null)} style={{border:"none",background:"none",cursor:"pointer",color:"var(--c-danger-mid)",fontSize:12}}>Xóa</button>}
               </div>
             </div>
             <div>
               <label style={lbl}>Ảnh CCCD</label>
               <div style={{display:"flex",alignItems:"center",gap:12}}>
-                {form.cccdImg&&<img src={form.cccdImg} alt="" style={{width:80,height:50,borderRadius:6,objectFit:"cover",border:"2px solid #e2e8f0"}}/>}
-                <label style={{padding:"7px 14px",background:"#f1f5f9",border:"1px dashed #cbd5e1",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600}}>
+                {form.cccdImg&&<img src={form.cccdImg} alt="" style={{width:80,height:50,borderRadius:6,objectFit:"cover",border:"2px solid var(--c-border)"}}/>}
+                <label style={{padding:"7px 14px",background:"var(--c-surface-3)",border:"1px dashed var(--c-border-mid)",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600}}>
                   {form.cccdImg?"Đổi CCCD":"📄 Tải CCCD lên"}<input type="file" accept="image/*" onChange={e=>handleImg('cccdImg',e)} style={{display:"none"}}/>
                 </label>
-                {form.cccdImg&&<button onClick={()=>set('cccdImg',null)} style={{border:"none",background:"none",cursor:"pointer",color:"#ef4444",fontSize:12}}>Xóa</button>}
+                {form.cccdImg&&<button onClick={()=>set('cccdImg',null)} style={{border:"none",background:"none",cursor:"pointer",color:"var(--c-danger-mid)",fontSize:12}}>Xóa</button>}
               </div>
             </div>
             <div style={{gridColumn:"1/-1"}}><label style={lbl}>Ghi chú nội bộ</label><textarea rows={2} value={form.notes||''} onChange={e=>set('notes',e.target.value)} style={{...inp,resize:"vertical"}}/></div>
           </div>
           <div style={{display:'flex',gap:8,marginTop:16}}>
-            <button onClick={save} style={{background:'#16a34a',color:'#fff',border:'none',borderRadius:8,padding:'9px 20px',cursor:'pointer',fontWeight:700}}>Lưu</button>
-            <button onClick={()=>{setShowForm(false);setEditHdv(null);}} style={{background:'#6b7280',color:'#fff',border:'none',borderRadius:8,padding:'9px 20px',cursor:'pointer',fontWeight:600}}>Hủy</button>
+            <button onClick={save} style={{background:'var(--c-success-mid)',color:'var(--c-text-inverse)',border:'none',borderRadius:8,padding:'9px 20px',cursor:'pointer',fontWeight:700}}>Lưu</button>
+            <button onClick={()=>{setShowForm(false);setEditHdv(null);}} style={{background:'var(--c-text-3)',color:'var(--c-text-inverse)',border:'none',borderRadius:8,padding:'9px 20px',cursor:'pointer',fontWeight:600}}>Hủy</button>
           </div>
         </div>
       )}
@@ -339,9 +339,9 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
       {/* Contract modal */}
       {contractHdv&&(
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={e=>e.target===e.currentTarget&&setContractHdv(null)}>
-          <div style={{background:"#fff",borderRadius:16,padding:28,width:"min(660px,95vw)",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 8px 40px rgba(0,0,0,.22)"}}>
+          <div style={{background:"var(--c-surface)",borderRadius:16,padding:28,width:"min(660px,95vw)",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 8px 40px rgba(0,0,0,.22)"}}>
             <h3 style={{marginTop:0,marginBottom:4}}>📄 Tạo hợp đồng — {contractHdv.name}</h3>
-            <div style={{fontSize:12,color:"#64748b",marginBottom:16}}>Điền thông tin tour rồi bấm Xuất HĐ để mở trang in</div>
+            <div style={{fontSize:12,color:"var(--c-text-3)",marginBottom:16}}>Điền thông tin tour rồi bấm Xuất HĐ để mở trang in</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               <div style={{gridColumn:"1/-1"}}><label style={lbl}>Tên tour / chương trình *</label>
                 <input value={cf.tourName} onChange={e=>setCfField('tourName',e.target.value)} placeholder="VD: HÀNH TRÌNH HẢI PHÒNG - MAI CHÂU 2N1Đ" style={inp}/>
@@ -368,15 +368,15 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
               </div>
               <div style={{gridColumn:"1/-1"}}><label style={lbl}>Ghi chú bổ sung</label><textarea rows={2} value={cf.notes} onChange={e=>setCfField('notes',e.target.value)} style={{...inp,resize:"vertical"}}/></div>
             </div>
-            <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:10,padding:"12px 16px",marginTop:12}}>
-              <div style={{fontWeight:700,color:"#15803d",fontSize:16}}>
+            <div style={{background:"var(--c-success-bg)",border:"1px solid var(--c-success-border)",borderRadius:10,padding:"12px 16px",marginTop:12}}>
+              <div style={{fontWeight:700,color:"var(--c-success)",fontSize:16}}>
                 Thù lao hợp đồng: {Number(cf.totalFee||0).toLocaleString("vi-VN")}đ
               </div>
-              <div style={{fontSize:12,color:"#64748b",marginTop:2}}>All-in — bao gồm công hướng dẫn, ăn ở, đi lại trong tour</div>
+              <div style={{fontSize:12,color:"var(--c-text-3)",marginTop:2}}>All-in — bao gồm công hướng dẫn, ăn ở, đi lại trong tour</div>
             </div>
             <div style={{display:'flex',gap:8,marginTop:16}}>
-              <button onClick={printContract} style={{background:'#2563eb',color:'#fff',border:'none',borderRadius:8,padding:'10px 22px',cursor:'pointer',fontWeight:700,fontSize:14}}>🖨 Xuất &amp; In HĐ</button>
-              <button onClick={()=>setContractHdv(null)} style={{background:'#6b7280',color:'#fff',border:'none',borderRadius:8,padding:'10px 20px',cursor:'pointer',fontWeight:600}}>Hủy</button>
+              <button onClick={printContract} style={{background:'var(--c-primary-mid)',color:'var(--c-text-inverse)',border:'none',borderRadius:8,padding:'10px 22px',cursor:'pointer',fontWeight:700,fontSize:14}}>🖨 Xuất &amp; In HĐ</button>
+              <button onClick={()=>setContractHdv(null)} style={{background:'var(--c-text-3)',color:'var(--c-text-inverse)',border:'none',borderRadius:8,padding:'10px 20px',cursor:'pointer',fontWeight:600}}>Hủy</button>
             </div>
           </div>
         </div>
@@ -385,24 +385,24 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
       {/* Rating modal */}
       {addRatingHdv&&(
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={e=>e.target===e.currentTarget&&setAddRatingHdv(null)}>
-          <div style={{background:"#fff",borderRadius:16,padding:28,width:"min(460px,95vw)",boxShadow:"0 8px 40px rgba(0,0,0,.22)"}}>
+          <div style={{background:"var(--c-surface)",borderRadius:16,padding:28,width:"min(460px,95vw)",boxShadow:"0 8px 40px rgba(0,0,0,.22)"}}>
             <h3 style={{marginTop:0,marginBottom:4}}>⭐ Chấm điểm — {addRatingHdv.name}</h3>
-            {(addRatingHdv.ratings||[]).length>0&&<div style={{fontSize:12,color:"#64748b",marginBottom:16}}>Trung bình hiện tại: {avgRating(addRatingHdv)} ★ ({(addRatingHdv.ratings||[]).length} lần)</div>}
+            {(addRatingHdv.ratings||[]).length>0&&<div style={{fontSize:12,color:"var(--c-text-3)",marginBottom:16}}>Trung bình hiện tại: {avgRating(addRatingHdv)} ★ ({(addRatingHdv.ratings||[]).length} lần)</div>}
             <div style={{marginBottom:12}}><label style={lbl}>Tour / chuyến đi</label><input value={ratingForm.tourName} onChange={e=>setRatingForm(f=>({...f,tourName:e.target.value}))} placeholder="VD: Tour Phú Quốc 3N2Đ" style={inp}/></div>
             <div style={{marginBottom:12}}>
               <label style={lbl}>Điểm đánh giá</label>
               <div style={{display:"flex",gap:6,marginTop:4}}>
                 {[1,2,3,4,5].map(s=>(
-                  <button key={s} onClick={()=>setRatingForm(f=>({...f,score:s}))} style={{width:44,height:44,borderRadius:8,border:"none",cursor:"pointer",fontSize:20,background:ratingForm.score>=s?"#fbbf24":"#f1f5f9",transition:"all .15s"}}>★</button>
+                  <button key={s} onClick={()=>setRatingForm(f=>({...f,score:s}))} style={{width:44,height:44,borderRadius:8,border:"none",cursor:"pointer",fontSize:20,background:ratingForm.score>=s?"var(--c-warning-mid)":"var(--c-surface-3)",transition:"all .15s"}}>★</button>
                 ))}
-                <span style={{alignSelf:"center",marginLeft:6,fontWeight:700,fontSize:16,color:"#92400e"}}>{ratingForm.score}/5</span>
+                <span style={{alignSelf:"center",marginLeft:6,fontWeight:700,fontSize:16,color:"var(--c-warning)"}}>{ratingForm.score}/5</span>
               </div>
-              <div style={{fontSize:11,color:"#94a3b8",marginTop:4}}>{["","⚠ Không phù hợp","↓ Cần cải thiện","↗ Đạt yêu cầu","✓ Tốt","★ Xuất sắc — tour cao cấp"][ratingForm.score]}</div>
+              <div style={{fontSize:11,color:"var(--c-text-muted)",marginTop:4}}>{["","⚠ Không phù hợp","↓ Cần cải thiện","↗ Đạt yêu cầu","✓ Tốt","★ Xuất sắc — tour cao cấp"][ratingForm.score]}</div>
             </div>
             <div style={{marginBottom:16}}><label style={lbl}>Nhận xét</label><textarea rows={2} value={ratingForm.note} onChange={e=>setRatingForm(f=>({...f,note:e.target.value}))} placeholder="VD: Dẫn đoàn chuyên nghiệp, khách hài lòng..." style={{...inp,resize:"vertical"}}/></div>
             <div style={{display:'flex',gap:8}}>
-              <button onClick={addRating} style={{flex:1,background:'#f59e0b',color:'#fff',border:'none',borderRadius:8,padding:'9px 0',cursor:'pointer',fontWeight:700,fontSize:14}}>Lưu đánh giá</button>
-              <button onClick={()=>setAddRatingHdv(null)} style={{background:'#6b7280',color:'#fff',border:'none',borderRadius:8,padding:'9px 16px',cursor:'pointer',fontWeight:600}}>Hủy</button>
+              <button onClick={addRating} style={{flex:1,background:'var(--c-warning-mid)',color:'var(--c-text-inverse)',border:'none',borderRadius:8,padding:'9px 0',cursor:'pointer',fontWeight:700,fontSize:14}}>Lưu đánh giá</button>
+              <button onClick={()=>setAddRatingHdv(null)} style={{background:'var(--c-text-3)',color:'var(--c-text-inverse)',border:'none',borderRadius:8,padding:'9px 16px',cursor:'pointer',fontWeight:600}}>Hủy</button>
             </div>
           </div>
         </div>
@@ -411,16 +411,16 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
       {/* Language filter */}
       {allLangs.length>0&&(
         <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
-          <button onClick={()=>setFilterLang("all")} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterLang==="all"?"#1e293b":"#f1f5f9",color:filterLang==="all"?"#fff":"#64748b"}}>Tất cả ngôn ngữ</button>
+          <button onClick={()=>setFilterLang("all")} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterLang==="all"?"var(--c-text-2)":"var(--c-surface-3)",color:filterLang==="all"?"var(--c-text-inverse)":"var(--c-text-3)"}}>Tất cả ngôn ngữ</button>
           {allLangs.map(l=>(
-            <button key={l} onClick={()=>setFilterLang(l)} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterLang===l?"#1e293b":"#f1f5f9",color:filterLang===l?"#fff":"#64748b"}}>{LANG_LABEL[l]||l}</button>
+            <button key={l} onClick={()=>setFilterLang(l)} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterLang===l?"var(--c-text-2)":"var(--c-surface-3)",color:filterLang===l?"var(--c-text-inverse)":"var(--c-text-3)"}}>{LANG_LABEL[l]||l}</button>
           ))}
         </div>
       )}
 
       {/* Cards */}
       <div style={{display:'grid',gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14}}>
-        {filtered.length===0&&<div style={{textAlign:'center',color:'#9ca3af',padding:40,gridColumn:"1/-1"}}>Chưa có HDV nào</div>}
+        {filtered.length===0&&<div style={{textAlign:'center',color:'var(--c-text-muted)',padding:40,gridColumn:"1/-1"}}>Chưa có HDV nào</div>}
         {filtered.map(h=>{
           const assignments=activeAssignments[h.id]||[];
           const initials=(h.name||"?").split(" ").slice(-2).map(w=>w[0]).join("").toUpperCase();
@@ -429,63 +429,63 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
           const isExpiring=!!expiryInfo;
           const avg=avgRating(h);
           return(
-            <div key={h.id} style={{background:'#fff',borderRadius:14,padding:18,boxShadow:'0 1px 5px rgba(0,0,0,.08)',display:"flex",flexDirection:"column",gap:0,border:isExpiring?"2px solid #fca5a5":"2px solid transparent"}}>
+            <div key={h.id} style={{background:'var(--c-surface)',borderRadius:14,padding:18,boxShadow:'0 1px 5px rgba(0,0,0,.08)',display:"flex",flexDirection:"column",gap:0,border:isExpiring?"2px solid var(--c-danger-border)":"2px solid transparent"}}>
               {/* Avatar + name row */}
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
                 {h.photo
-                  ?<img src={h.photo} alt="" style={{width:52,height:52,borderRadius:"50%",objectFit:"cover",border:h.available?"2px solid #86efac":"2px solid #fca5a5",flexShrink:0}}/>
-                  :<div style={{width:52,height:52,borderRadius:"50%",background:h.available?"#dbeafe":"#fee2e2",display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,fontWeight:800,color:h.available?"#1d4ed8":"#dc2626",flexShrink:0}}>{initials}</div>
+                  ?<img src={h.photo} alt="" style={{width:52,height:52,borderRadius:"50%",objectFit:"cover",border:h.available?"2px solid var(--c-success-border)":"2px solid var(--c-danger-border)",flexShrink:0}}/>
+                  :<div style={{width:52,height:52,borderRadius:"50%",background:h.available?"var(--c-primary-pale)":"var(--c-danger-bg)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,fontWeight:800,color:h.available?"var(--c-primary)":"var(--c-danger-mid)",flexShrink:0}}>{initials}</div>
                 }
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontWeight:700,fontSize:15,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:4}}>{h.name}</div>
                   <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
-                    <span onClick={()=>canEdit&&toggleAvailable(h)} style={{background:h.available?"#dcfce7":"#fee2e2",color:h.available?"#15803d":"#dc2626",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:700,cursor:canEdit?"pointer":"default",whiteSpace:"nowrap"}}>{h.available?"● Rảnh":"● Bận"}</span>
-                    {h.cardType&&<span style={{background:h.cardType==="international"?"#fef3c7":"#eff6ff",color:h.cardType==="international"?"#92400e":"#1d4ed8",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:700}}>{h.cardType==="international"?"🌍 Quốc tế":"🏠 Quốc nội"}</span>}
-                    {h.type&&<span style={{background:"#f5f3ff",color:"#6d28d9",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:600}}>{HTYPE[h.type]||h.type}</span>}
+                    <span onClick={()=>canEdit&&toggleAvailable(h)} style={{background:h.available?"var(--c-success-bg)":"var(--c-danger-bg)",color:h.available?"var(--c-success)":"var(--c-danger-mid)",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:700,cursor:canEdit?"pointer":"default",whiteSpace:"nowrap"}}>{h.available?"● Rảnh":"● Bận"}</span>
+                    {h.cardType&&<span style={{background:h.cardType==="international"?"var(--c-warning-bg)":"var(--c-primary-light)",color:h.cardType==="international"?"var(--c-warning)":"var(--c-primary)",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:700}}>{h.cardType==="international"?"🌍 Quốc tế":"🏠 Quốc nội"}</span>}
+                    {h.type&&<span style={{background:"var(--c-purple-bg)",color:"var(--c-purple)",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:600}}>{HTYPE[h.type]||h.type}</span>}
                   </div>
                 </div>
               </div>
               {/* Info */}
-              <div style={{fontSize:12,color:'#4b5563',display:"flex",flexDirection:"column",gap:3,marginBottom:8}}>
+              <div style={{fontSize:12,color:'var(--c-text-2)',display:"flex",flexDirection:"column",gap:3,marginBottom:8}}>
                 {h.phone&&<div>📞 {h.phone}</div>}
                 {h.email&&<div>✉ {h.email}</div>}
-                {h.cardNo&&<div>🪪 Thẻ HDV: <strong>{h.cardNo}</strong>{h.cardExpiry&&<span style={{marginLeft:6,color:isExpiring?"#dc2626":"#64748b",fontWeight:isExpiring?700:400}}>· HH: {new Date(h.cardExpiry).toLocaleDateString("vi-VN")}{isExpiring&&<span style={{marginLeft:4,background:"#fee2e2",color:"#b91c1c",borderRadius:4,padding:"0 5px"}}>{expiryInfo._daysLeft<=0?"ĐÃ HẾT HẠN":expiryInfo._daysLeft+"ngày"}</span>}</span>}</div>}
+                {h.cardNo&&<div>🪪 Thẻ HDV: <strong>{h.cardNo}</strong>{h.cardExpiry&&<span style={{marginLeft:6,color:isExpiring?"var(--c-danger-mid)":"var(--c-text-3)",fontWeight:isExpiring?700:400}}>· HH: {new Date(h.cardExpiry).toLocaleDateString("vi-VN")}{isExpiring&&<span style={{marginLeft:4,background:"var(--c-danger-bg)",color:"var(--c-danger)",borderRadius:4,padding:"0 5px"}}>{expiryInfo._daysLeft<=0?"ĐÃ HẾT HẠN":expiryInfo._daysLeft+"ngày"}</span>}</span>}</div>}
                 {h.cccd&&<div>🆔 CCCD: {h.cccd}</div>}
                 {h.dob&&<div>🎂 {new Date(h.dob).toLocaleDateString("vi-VN")}</div>}
                 {h.speciality&&<div>🗺 {h.speciality}</div>}
                 {h.dailyRate>0&&<div>💰 {Number(h.dailyRate).toLocaleString("vi-VN")}đ/ngày</div>}
-                {avg!=null&&<div style={{color:"#92400e",fontWeight:600}}>⭐ {avg}/5 &nbsp;<span style={{letterSpacing:-1,color:"#fbbf24"}}>{starStr(avg)}</span>&nbsp;<span style={{color:"#94a3b8",fontWeight:400}}>({(h.ratings||[]).length} lần)</span></div>}
+                {avg!=null&&<div style={{color:"var(--c-warning)",fontWeight:600}}>⭐ {avg}/5 &nbsp;<span style={{letterSpacing:-1,color:"var(--c-warning-mid)"}}>{starStr(avg)}</span>&nbsp;<span style={{color:"var(--c-text-muted)",fontWeight:400}}>({(h.ratings||[]).length} lần)</span></div>}
               </div>
               {/* Social */}
               {(h.facebook||h.zalo)&&(
                 <div style={{display:"flex",gap:6,marginBottom:8,flexWrap:"wrap"}}>
-                  {h.facebook&&<a href={h.facebook.startsWith('http')?h.facebook:'https://'+h.facebook} target="_blank" rel="noopener noreferrer" style={{fontSize:11,background:"#eff6ff",color:"#1d4ed8",borderRadius:6,padding:"3px 10px",textDecoration:"none",fontWeight:600}}>📘 Facebook</a>}
-                  {h.zalo&&<span style={{fontSize:11,background:"#ecfdf5",color:"#065f46",borderRadius:6,padding:"3px 10px",fontWeight:600}}>💬 Zalo: {h.zalo}</span>}
+                  {h.facebook&&<a href={h.facebook.startsWith('http')?h.facebook:'https://'+h.facebook} target="_blank" rel="noopener noreferrer" style={{fontSize:11,background:"var(--c-primary-light)",color:"var(--c-primary)",borderRadius:6,padding:"3px 10px",textDecoration:"none",fontWeight:600}}>📘 Facebook</a>}
+                  {h.zalo&&<span style={{fontSize:11,background:"var(--c-success-bg)",color:"var(--c-success)",borderRadius:6,padding:"3px 10px",fontWeight:600}}>💬 Zalo: {h.zalo}</span>}
                 </div>
               )}
               {/* CCCD preview */}
-              {h.cccdImg&&<img src={h.cccdImg} alt="CCCD" style={{width:"100%",maxHeight:80,objectFit:"cover",borderRadius:6,marginBottom:8,border:"1px solid #e2e8f0"}}/>}
+              {h.cccdImg&&<img src={h.cccdImg} alt="CCCD" style={{width:"100%",maxHeight:80,objectFit:"cover",borderRadius:6,marginBottom:8,border:"1px solid var(--c-border)"}}/>}
               {/* Languages */}
               {(h.lang||[]).length>0&&(
                 <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap"}}>
-                  {h.lang.map(l=><span key={l} style={{fontSize:10,background:"#eff6ff",color:"#1d4ed8",borderRadius:5,padding:"2px 7px",fontWeight:600}}>{LANG_LABEL[l]||l}</span>)}
+                  {h.lang.map(l=><span key={l} style={{fontSize:10,background:"var(--c-primary-light)",color:"var(--c-primary)",borderRadius:5,padding:"2px 7px",fontWeight:600}}>{LANG_LABEL[l]||l}</span>)}
                 </div>
               )}
               {/* Assignments */}
               {assignments.length>0&&(
-                <div style={{marginBottom:10,paddingTop:8,borderTop:"1px solid #f1f5f9"}}>
-                  <div style={{fontSize:11,color:"#94a3b8",fontWeight:700,marginBottom:4,letterSpacing:.5}}>ĐANG PHỤ TRÁCH</div>
+                <div style={{marginBottom:10,paddingTop:8,borderTop:"1px solid var(--c-surface-3)"}}>
+                  <div style={{fontSize:11,color:"var(--c-text-muted)",fontWeight:700,marginBottom:4,letterSpacing:.5}}>ĐANG PHỤ TRÁCH</div>
                   {assignments.map(o=>(
-                    <div key={o.id} style={{fontSize:12,color:"#374151"}}>• {o.id} — {o.serviceName||o.tourName||o.service} ({o.departDate?new Date(o.departDate).toLocaleDateString("vi-VN"):"—"})</div>
+                    <div key={o.id} style={{fontSize:12,color:"var(--c-text-2)"}}>• {o.id} — {o.serviceName||o.tourName||o.service} ({o.departDate?new Date(o.departDate).toLocaleDateString("vi-VN"):"—"})</div>
                   ))}
                 </div>
               )}
               {/* Actions */}
               {canEdit&&(
-                <div style={{display:"flex",gap:6,marginTop:"auto",paddingTop:10,borderTop:"1px solid #f1f5f9"}}>
-                  <button onClick={()=>openEdit(h)} style={{flex:1,background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:7,padding:'7px 0',cursor:'pointer',fontSize:12,fontWeight:600}}>✏ Sửa</button>
-                  <button onClick={()=>openContract(h)} style={{flex:1,background:'#eff6ff',color:'#2563eb',border:'1px solid #bfdbfe',borderRadius:7,padding:'7px 0',cursor:'pointer',fontSize:12,fontWeight:700}}>📄 Tạo HĐ</button>
-                  <button onClick={()=>{setAddRatingHdv(h);setRatingForm({score:5,note:'',tourName:''});}} style={{flex:1,background:'#fffbeb',color:'#92400e',border:'1px solid #fde68a',borderRadius:7,padding:'7px 0',cursor:'pointer',fontSize:12,fontWeight:700}}>⭐ Chấm</button>
+                <div style={{display:"flex",gap:6,marginTop:"auto",paddingTop:10,borderTop:"1px solid var(--c-surface-3)"}}>
+                  <button onClick={()=>openEdit(h)} style={{flex:1,background:'var(--c-surface-2)',border:'1px solid var(--c-border)',borderRadius:7,padding:'7px 0',cursor:'pointer',fontSize:12,fontWeight:600}}>✏ Sửa</button>
+                  <button onClick={()=>openContract(h)} style={{flex:1,background:'var(--c-primary-light)',color:'var(--c-primary-mid)',border:'1px solid var(--c-primary-pale)',borderRadius:7,padding:'7px 0',cursor:'pointer',fontSize:12,fontWeight:700}}>📄 Tạo HĐ</button>
+                  <button onClick={()=>{setAddRatingHdv(h);setRatingForm({score:5,note:'',tourName:''});}} style={{flex:1,background:'var(--c-warning-bg)',color:'var(--c-warning)',border:'1px solid var(--c-warning-border)',borderRadius:7,padding:'7px 0',cursor:'pointer',fontSize:12,fontWeight:700}}>⭐ Chấm</button>
                 </div>
               )}
             </div>
