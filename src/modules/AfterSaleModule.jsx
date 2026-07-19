@@ -90,20 +90,20 @@ export default function AfterSaleModule({ careTasks=[], onUpdateTasks, orders=[]
     <div style={{padding:24}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20,flexWrap:"wrap",gap:12}}>
         <h2 style={{margin:0,fontSize:20,fontWeight:800}}>Chăm sóc sau bán ({myTasks.filter(t=>!t.done).length} chưa xong)</h2>
-        <button onClick={()=>setShowForm(true)} style={{background:'#2563eb',color:'#fff',border:'none',borderRadius:9,padding:'9px 18px',cursor:'pointer',fontWeight:700,fontSize:13}}>+ Tạo task</button>
+        <button onClick={()=>setShowForm(true)} style={{background:'var(--c-primary-mid)',color:'var(--c-text-inverse)',border:'none',borderRadius:9,padding:'9px 18px',cursor:'pointer',fontWeight:700,fontSize:13}}>+ Tạo task</button>
       </div>
 
       {suggestions.length>0&&(
-        <div style={{background:"#fff",borderRadius:14,padding:18,marginBottom:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)",border:"1px solid #fde68a"}}>
-          <div style={{fontWeight:700,marginBottom:10,color:"#92400e",fontSize:14}}>💡 Gợi ý tự động ({suggestions.length})</div>
+        <div style={{background:"var(--c-surface)",borderRadius:14,padding:18,marginBottom:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)",border:"1px solid var(--c-warning-border)"}}>
+          <div style={{fontWeight:700,marginBottom:10,color:"var(--c-warning)",fontSize:14}}>💡 Gợi ý tự động ({suggestions.length})</div>
           <div style={{display:"grid",gap:8}}>
             {suggestions.map(s=>(
-              <div key={s.key} style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"#fffbeb",borderRadius:10,padding:"10px 14px"}}>
+              <div key={s.key} style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"var(--c-warning-bg)",borderRadius:10,padding:"10px 14px"}}>
                 <div>
                   <div style={{fontWeight:600,fontSize:13}}>{TYPE_ICON[s.type]} {TYPE_LABEL[s.type]} — {s.customerName||s.orderId}</div>
-                  <div style={{fontSize:12,color:"#92400e",marginTop:2}}>{s.reason}</div>
+                  <div style={{fontSize:12,color:"var(--c-warning)",marginTop:2}}>{s.reason}</div>
                 </div>
-                <button onClick={()=>acceptSuggestion(s)} style={{background:"#d97706",color:"#fff",border:"none",borderRadius:8,padding:"6px 14px",cursor:"pointer",fontSize:12,fontWeight:700,whiteSpace:"nowrap"}}>+ Tạo task</button>
+                <button onClick={()=>acceptSuggestion(s)} style={{background:"var(--c-warning-mid)",color:"var(--c-text-inverse)",border:"none",borderRadius:8,padding:"6px 14px",cursor:"pointer",fontSize:12,fontWeight:700,whiteSpace:"nowrap"}}>+ Tạo task</button>
               </div>
             ))}
           </div>
@@ -111,54 +111,54 @@ export default function AfterSaleModule({ careTasks=[], onUpdateTasks, orders=[]
       )}
 
       {showForm && (
-        <div style={{background:'#fff',borderRadius:14,padding:20,marginBottom:16,boxShadow:'0 1px 6px rgba(0,0,0,.07)'}}>
+        <div style={{background:'var(--c-surface)',borderRadius:14,padding:20,marginBottom:16,boxShadow:'0 1px 6px rgba(0,0,0,.07)'}}>
           <h3 style={{marginTop:0,marginBottom:16}}>Task chăm sóc mới</h3>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             <div>
-              <label style={{display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"#374151"}}>Đơn hàng</label>
-              <select value={form.orderId} onChange={e=>{const o=orders.find(x=>x.id===e.target.value);setForm(f=>({...f,orderId:e.target.value,customerName:o?.customerName||""}));}} style={{width:'100%',border:'1px solid #e2e8f0',borderRadius:8,padding:'9px 12px',fontSize:13}}>
+              <label style={{display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"var(--c-text-2)"}}>Đơn hàng</label>
+              <select value={form.orderId} onChange={e=>{const o=orders.find(x=>x.id===e.target.value);setForm(f=>({...f,orderId:e.target.value,customerName:o?.customerName||""}));}} style={{width:'100%',border:'1px solid var(--c-border)',borderRadius:8,padding:'9px 12px',fontSize:13}}>
                 <option value=''>-- Chọn đơn --</option>
                 {orders.map(o=><option key={o.id} value={o.id}>{o.id} - {o.customerName||(typeof o.customer==="object"?o.customer?.name:o.customer)||"—"}</option>)}
               </select>
             </div>
             <div>
-              <label style={{display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"#374151"}}>Loại</label>
-              <select value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))} style={{width:'100%',border:'1px solid #e2e8f0',borderRadius:8,padding:'9px 12px',fontSize:13}}>
+              <label style={{display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"var(--c-text-2)"}}>Loại</label>
+              <select value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))} style={{width:'100%',border:'1px solid var(--c-border)',borderRadius:8,padding:'9px 12px',fontSize:13}}>
                 {Object.entries(TYPE_LABEL).map(([k,v])=><option key={k} value={k}>{TYPE_ICON[k]} {v}</option>)}
               </select>
             </div>
             <div>
-              <label style={{display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"#374151"}}>Ngày hẹn</label>
-              <input type='date' value={form.dueDate} onChange={e=>setForm(f=>({...f,dueDate:e.target.value}))} style={{width:"100%",border:'1px solid #e2e8f0',borderRadius:8,padding:'9px 12px',fontSize:13,boxSizing:"border-box"}}/>
+              <label style={{display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"var(--c-text-2)"}}>Ngày hẹn</label>
+              <input type='date' value={form.dueDate} onChange={e=>setForm(f=>({...f,dueDate:e.target.value}))} style={{width:"100%",border:'1px solid var(--c-border)',borderRadius:8,padding:'9px 12px',fontSize:13,boxSizing:"border-box"}}/>
             </div>
           </div>
           <div style={{marginTop:12}}>
-            <label style={{display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"#374151"}}>Ghi chú</label>
-            <textarea value={form.note} onChange={e=>setForm(f=>({...f,note:e.target.value}))} rows={2} style={{width:'100%',border:'1px solid #e2e8f0',borderRadius:8,padding:'9px 12px',fontSize:13,boxSizing:'border-box',resize:"vertical"}}/>
+            <label style={{display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"var(--c-text-2)"}}>Ghi chú</label>
+            <textarea value={form.note} onChange={e=>setForm(f=>({...f,note:e.target.value}))} rows={2} style={{width:'100%',border:'1px solid var(--c-border)',borderRadius:8,padding:'9px 12px',fontSize:13,boxSizing:'border-box',resize:"vertical"}}/>
           </div>
           <div style={{display:'flex',gap:8,marginTop:14}}>
-            <button onClick={save} style={{background:'#16a34a',color:'#fff',border:'none',borderRadius:8,padding:'9px 20px',cursor:'pointer',fontWeight:700}}>Lưu</button>
-            <button onClick={()=>setShowForm(false)} style={{background:'#6b7280',color:'#fff',border:'none',borderRadius:8,padding:'9px 20px',cursor:'pointer',fontWeight:600}}>Hủy</button>
+            <button onClick={save} style={{background:'var(--c-success-mid)',color:'var(--c-text-inverse)',border:'none',borderRadius:8,padding:'9px 20px',cursor:'pointer',fontWeight:700}}>Lưu</button>
+            <button onClick={()=>setShowForm(false)} style={{background:'var(--c-text-3)',color:'var(--c-text-inverse)',border:'none',borderRadius:8,padding:'9px 20px',cursor:'pointer',fontWeight:600}}>Hủy</button>
           </div>
         </div>
       )}
 
       <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
-        <button onClick={()=>setFilterType("all")} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterType==="all"?"#1e293b":"#f1f5f9",color:filterType==="all"?"#fff":"#64748b"}}>Tất cả</button>
+        <button onClick={()=>setFilterType("all")} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterType==="all"?"var(--c-text-2)":"var(--c-surface-3)",color:filterType==="all"?"var(--c-text-inverse)":"var(--c-text-3)"}}>Tất cả</button>
         {Object.entries(TYPE_LABEL).map(([k,v])=>(
-          <button key={k} onClick={()=>setFilterType(k)} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterType===k?"#1e293b":"#f1f5f9",color:filterType===k?"#fff":"#64748b"}}>{TYPE_ICON[k]} {v}</button>
+          <button key={k} onClick={()=>setFilterType(k)} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterType===k?"var(--c-text-2)":"var(--c-surface-3)",color:filterType===k?"var(--c-text-inverse)":"var(--c-text-3)"}}>{TYPE_ICON[k]} {v}</button>
         ))}
       </div>
 
       <div style={{display:'grid',gap:8}}>
-        {sorted.length===0 && <div style={{textAlign:'center',color:'#9ca3af',padding:40}}>Không có task nào</div>}
+        {sorted.length===0 && <div style={{textAlign:'center',color:'var(--c-text-muted)',padding:40}}>Không có task nào</div>}
         {sorted.map(t=>(
-          <div key={t.id} style={{background:t.done?"#f8fafc":'#fff',borderRadius:12,padding:16,boxShadow:'0 1px 4px rgba(0,0,0,.07)',display:'flex',gap:12,alignItems:'flex-start',border:isOverdue(t)?"1px solid #fecaca":"1px solid transparent"}}>
+          <div key={t.id} style={{background:t.done?"var(--c-surface-2)":'var(--c-surface)',borderRadius:12,padding:16,boxShadow:'0 1px 4px rgba(0,0,0,.07)',display:'flex',gap:12,alignItems:'flex-start',border:isOverdue(t)?"1px solid var(--c-danger-border)":"1px solid transparent"}}>
             <input type='checkbox' checked={!!t.done} onChange={()=>toggle(t.id)} style={{marginTop:3,width:16,height:16,cursor:'pointer'}}/>
             <div style={{flex:1}}>
-              <div style={{fontWeight:600,textDecoration:t.done?"line-through":"none",color:t.done?"#94a3b8":"#1e293b"}}>{TYPE_ICON[t.type]} {t.orderId} — {TYPE_LABEL[t.type]||t.type}</div>
-              {t.note && <div style={{fontSize:13,color:'#64748b',marginTop:2}}>{t.note}</div>}
-              <div style={{fontSize:12,marginTop:4,color:isOverdue(t)?"#dc2626":"#94a3b8",fontWeight:isOverdue(t)?700:400}}>
+              <div style={{fontWeight:600,textDecoration:t.done?"line-through":"none",color:t.done?"var(--c-text-muted)":"var(--c-text-2)"}}>{TYPE_ICON[t.type]} {t.orderId} — {TYPE_LABEL[t.type]||t.type}</div>
+              {t.note && <div style={{fontSize:13,color:'var(--c-text-3)',marginTop:2}}>{t.note}</div>}
+              <div style={{fontSize:12,marginTop:4,color:isOverdue(t)?"var(--c-danger-mid)":"var(--c-text-muted)",fontWeight:isOverdue(t)?700:400}}>
                 {isOverdue(t)&&"⚠️ Quá hạn · "}Hẹn: {fmtDate(t.dueDate)} · {t.assignee}
               </div>
             </div>
