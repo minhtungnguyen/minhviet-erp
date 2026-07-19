@@ -1,6 +1,7 @@
 import React from "react";
 import { exportCustomersToExcel } from "../utils/importExcel.js";
 import { SEED_CUSTOMERS } from "../seeds/index.js";
+import { Btn, SearchInp, PageHeader, TabBar } from "../components/ui.jsx";
 
 const CRM_TAGS = [
   {id:"vip",      label:"VIP",            color:"#7a5a00", bg:"#fef9e7"},
@@ -172,71 +173,71 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
 
     return (
       <div style={{padding:24,maxWidth:1000,margin:"0 auto"}}>
-        <button onClick={()=>setSubView("list")} style={{background:"none",border:"none",color:"#2563eb",cursor:"pointer",fontSize:14,marginBottom:16}}>← Danh sách khách</button>
+        <button onClick={()=>setSubView("list")} style={{background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:"var(--text-md)",marginBottom:16}}>← Danh sách khách</button>
 
         {nextBirthday&&bdayDays!==null&&(
-          <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:12,padding:"12px 18px",marginBottom:16,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{background:"var(--c-warning-bg)",border:"1px solid var(--c-warning-border)",borderRadius:"var(--r-lg)",padding:"12px 18px",marginBottom:16,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
               <span style={{fontSize:20}}>🎂</span>
-              <span style={{fontWeight:700,fontSize:14}}>Sinh nhật ({bdayYears} năm) {bdayDays} ngày nữa</span>
+              <span style={{fontWeight:700,fontSize:"var(--text-md)"}}>Sinh nhật ({bdayYears} năm) {bdayDays} ngày nữa</span>
             </div>
-            <button onClick={()=>openCompose(live,"birthday")} style={{background:"#1e3a8a",color:"#fff",border:"none",borderRadius:8,padding:"7px 16px",cursor:"pointer",fontWeight:700,fontSize:12}}>🎁 Soạn thiệp</button>
+            <Btn onClick={()=>openCompose(live,"birthday")}>🎁 Soạn thiệp</Btn>
           </div>
         )}
 
         <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:16}}>
-          <div style={{background:"#fff",borderRadius:14,padding:22,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
-            <div style={{textAlign:"center",fontWeight:700,fontSize:15,marginBottom:18,color:"#1e293b"}}>👤 Hồ sơ khách hàng</div>
-            {[["Họ và tên",live.name,"#2563eb"],["Điện thoại",live.phone],["Email",live.email||"—"],["Ngày sinh",fmtDate(live.dob)],["Tỉnh/TP",live.province||"—"],["Nguồn KH",live.source||"—"],["Sale phụ trách",live.assignedSale||"—"]].map(([k,v,color])=>(
-              <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid #f1f5f9",fontSize:13}}>
-                <span style={{color:"#64748b"}}>{k}</span><span style={{fontWeight:600,color:color||"#1e293b"}}>{v}</span>
+          <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:22,boxShadow:"var(--sh-sm)"}}>
+            <div style={{textAlign:"center",fontWeight:700,fontSize:"var(--text-lg)",marginBottom:18,color:"var(--c-text-2)"}}>👤 Hồ sơ khách hàng</div>
+            {[["Họ và tên",live.name,"var(--c-primary-mid)"],["Điện thoại",live.phone],["Email",live.email||"—"],["Ngày sinh",fmtDate(live.dob)],["Tỉnh/TP",live.province||"—"],["Nguồn KH",live.source||"—"],["Sale phụ trách",live.assignedSale||"—"]].map(([k,v,color])=>(
+              <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid var(--c-border)",fontSize:"var(--text-base)"}}>
+                <span style={{color:"var(--c-text-3)"}}>{k}</span><span style={{fontWeight:600,color:color||"var(--c-text-2)"}}>{v}</span>
               </div>
             ))}
             {(live.tags||[]).length>0&&(
               <div style={{display:"flex",gap:5,marginTop:14,flexWrap:"wrap"}}>
-                {live.tags.map(tId=>{const t=CRM_TAGS.find(x=>x.id===tId);return t&&<span key={tId} style={{fontSize:11,background:t.bg,color:t.color,borderRadius:6,padding:"3px 10px",fontWeight:600}}>{t.label}</span>;})}
+                {live.tags.map(tId=>{const t=CRM_TAGS.find(x=>x.id===tId);return t&&<span key={tId} style={{fontSize:"var(--text-xs)",background:t.bg,color:t.color,borderRadius:"var(--r-xs)",padding:"3px 10px",fontWeight:600}}>{t.label}</span>;})}
               </div>
             )}
             {missingCccd&&(
-              <div style={{background:"#eff6ff",borderRadius:8,padding:"10px 14px",marginTop:14,fontSize:12,color:"#1d4ed8",textAlign:"center"}}>
+              <div style={{background:"var(--c-primary-light)",borderRadius:"var(--r-sm)",padding:"10px 14px",marginTop:14,fontSize:"var(--text-sm)",color:"var(--c-primary-mid)",textAlign:"center"}}>
                 📋 Thiếu CCCD, đơn bị khóa. Cần follow-up.
               </div>
             )}
             <div style={{display:"flex",gap:8,marginTop:16}}>
-              <button onClick={()=>openEdit(live)} style={{flex:1,background:"#f1f5f9",border:"none",borderRadius:8,padding:"8px",cursor:"pointer",fontSize:12,fontWeight:600}}>✏️ Sửa hồ sơ</button>
-              {onCreateOrderFromLead&&<button onClick={onCreateOrderFromLead} style={{flex:1,background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"8px",cursor:"pointer",fontSize:12,fontWeight:600}}>+ Tạo đơn</button>}
+              <Btn variant="secondary" style={{flex:1,justifyContent:"center"}} onClick={()=>openEdit(live)}>✏️ Sửa hồ sơ</Btn>
+              {onCreateOrderFromLead&&<Btn style={{flex:1,justifyContent:"center"}} onClick={onCreateOrderFromLead}>+ Tạo đơn</Btn>}
             </div>
           </div>
 
           <div>
-            <div style={{background:"#fff",borderRadius:14,padding:18,boxShadow:"0 1px 6px rgba(0,0,0,.07)",marginBottom:14}}>
-              <div style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:.5,marginBottom:12,textTransform:"uppercase",textAlign:"center"}}>Giá trị khách hàng (LTV)</div>
+            <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:18,boxShadow:"var(--sh-sm)",marginBottom:14}}>
+              <div style={{fontSize:"var(--text-xs)",fontWeight:700,color:"var(--c-text-muted)",letterSpacing:.5,marginBottom:12,textTransform:"uppercase",textAlign:"center"}}>Giá trị khách hàng (LTV)</div>
               {[["Tổng đơn",(live.totalOrders||myOrders.length)+" đơn"],["Tổng doanh thu",fmtMoney(live.totalRevenue)],["Tổng lợi nhuận",fmtMoney(live.totalProfit)],["Biên LN TB",profitMargin.toFixed(1)+"%"],["Đơn đầu tiên",fmtDate(live.firstOrderDate)]].map(([k,v])=>(
-                <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",fontSize:13}}>
-                  <span style={{color:"#64748b"}}>{k}</span><span style={{fontWeight:700,color:"#1e293b"}}>{v}</span>
+                <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",fontSize:"var(--text-base)"}}>
+                  <span style={{color:"var(--c-text-3)"}}>{k}</span><span style={{fontWeight:700,color:"var(--c-text-2)"}}>{v}</span>
                 </div>
               ))}
             </div>
-            <div style={{background:"#fff",borderRadius:14,padding:18,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
-              <div style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:.5,marginBottom:12,textTransform:"uppercase",textAlign:"center"}}>Thao tác nhanh</div>
-              <button onClick={()=>openCompose(live,"birthday")} style={{width:"100%",textAlign:"left",background:"#f8fafc",border:"none",borderRadius:8,padding:"9px 12px",cursor:"pointer",fontSize:13,marginBottom:6}}>✉️ Soạn email chúc mừng</button>
-              <button onClick={()=>openCompose(live,"anniversary")} style={{width:"100%",textAlign:"left",background:"#f8fafc",border:"none",borderRadius:8,padding:"9px 12px",cursor:"pointer",fontSize:13,marginBottom:6}}>💬 Nhắn Zalo</button>
-              <button onClick={()=>{navigator.clipboard?.writeText(live.phone);pushNotif&&pushNotif("Đã copy SĐT");}} style={{width:"100%",textAlign:"left",background:"#f8fafc",border:"none",borderRadius:8,padding:"9px 12px",cursor:"pointer",fontSize:13}}>📞 Copy số điện thoại</button>
+            <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:18,boxShadow:"var(--sh-sm)"}}>
+              <div style={{fontSize:"var(--text-xs)",fontWeight:700,color:"var(--c-text-muted)",letterSpacing:.5,marginBottom:12,textTransform:"uppercase",textAlign:"center"}}>Thao tác nhanh</div>
+              <button onClick={()=>openCompose(live,"birthday")} style={{width:"100%",textAlign:"left",background:"var(--c-surface-2)",border:"none",borderRadius:"var(--r-sm)",padding:"9px 12px",cursor:"pointer",fontSize:"var(--text-base)",marginBottom:6}}>✉️ Soạn email chúc mừng</button>
+              <button onClick={()=>openCompose(live,"anniversary")} style={{width:"100%",textAlign:"left",background:"var(--c-surface-2)",border:"none",borderRadius:"var(--r-sm)",padding:"9px 12px",cursor:"pointer",fontSize:"var(--text-base)",marginBottom:6}}>💬 Nhắn Zalo</button>
+              <button onClick={()=>{navigator.clipboard?.writeText(live.phone);pushNotif&&pushNotif("Đã copy SĐT");}} style={{width:"100%",textAlign:"left",background:"var(--c-surface-2)",border:"none",borderRadius:"var(--r-sm)",padding:"9px 12px",cursor:"pointer",fontSize:"var(--text-base)"}}>📞 Copy số điện thoại</button>
             </div>
           </div>
         </div>
 
         {myOrders.length>0&&(
-          <div style={{background:"#fff",borderRadius:14,padding:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)",marginTop:16}}>
+          <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:20,boxShadow:"var(--sh-sm)",marginTop:16}}>
             <div style={{fontWeight:700,marginBottom:12}}>Đơn hàng ({myOrders.length})</div>
             {myOrders.map(o=>(
-              <div key={o.id} onClick={()=>onViewOrder?.(o)} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid #f1f5f9",cursor:onViewOrder?"pointer":"default",borderRadius:6,paddingLeft:4,paddingRight:4}}
-                onMouseEnter={e=>{if(onViewOrder)e.currentTarget.style.background="#f8fafc";}}
+              <div key={o.id} onClick={()=>onViewOrder?.(o)} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid var(--c-border)",cursor:onViewOrder?"pointer":"default",borderRadius:6,paddingLeft:4,paddingRight:4}}
+                onMouseEnter={e=>{if(onViewOrder)e.currentTarget.style.background="var(--c-surface-2)";}}
                 onMouseLeave={e=>{e.currentTarget.style.background="transparent";}}>
-                <span style={{fontWeight:600,fontSize:13}}>{o.id} <span style={{color:"#64748b",fontWeight:400}}>· {o.tourName||o.service}</span></span>
+                <span style={{fontWeight:600,fontSize:"var(--text-base)"}}>{o.id} <span style={{color:"var(--c-text-3)",fontWeight:400}}>· {o.tourName||o.service}</span></span>
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
-                  <span style={{fontWeight:700,color:"#16a34a",fontSize:13}}>{fmtMoney(o.totalPrice)}</span>
-                  {onViewOrder&&<span style={{fontSize:11,color:"#2563eb"}}>→</span>}
+                  <span style={{fontWeight:700,color:"var(--c-success-mid)",fontSize:"var(--text-base)"}}>{fmtMoney(o.totalPrice)}</span>
+                  {onViewOrder&&<span style={{fontSize:"var(--text-xs)",color:"var(--c-primary-mid)"}}>→</span>}
                 </div>
               </div>
             ))}
@@ -260,28 +261,28 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
       {/* Header + Tab bar */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:12}}>
         <div>
-          <h2 style={{margin:0,fontSize:20,fontWeight:800}}>CRM — Khách hàng</h2>
-          <div style={{fontSize:13,color:"#64748b",marginTop:2}}>{customers.length} khách hàng</div>
+          <h2 style={{margin:0,fontSize:"var(--text-2xl)",fontWeight:"var(--fw-bold)",color:"var(--c-text)"}}>CRM — Khách hàng</h2>
+          <div style={{fontSize:"var(--text-base)",color:"var(--c-text-3)",marginTop:2}}>{customers.length} khách hàng</div>
         </div>
         <div style={{display:"flex",gap:8}}>
           {mainTab==="list"&&<>
-            <button onClick={()=>exportCustomersToExcel(filtered)} style={{background:"#f0fdf4",color:"#15803d",border:"1px solid #bbf7d0",borderRadius:9,padding:"9px 16px",cursor:"pointer",fontWeight:700,fontSize:13}}>📊 Xuất Excel</button>
-            <button onClick={()=>{setEditMode(false);setForm({name:"",phone:"",email:"",type:"personal",customerType:"personal",cccd:"",dob:"",companyName:"",taxCode:"",source:"Facebook",assignedSale:currentUser?.name||"",province:"",notes:"",tags:[]});setShowForm(true);}} style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:9,padding:"9px 20px",cursor:"pointer",fontWeight:700,fontSize:13}}>+ Thêm khách</button>
+            <Btn variant="success" style={{background:"var(--c-success-bg)",color:"var(--c-success)",border:"1px solid var(--c-success-border)"}} onClick={()=>exportCustomersToExcel(filtered)}>📊 Xuất Excel</Btn>
+            <Btn onClick={()=>{setEditMode(false);setForm({name:"",phone:"",email:"",type:"personal",customerType:"personal",cccd:"",dob:"",companyName:"",taxCode:"",source:"Facebook",assignedSale:currentUser?.name||"",province:"",notes:"",tags:[]});setShowForm(true);}}>+ Thêm khách</Btn>
           </>}
         </div>
       </div>
 
       {/* Tab bar */}
-      <div style={{display:"flex",gap:2,borderBottom:"2px solid #e2e8f0",marginBottom:20}}>
+      <div style={{display:"flex",gap:2,borderBottom:"2px solid var(--c-border)",marginBottom:20}}>
         {MAIN_TABS.map(t=>(
           <button key={t.k} onClick={()=>setMainTab(t.k)} style={{
-            padding:"9px 18px",border:"none",cursor:"pointer",fontSize:13,fontWeight:mainTab===t.k?700:500,
-            background:"transparent",color:mainTab===t.k?"#2563eb":"#64748b",
-            borderBottom:mainTab===t.k?"2.5px solid #2563eb":"2.5px solid transparent",
+            padding:"9px 18px",border:"none",cursor:"pointer",fontSize:"var(--text-base)",fontWeight:mainTab===t.k?700:500,
+            background:"transparent",color:mainTab===t.k?"var(--c-primary-mid)":"var(--c-text-3)",
+            borderBottom:mainTab===t.k?"2.5px solid var(--c-primary-mid)":"2.5px solid transparent",
             marginBottom:-2,transition:"color .15s"
           }}>
             {t.label}
-            {t.count!=null&&t.count>0&&<span style={{marginLeft:6,background:mainTab===t.k?"#dbeafe":"#e2e8f0",color:mainTab===t.k?"#1d4ed8":"#475569",borderRadius:20,padding:"1px 7px",fontSize:11,fontWeight:700}}>{t.count}</span>}
+            {t.count!=null&&t.count>0&&<span style={{marginLeft:6,background:mainTab===t.k?"var(--c-primary-pale)":"var(--c-border)",color:mainTab===t.k?"var(--c-primary-hover)":"var(--c-text-2)",borderRadius:"var(--r-pill)",padding:"1px 7px",fontSize:"var(--text-xs)",fontWeight:700}}>{t.count}</span>}
           </button>
         ))}
       </div>
@@ -289,19 +290,19 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
       {/* ── TAB: DANH SÁCH KHÁCH HÀNG ── */}
       {mainTab==="list"&&(<>
         {upcomingEvents.length>0&&(
-          <div style={{background:"#fff",borderRadius:14,boxShadow:"0 1px 6px rgba(0,0,0,.07)",marginBottom:16,overflow:"hidden"}}>
-            <div style={{textAlign:"center",background:"#fdf2f8",padding:"10px 16px",fontWeight:700,fontSize:13,color:"#9d174d"}}>📅 Sự kiện trong 30 ngày tới ({upcomingEvents.length})</div>
+          <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",boxShadow:"var(--sh-sm)",marginBottom:16,overflow:"hidden"}}>
+            <div style={{textAlign:"center",background:"var(--c-danger-bg)",padding:"10px 16px",fontWeight:700,fontSize:"var(--text-base)",color:"var(--c-danger)"}}>📅 Sự kiện trong 30 ngày tới ({upcomingEvents.length})</div>
             {upcomingEvents.map((ev,i)=>{
               const cat=CRM_EVENT_TYPES[ev.event.type]||CRM_EVENT_TYPES.custom;
               return(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 18px",borderTop:i>0?"1px solid #f1f5f9":"none"}}>
+                <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 18px",borderTop:i>0?"1px solid var(--c-border)":"none"}}>
                   <span style={{fontSize:22}}>{cat.icon}</span>
                   <div style={{flex:1}}>
-                    <span style={{fontWeight:700,fontSize:14}}>{ev.customer.name}</span>
-                    <span style={{color:"#64748b",fontSize:13}}> — {ev.event.label||cat.label}</span>
+                    <span style={{fontWeight:700,fontSize:"var(--text-md)"}}>{ev.customer.name}</span>
+                    <span style={{color:"var(--c-text-3)",fontSize:"var(--text-base)"}}> — {ev.event.label||cat.label}</span>
                   </div>
-                  <span style={{fontWeight:700,color:"#2563eb",fontSize:13}}>{ev.days===0?"Hôm nay":ev.days+" ngày"}</span>
-                  <button onClick={()=>openCompose(ev.customer,ev.event.type)} style={{background:"#1e3a8a",color:"#fff",border:"none",borderRadius:8,padding:"7px 16px",cursor:"pointer",fontWeight:700,fontSize:12}}>✉️ Soạn</button>
+                  <span style={{fontWeight:700,color:"var(--c-primary-mid)",fontSize:"var(--text-base)"}}>{ev.days===0?"Hôm nay":ev.days+" ngày"}</span>
+                  <Btn size="sm" onClick={()=>openCompose(ev.customer,ev.event.type)}>✉️ Soạn</Btn>
                 </div>
               );
             })}
@@ -309,20 +310,17 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
         )}
 
         <div style={{display:"flex",gap:10,marginBottom:18,flexWrap:"wrap",alignItems:"center"}}>
-          <div style={{position:"relative",flex:1,minWidth:220}}>
-            <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#94a3b8"}}>🔍</span>
-            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Tìm khách hàng, công ty, SĐT, email..." style={{width:"100%",border:"1px solid #e2e8f0",borderRadius:20,padding:"9px 14px 9px 36px",fontSize:13,boxSizing:"border-box"}}/>
-          </div>
-          <div style={{display:"flex",background:"#f1f5f9",borderRadius:20,padding:3}}>
+          <SearchInp value={search} onChange={e=>setSearch(e.target.value)} placeholder="Tìm khách hàng, công ty, SĐT, email..." style={{flex:1,minWidth:220}}/>
+          <div style={{display:"flex",background:"var(--c-surface-2)",borderRadius:"var(--r-pill)",padding:3}}>
             {[["all","Tất cả"],["personal","👤 Cá nhân"],["corp","🏢 DN"]].map(([k,l])=>(
-              <button key={k} onClick={()=>setFilterType(k)} style={{padding:"6px 14px",borderRadius:18,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterType===k?"#fff":"transparent",color:filterType===k?"#1e293b":"#64748b",boxShadow:filterType===k?"0 1px 4px rgba(0,0,0,.1)":"none"}}>{l}</button>
+              <button key={k} onClick={()=>setFilterType(k)} style={{padding:"6px 14px",borderRadius:"var(--r-md)",border:"none",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:600,background:filterType===k?"var(--c-surface)":"transparent",color:filterType===k?"var(--c-text)":"var(--c-text-3)",boxShadow:filterType===k?"var(--sh-xs)":"none"}}>{l}</button>
             ))}
           </div>
-          <select value={filterTag} onChange={e=>setFilterTag(e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:20,padding:"8px 14px",fontSize:12,background:"#fff"}}>
+          <select value={filterTag} onChange={e=>setFilterTag(e.target.value)} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-pill)",padding:"8px 14px",fontSize:"var(--text-sm)",background:"var(--c-surface)",color:"var(--c-text)"}}>
             <option value="all">Tất cả tag</option>
             {STAGE_TAGS.map(t=><option key={t.id} value={t.id}>{t.label}</option>)}
           </select>
-          <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:20,padding:"8px 14px",fontSize:12,background:"#fff"}}>
+          <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-pill)",padding:"8px 14px",fontSize:"var(--text-sm)",background:"var(--c-surface)",color:"var(--c-text)"}}>
             <option value="revenue">Theo doanh thu</option>
             <option value="recent">Gần đây nhất</option>
             <option value="name">Theo tên</option>
@@ -330,40 +328,40 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
         </div>
 
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14}}>
-          {filtered.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:48,gridColumn:"1/-1"}}>Không tìm thấy khách hàng nào</div>}
+          {filtered.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:48,gridColumn:"1/-1"}}>Không tìm thấy khách hàng nào</div>}
           {filtered.map(c=>{
             const debt=hasDebt(c);
             const seg=RFM_SEGMENTS.find(s=>s.id===classifyRFM(c));
             return(
-              <div key={c.id} onClick={()=>{setSelected(c);setSubView("detail");}} style={{background:"#fff",borderRadius:14,padding:18,boxShadow:"0 1px 6px rgba(0,0,0,.07)",cursor:"pointer",transition:"box-shadow .15s"}}
-                onMouseEnter={e=>e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,.1)"} onMouseLeave={e=>e.currentTarget.style.boxShadow="0 1px 6px rgba(0,0,0,.07)"}>
+              <div key={c.id} onClick={()=>{setSelected(c);setSubView("detail");}} style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:18,boxShadow:"var(--sh-sm)",cursor:"pointer",transition:"box-shadow .15s"}}
+                onMouseEnter={e=>e.currentTarget.style.boxShadow="var(--sh-md)"} onMouseLeave={e=>e.currentTarget.style.boxShadow="var(--sh-sm)"}>
                 <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
-                  <div style={{width:38,height:38,borderRadius:"50%",background:c.type==="corp"?"#7c3aed":"#2563eb",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,flexShrink:0}}>
+                  <div style={{width:38,height:38,borderRadius:"50%",background:c.type==="corp"?"var(--c-purple)":"var(--c-primary-mid)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:"var(--text-lg)",flexShrink:0}}>
                     {c.type==="corp"?"🏢":c.name?.[0]?.toUpperCase()}
                   </div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontWeight:700,fontSize:14,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
-                    <div style={{fontSize:12,color:"#64748b"}}>{c.phone}</div>
+                    <div style={{fontWeight:700,fontSize:"var(--text-md)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                    <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)"}}>{c.phone}</div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:3}}>
-                    <span style={{fontSize:10,fontWeight:700,background:c.type==="corp"?"#f5f3ff":"#eff6ff",color:c.type==="corp"?"#7c3aed":"#2563eb",borderRadius:6,padding:"2px 7px"}}>{c.type==="corp"?"DN":"CN"}</span>
-                    {seg&&<span style={{fontSize:10,fontWeight:700,background:seg.bg,color:seg.color,borderRadius:6,padding:"2px 7px"}}>{seg.label}</span>}
+                    <span style={{fontSize:"var(--text-2xs)",fontWeight:700,background:c.type==="corp"?"var(--c-purple-bg)":"var(--c-primary-light)",color:c.type==="corp"?"var(--c-purple)":"var(--c-primary-mid)",borderRadius:"var(--r-xs)",padding:"2px 7px"}}>{c.type==="corp"?"DN":"CN"}</span>
+                    {seg&&<span style={{fontSize:"var(--text-2xs)",fontWeight:700,background:seg.bg,color:seg.color,borderRadius:"var(--r-xs)",padding:"2px 7px"}}>{seg.label}</span>}
                   </div>
                 </div>
                 {(c.tags||[]).length>0&&(
                   <div style={{display:"flex",gap:4,marginBottom:10,flexWrap:"wrap"}}>
-                    {c.tags.map(tId=>{const t=CRM_TAGS.find(x=>x.id===tId);return t&&<span key={tId} style={{fontSize:10,background:t.bg,color:t.color,borderRadius:5,padding:"2px 7px",fontWeight:600}}>{t.label}</span>;})}
+                    {c.tags.map(tId=>{const t=CRM_TAGS.find(x=>x.id===tId);return t&&<span key={tId} style={{fontSize:"var(--text-2xs)",background:t.bg,color:t.color,borderRadius:"var(--r-xs)",padding:"2px 7px",fontWeight:600}}>{t.label}</span>;})}
                   </div>
                 )}
-                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,paddingTop:10,borderTop:"1px solid #f1f5f9"}}>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,paddingTop:10,borderTop:"1px solid var(--c-border)"}}>
                   {[["Đơn",c.totalOrders||0],["DT",fmtTr(c.totalRevenue)],["LN",fmtTr(c.totalProfit)]].map(([k,v])=>(
                     <div key={k} style={{textAlign:"center"}}>
-                      <div style={{fontSize:10,color:"#94a3b8"}}>{k}</div>
-                      <div style={{fontSize:13,fontWeight:700,color:"#1e293b"}}>{v}</div>
+                      <div style={{fontSize:"var(--text-2xs)",color:"var(--c-text-muted)"}}>{k}</div>
+                      <div style={{fontSize:"var(--text-base)",fontWeight:700,color:"var(--c-text-2)"}}>{v}</div>
                     </div>
                   ))}
                 </div>
-                {debt&&<div style={{textAlign:"center",marginTop:10,background:"#fef2f2",color:"#dc2626",borderRadius:6,padding:"3px",fontSize:11,fontWeight:700}}>Còn nợ</div>}
+                {debt&&<div style={{textAlign:"center",marginTop:10,background:"var(--c-danger-bg)",color:"var(--c-danger-mid)",borderRadius:"var(--r-xs)",padding:"3px",fontSize:"var(--text-xs)",fontWeight:700}}>Còn nợ</div>}
               </div>
             );
           })}
@@ -376,14 +374,14 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:24}}>
             {RFM_SEGMENTS.map(seg=>(
               <div key={seg.id} onClick={()=>setSegFilter(segFilter===seg.id?null:seg.id)}
-                style={{background:segFilter===seg.id?seg.bg:"#fff",border:"2px solid "+(segFilter===seg.id?seg.color:"#e2e8f0"),
-                  borderRadius:12,padding:"16px 18px",cursor:"pointer",transition:"all .15s"}}>
+                style={{background:segFilter===seg.id?seg.bg:"var(--c-surface)",border:"2px solid "+(segFilter===seg.id?seg.color:"var(--c-border)"),
+                  borderRadius:"var(--r-md)",padding:"16px 18px",cursor:"pointer",transition:"all .15s"}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
-                  <span style={{fontSize:11,fontWeight:700,background:seg.bg,color:seg.color,borderRadius:6,padding:"2px 9px"}}>{seg.label}</span>
-                  <span style={{fontSize:26,fontWeight:800,color:seg.color,lineHeight:1}}>{segCounts[seg.id]||0}</span>
+                  <span style={{fontSize:"var(--text-xs)",fontWeight:700,background:seg.bg,color:seg.color,borderRadius:"var(--r-xs)",padding:"2px 9px"}}>{seg.label}</span>
+                  <span style={{fontSize:"var(--text-3xl)",fontWeight:800,color:seg.color,lineHeight:1}}>{segCounts[seg.id]||0}</span>
                 </div>
-                <div style={{fontSize:12,color:"#64748b"}}>{seg.desc}</div>
-                <div style={{fontSize:11,color:seg.color,marginTop:4,fontWeight:600}}>
+                <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)"}}>{seg.desc}</div>
+                <div style={{fontSize:"var(--text-xs)",color:seg.color,marginTop:4,fontWeight:600}}>
                   {segCounts[seg.id]?`${Math.round((segCounts[seg.id]/customers.length)*100)}% tổng KH`:"Không có"}
                 </div>
               </div>
@@ -396,38 +394,38 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
             return (
               <div>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-                  <div style={{fontWeight:700,fontSize:15}}>
+                  <div style={{fontWeight:700,fontSize:"var(--text-lg)"}}>
                     Khách hàng phân khúc: <span style={{color:seg.color}}>{seg.label}</span>
-                    <span style={{marginLeft:8,fontSize:13,fontWeight:400,color:"#64748b"}}>({list.length} người)</span>
+                    <span style={{marginLeft:8,fontSize:"var(--text-base)",fontWeight:400,color:"var(--c-text-3)"}}>({list.length} người)</span>
                   </div>
                   <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                    {list.length>0&&<button onClick={()=>setBulkCompose({seg,list})} style={{background:seg.color,color:"#fff",border:"none",borderRadius:8,padding:"7px 16px",cursor:"pointer",fontWeight:700,fontSize:12}}>📣 Gửi tin hàng loạt ({list.length})</button>}
-                    <button onClick={()=>setSegFilter(null)} style={{background:"none",border:"none",cursor:"pointer",color:"#94a3b8",fontSize:18}}>✕</button>
+                    {list.length>0&&<Btn size="sm" style={{background:seg.color}} onClick={()=>setBulkCompose({seg,list})}>📣 Gửi tin hàng loạt ({list.length})</Btn>}
+                    <button onClick={()=>setSegFilter(null)} style={{background:"none",border:"none",cursor:"pointer",color:"var(--c-text-muted)",fontSize:18}}>✕</button>
                   </div>
                 </div>
-                <div style={{background:"#fff",borderRadius:12,overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
-                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
+                <div style={{background:"var(--c-surface)",borderRadius:"var(--r-md)",overflow:"hidden",boxShadow:"var(--sh-sm)"}}>
+                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:"var(--text-base)"}}>
                     <thead>
-                      <tr style={{background:"#f8fafc"}}>
+                      <tr style={{background:"var(--c-surface-2)"}}>
                         {["Khách hàng","SĐT","Đơn","Doanh thu","Ngày cuối","Thao tác"].map(h=>(
-                          <th key={h} style={{padding:"10px 14px",textAlign:"left",fontWeight:600,fontSize:12,color:"#64748b",borderBottom:"1px solid #e2e8f0"}}>{h}</th>
+                          <th key={h} style={{padding:"10px 14px",textAlign:"left",fontWeight:600,fontSize:"var(--text-sm)",color:"var(--c-text-3)",borderBottom:"1px solid var(--c-border)"}}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {list.length===0&&<tr><td colSpan={6} style={{textAlign:"center",padding:32,color:"#94a3b8"}}>Không có khách hàng nào</td></tr>}
+                      {list.length===0&&<tr><td colSpan={6} style={{textAlign:"center",padding:32,color:"var(--c-text-muted)"}}>Không có khách hàng nào</td></tr>}
                       {list.map((c,i)=>(
-                        <tr key={c.id} style={{borderBottom:i<list.length-1?"1px solid #f1f5f9":"none"}} className="table-row-hover">
+                        <tr key={c.id} style={{borderBottom:i<list.length-1?"1px solid var(--c-border)":"none"}} className="table-row-hover">
                           <td style={{padding:"10px 14px"}}>
                             <div style={{fontWeight:700}}>{c.name}</div>
-                            <div style={{fontSize:11,color:"#64748b"}}>{c.type==="corp"?"Doanh nghiệp":"Cá nhân"}</div>
+                            <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{c.type==="corp"?"Doanh nghiệp":"Cá nhân"}</div>
                           </td>
-                          <td style={{padding:"10px 14px",color:"#374151"}}>{c.phone}</td>
-                          <td style={{padding:"10px 14px",fontWeight:700,color:"#2563eb"}}>{c.totalOrders||0}</td>
-                          <td style={{padding:"10px 14px",fontWeight:700,color:"#15803d"}}>{fmtTr(c.totalRevenue)}</td>
-                          <td style={{padding:"10px 14px",color:"#64748b",fontSize:12}}>{c.lastOrderDate?new Date(c.lastOrderDate).toLocaleDateString("vi-VN"):"—"}</td>
+                          <td style={{padding:"10px 14px",color:"var(--c-text-2)"}}>{c.phone}</td>
+                          <td style={{padding:"10px 14px",fontWeight:700,color:"var(--c-primary-mid)"}}>{c.totalOrders||0}</td>
+                          <td style={{padding:"10px 14px",fontWeight:700,color:"var(--c-success)"}}>{fmtTr(c.totalRevenue)}</td>
+                          <td style={{padding:"10px 14px",color:"var(--c-text-3)",fontSize:"var(--text-sm)"}}>{c.lastOrderDate?new Date(c.lastOrderDate).toLocaleDateString("vi-VN"):"—"}</td>
                           <td style={{padding:"10px 14px"}}>
-                            <button onClick={()=>{setSelected(c);setSubView("detail");}} style={{background:"#eff6ff",color:"#2563eb",border:"none",borderRadius:7,padding:"5px 12px",cursor:"pointer",fontWeight:600,fontSize:12}}>Xem</button>
+                            <Btn size="xs" variant="secondary" onClick={()=>{setSelected(c);setSubView("detail");}}>Xem</Btn>
                           </td>
                         </tr>
                       ))}
@@ -438,14 +436,14 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
             );
           })()}
           {!segFilter&&(
-            <div style={{background:"#f8fafc",borderRadius:12,padding:"20px 24px"}}>
-              <div style={{fontWeight:600,fontSize:13,color:"#374151",marginBottom:8}}>Hướng dẫn sử dụng</div>
-              <ul style={{margin:0,padding:"0 0 0 18px",fontSize:13,color:"#64748b",lineHeight:2}}>
+            <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-md)",padding:"20px 24px"}}>
+              <div style={{fontWeight:600,fontSize:"var(--text-base)",color:"var(--c-text-2)",marginBottom:8}}>Hướng dẫn sử dụng</div>
+              <ul style={{margin:0,padding:"0 0 0 18px",fontSize:"var(--text-base)",color:"var(--c-text-3)",lineHeight:2}}>
                 <li>Click vào thẻ phân khúc để xem danh sách khách hàng trong nhóm đó</li>
-                <li><b style={{color:"#7c3aed"}}>VIP</b>: ưu tiên chăm sóc đặc biệt, tặng quà, ưu đãi riêng</li>
-                <li><b style={{color:"#0284c7"}}>Thân thiết</b>: duy trì tương tác đều đặn, tư vấn tour mới</li>
-                <li><b style={{color:"#d97706"}}>Có rủi ro</b>: cần liên hệ lại, hỏi lý do vắng, đề xuất ưu đãi</li>
-                <li><b style={{color:"#dc2626"}}>Ngủ đông</b>: chiến dịch win-back, ưu đãi đặc biệt để kéo lại</li>
+                <li><b style={{color:"var(--c-purple)"}}>VIP</b>: ưu tiên chăm sóc đặc biệt, tặng quà, ưu đãi riêng</li>
+                <li><b style={{color:"var(--c-info)"}}>Thân thiết</b>: duy trì tương tác đều đặn, tư vấn tour mới</li>
+                <li><b style={{color:"var(--c-warning-mid)"}}>Có rủi ro</b>: cần liên hệ lại, hỏi lý do vắng, đề xuất ưu đãi</li>
+                <li><b style={{color:"var(--c-danger-mid)"}}>Ngủ đông</b>: chiến dịch win-back, ưu đãi đặc biệt để kéo lại</li>
               </ul>
             </div>
           )}
@@ -456,18 +454,18 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
       {mainTab==="history"&&(
         <div>
           {(!msgHistory||msgHistory.length===0)?(
-            <div style={{textAlign:"center",padding:64,color:"#94a3b8"}}>
+            <div style={{textAlign:"center",padding:64,color:"var(--c-text-muted)"}}>
               <div style={{fontSize:40,marginBottom:12}}>📤</div>
-              <div style={{fontWeight:600,fontSize:15,marginBottom:4}}>Chưa có lịch sử gửi tin</div>
-              <div style={{fontSize:13}}>Vào hồ sơ khách hàng và soạn tin để ghi lịch sử tại đây</div>
+              <div style={{fontWeight:600,fontSize:"var(--text-lg)",marginBottom:4}}>Chưa có lịch sử gửi tin</div>
+              <div style={{fontSize:"var(--text-base)"}}>Vào hồ sơ khách hàng và soạn tin để ghi lịch sử tại đây</div>
             </div>
           ):(
-            <div style={{background:"#fff",borderRadius:12,overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
-              <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
+            <div style={{background:"var(--c-surface)",borderRadius:"var(--r-md)",overflow:"hidden",boxShadow:"var(--sh-sm)"}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:"var(--text-base)"}}>
                 <thead>
-                  <tr style={{background:"#f8fafc"}}>
+                  <tr style={{background:"var(--c-surface-2)"}}>
                     {["Thời gian","Khách hàng","Kênh","Sự kiện / Nội dung","Người gửi"].map(h=>(
-                      <th key={h} style={{padding:"10px 14px",textAlign:"left",fontWeight:600,fontSize:12,color:"#64748b",borderBottom:"1px solid #e2e8f0"}}>{h}</th>
+                      <th key={h} style={{padding:"10px 14px",textAlign:"left",fontWeight:600,fontSize:"var(--text-sm)",color:"var(--c-text-3)",borderBottom:"1px solid var(--c-border)"}}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -475,23 +473,23 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
                   {(msgHistory||[]).slice(0,100).map((rec,i)=>{
                     const ch={email:"✉️ Email",zalo:"💬 Zalo",sms:"📱 SMS"}[rec.type]||rec.type||"—";
                     return(
-                      <tr key={i} style={{borderBottom:i<(msgHistory.length-1)?"1px solid #f1f5f9":"none"}} className="table-row-hover">
-                        <td style={{padding:"10px 14px",color:"#64748b",fontSize:12,whiteSpace:"nowrap"}}>{new Date(rec.ts).toLocaleString("vi-VN",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
+                      <tr key={i} style={{borderBottom:i<(msgHistory.length-1)?"1px solid var(--c-border)":"none"}} className="table-row-hover">
+                        <td style={{padding:"10px 14px",color:"var(--c-text-3)",fontSize:"var(--text-sm)",whiteSpace:"nowrap"}}>{new Date(rec.ts).toLocaleString("vi-VN",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
                         <td style={{padding:"10px 14px"}}>
-                          <div style={{fontWeight:700,color:"#1e293b"}}>{rec.customerName||"—"}</div>
-                          {rec.phone&&<div style={{fontSize:11,color:"#64748b"}}>{rec.phone}</div>}
+                          <div style={{fontWeight:700,color:"var(--c-text-2)"}}>{rec.customerName||"—"}</div>
+                          {rec.phone&&<div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{rec.phone}</div>}
                         </td>
                         <td style={{padding:"10px 14px",whiteSpace:"nowrap"}}>{ch}</td>
                         <td style={{padding:"10px 14px",maxWidth:300}}>
-                          <div style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",color:"#374151"}}>{rec.note||rec.body||"—"}</div>
+                          <div style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",color:"var(--c-text-2)"}}>{rec.note||rec.body||"—"}</div>
                         </td>
-                        <td style={{padding:"10px 14px",color:"#64748b",fontSize:12}}>{rec.by||rec.sentBy||"—"}</td>
+                        <td style={{padding:"10px 14px",color:"var(--c-text-3)",fontSize:"var(--text-sm)"}}>{rec.by||rec.sentBy||"—"}</td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
-              {(msgHistory||[]).length>100&&<div style={{textAlign:"center",padding:"12px",fontSize:12,color:"#94a3b8"}}>Hiển thị 100 / {msgHistory.length} bản ghi gần nhất</div>}
+              {(msgHistory||[]).length>100&&<div style={{textAlign:"center",padding:"12px",fontSize:"var(--text-sm)",color:"var(--c-text-muted)"}}>Hiển thị 100 / {msgHistory.length} bản ghi gần nhất</div>}
             </div>
           )}
         </div>
@@ -506,12 +504,12 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
 
 function CustomerFormModal({form,setForm,onSave,onClose,title}){
   const isCorpType=(t)=>t==="corporate"||t==="corp";
-  const lbl={display:"block",fontSize:12,fontWeight:600,marginBottom:4,color:"#374151"};
-  const inp={width:"100%",border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 12px",fontSize:13,boxSizing:"border-box",outline:"none"};
+  const lbl={display:"block",fontSize:"var(--text-sm)",fontWeight:600,marginBottom:4,color:"var(--c-text-2)"};
+  const inp={width:"100%",border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-sm)",padding:"8px 12px",fontSize:"var(--text-base)",boxSizing:"border-box",outline:"none",background:"var(--c-surface)",color:"var(--c-text)"};
   return (
     <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
       <div className="modal-panel" style={{padding:28,width:520,maxWidth:"95vw",maxHeight:"90vh",overflowY:"auto"}}>
-        <h3 style={{margin:"0 0 20px",fontSize:18,fontWeight:800}}>{title}</h3>
+        <h3 style={{margin:"0 0 20px",fontSize:"var(--text-xl)",fontWeight:800,color:"var(--c-text)"}}>{title}</h3>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
           <div>
             <label style={lbl}>Loại khách</label>
@@ -576,7 +574,7 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
               const active=(form.tags||[]).includes(tag.id);
               return(
                 <button key={tag.id} onClick={()=>setForm(f=>({...f,tags:active?(f.tags||[]).filter(t=>t!==tag.id):[...(f.tags||[]),tag.id]}))}
-                  style={{padding:"5px 12px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:active?tag.bg:"#f1f5f9",color:active?tag.color:"#64748b",boxShadow:active?"inset 0 0 0 1.5px "+tag.color:"none"}}>
+                  style={{padding:"5px 12px",borderRadius:"var(--r-pill)",border:"none",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:600,background:active?tag.bg:"var(--c-surface-2)",color:active?tag.color:"var(--c-text-3)",boxShadow:active?"inset 0 0 0 1.5px "+tag.color:"none"}}>
                   {tag.label}
                 </button>
               );
@@ -588,8 +586,8 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
           <textarea value={form.notes||""} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} rows={2} style={{...inp,resize:"vertical"}}/>
         </div>
         <div style={{display:"flex",gap:8,marginTop:16}}>
-          <button onClick={onSave} style={{flex:1,background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"10px",cursor:"pointer",fontWeight:700,fontSize:14}}>Lưu</button>
-          <button onClick={onClose} style={{flex:1,background:"#f1f5f9",border:"none",borderRadius:8,padding:"10px",cursor:"pointer",fontWeight:600,fontSize:14}}>Hủy</button>
+          <Btn style={{flex:1,justifyContent:"center"}} onClick={onSave}>Lưu</Btn>
+          <Btn variant="secondary" style={{flex:1,justifyContent:"center"}} onClick={onClose}>Hủy</Btn>
         </div>
       </div>
     </div>
@@ -605,28 +603,28 @@ function ComposeModal({customer,channel,setChannel,body,setBody,onSend,onClose})
   return (
     <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
       <div className="modal-panel" style={{padding:0,width:520,maxWidth:"95vw",maxHeight:"90vh",overflow:"hidden",display:"flex",flexDirection:"column"}}>
-        <div style={{padding:"18px 24px",borderBottom:"1px solid #f1f5f9",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <div style={{fontWeight:800,fontSize:16,color:"#1e3a8a"}}>🎂 Soạn thông điệp</div>
-          <button onClick={onClose} style={{background:"none",border:"none",fontSize:18,cursor:"pointer",color:"#94a3b8"}}>✕</button>
+        <div style={{padding:"18px 24px",borderBottom:"1px solid var(--c-border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{fontWeight:800,fontSize:"var(--text-xl)",color:"var(--c-primary)"}}>🎂 Soạn thông điệp</div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:18,cursor:"pointer",color:"var(--c-text-muted)"}}>✕</button>
         </div>
         <div style={{padding:"16px 24px",overflowY:"auto",flex:1}}>
           <div style={{display:"flex",gap:8,marginBottom:16}}>
             {[["email","✉️ Email"],["zalo","💬 Zalo"],["sms","📱 SMS"]].map(([k,l])=>(
-              <button key={k} onClick={()=>setChannel(k)} style={{flex:1,padding:"8px",borderRadius:8,border:"1.5px solid "+(channel===k?"#1e3a8a":"#e2e8f0"),background:channel===k?"#eff6ff":"#fff",color:channel===k?"#1e3a8a":"#64748b",cursor:"pointer",fontWeight:600,fontSize:13}}>{l}</button>
+              <button key={k} onClick={()=>setChannel(k)} style={{flex:1,padding:"8px",borderRadius:"var(--r-sm)",border:"1.5px solid "+(channel===k?"var(--c-primary)":"var(--c-border)"),background:channel===k?"var(--c-primary-light)":"var(--c-surface)",color:channel===k?"var(--c-primary)":"var(--c-text-3)",cursor:"pointer",fontWeight:600,fontSize:"var(--text-base)"}}>{l}</button>
             ))}
           </div>
-          <div style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:.5,marginBottom:6,textTransform:"uppercase"}}>Nội dung</div>
-          <textarea value={body} onChange={e=>setBody(e.target.value)} rows={10} style={{width:"100%",border:"1px solid #e2e8f0",borderRadius:8,padding:"10px 12px",fontSize:13,boxSizing:"border-box",resize:"vertical",fontFamily:"inherit"}}/>
-          <div style={{background:"#f8fafc",borderRadius:8,padding:"10px 14px",marginTop:14,fontSize:13}}>
+          <div style={{fontSize:"var(--text-xs)",fontWeight:700,color:"var(--c-text-muted)",letterSpacing:.5,marginBottom:6,textTransform:"uppercase"}}>Nội dung</div>
+          <textarea value={body} onChange={e=>setBody(e.target.value)} rows={10} style={{width:"100%",border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-sm)",padding:"10px 12px",fontSize:"var(--text-base)",boxSizing:"border-box",resize:"vertical",fontFamily:"inherit",background:"var(--c-surface)",color:"var(--c-text)"}}/>
+          <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-sm)",padding:"10px 14px",marginTop:14,fontSize:"var(--text-base)"}}>
             <b>Gửi đến:</b> {customer.name} · 📞 {customer.phone}
           </div>
-          <div style={{background:"#fffbeb",borderRadius:8,padding:"10px 14px",marginTop:10,fontSize:12,color:"#92400e"}}>
+          <div style={{background:"var(--c-warning-bg)",borderRadius:"var(--r-sm)",padding:"10px 14px",marginTop:10,fontSize:"var(--text-sm)",color:"var(--c-warning)"}}>
             💡 <b>Gửi thủ công:</b> Dùng nút bên dưới để mở Gmail/Zalo với nội dung điền sẵn, hoặc Copy rồi paste vào ứng dụng bạn dùng. Tích hợp gửi tự động sẽ được kích hoạt sau khi deploy với Supabase + Resend.
           </div>
         </div>
-        <div style={{padding:"16px 24px",borderTop:"1px solid #f1f5f9",display:"flex",gap:10}}>
-          <button onClick={()=>{navigator.clipboard?.writeText(body);}} style={{background:"#f1f5f9",border:"none",borderRadius:8,padding:"10px 18px",cursor:"pointer",fontWeight:600,fontSize:13}}>📋 Copy</button>
-          <a href={links[channel]} onClick={onSend} style={{flex:1,background:"#1e3a8a",color:"#fff",border:"none",borderRadius:8,padding:"10px",cursor:"pointer",fontWeight:700,fontSize:13,textAlign:"center",textDecoration:"none"}}>Mở {channel==="email"?"Gmail":channel==="zalo"?"Zalo":"SMS"} →</a>
+        <div style={{padding:"16px 24px",borderTop:"1px solid var(--c-border)",display:"flex",gap:10}}>
+          <Btn variant="secondary" onClick={()=>{navigator.clipboard?.writeText(body);}}>📋 Copy</Btn>
+          <a href={links[channel]} onClick={onSend} style={{flex:1,background:"var(--c-primary)",color:"#fff",border:"none",borderRadius:"var(--r-sm)",padding:"10px",cursor:"pointer",fontWeight:700,fontSize:"var(--text-base)",textAlign:"center",textDecoration:"none"}}>Mở {channel==="email"?"Gmail":channel==="zalo"?"Zalo":"SMS"} →</a>
         </div>
       </div>
     </div>
@@ -668,50 +666,50 @@ function BulkComposeModal({seg,list,currentUser,onLogMessage,pushNotif,onClose})
   return(
     <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
       <div className="modal-panel" style={{padding:0,width:620,maxWidth:"96vw",maxHeight:"92vh",overflow:"hidden",display:"flex",flexDirection:"column"}}>
-        <div style={{padding:"16px 24px",borderBottom:"1px solid #f1f5f9",display:"flex",justifyContent:"space-between",alignItems:"center",background:seg.bg}}>
+        <div style={{padding:"16px 24px",borderBottom:"1px solid var(--c-border)",display:"flex",justifyContent:"space-between",alignItems:"center",background:seg.bg}}>
           <div>
-            <div style={{fontWeight:800,fontSize:16,color:seg.color}}>📣 Gửi tin hàng loạt — {seg.label}</div>
-            <div style={{fontSize:12,color:"#64748b",marginTop:2}}>{list.length} khách hàng trong phân khúc này</div>
+            <div style={{fontWeight:800,fontSize:"var(--text-xl)",color:seg.color}}>📣 Gửi tin hàng loạt — {seg.label}</div>
+            <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)",marginTop:2}}>{list.length} khách hàng trong phân khúc này</div>
           </div>
-          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#94a3b8"}}>✕</button>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"var(--c-text-muted)"}}>✕</button>
         </div>
         <div style={{padding:"16px 24px",overflowY:"auto",flex:1}}>
           <div style={{display:"flex",gap:8,marginBottom:14}}>
             {[["zalo","💬 Zalo"],["email","✉️ Email"],["sms","📱 SMS"]].map(([k,l])=>(
-              <button key={k} onClick={()=>setChannel(k)} style={{flex:1,padding:"8px",borderRadius:8,border:"1.5px solid "+(channel===k?"#1e3a8a":"#e2e8f0"),background:channel===k?"#eff6ff":"#fff",color:channel===k?"#1e3a8a":"#64748b",cursor:"pointer",fontWeight:600,fontSize:13}}>{l}</button>
+              <button key={k} onClick={()=>setChannel(k)} style={{flex:1,padding:"8px",borderRadius:"var(--r-sm)",border:"1.5px solid "+(channel===k?"var(--c-primary)":"var(--c-border)"),background:channel===k?"var(--c-primary-light)":"var(--c-surface)",color:channel===k?"var(--c-primary)":"var(--c-text-3)",cursor:"pointer",fontWeight:600,fontSize:"var(--text-base)"}}>{l}</button>
             ))}
           </div>
           <div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap"}}>
             {Object.entries(BULK_TPLS).map(([k,t])=>(
-              <button key={k} onClick={()=>setTplKey(k)} style={{padding:"6px 14px",borderRadius:20,border:"1.5px solid "+(tplKey===k?"#1e3a8a":"#e2e8f0"),background:tplKey===k?"#eff6ff":"#fff",color:tplKey===k?"#1e3a8a":"#64748b",cursor:"pointer",fontWeight:600,fontSize:12}}>{t.label}</button>
+              <button key={k} onClick={()=>setTplKey(k)} style={{padding:"6px 14px",borderRadius:"var(--r-pill)",border:"1.5px solid "+(tplKey===k?"var(--c-primary)":"var(--c-border)"),background:tplKey===k?"var(--c-primary-light)":"var(--c-surface)",color:tplKey===k?"var(--c-primary)":"var(--c-text-3)",cursor:"pointer",fontWeight:600,fontSize:"var(--text-sm)"}}>{t.label}</button>
             ))}
           </div>
-          <div style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:.5,marginBottom:6,textTransform:"uppercase"}}>Nội dung tin nhắn</div>
-          <textarea value={body} onChange={e=>setBody(e.target.value)} rows={9} style={{width:"100%",border:"1px solid #e2e8f0",borderRadius:8,padding:"10px 12px",fontSize:13,boxSizing:"border-box",resize:"vertical",fontFamily:"inherit"}}/>
-          <div style={{fontSize:11,color:"#94a3b8",marginTop:4}}>Dùng {"{name}"} và {"{honorific}"} để cá nhân hoá. Mỗi tin sẽ thay bằng tên thực của khách.</div>
+          <div style={{fontSize:"var(--text-xs)",fontWeight:700,color:"var(--c-text-muted)",letterSpacing:.5,marginBottom:6,textTransform:"uppercase"}}>Nội dung tin nhắn</div>
+          <textarea value={body} onChange={e=>setBody(e.target.value)} rows={9} style={{width:"100%",border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-sm)",padding:"10px 12px",fontSize:"var(--text-base)",boxSizing:"border-box",resize:"vertical",fontFamily:"inherit",background:"var(--c-surface)",color:"var(--c-text)"}}/>
+          <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)",marginTop:4}}>Dùng {"{name}"} và {"{honorific}"} để cá nhân hoá. Mỗi tin sẽ thay bằng tên thực của khách.</div>
 
           {channel==="zalo"&&(
-            <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:8,padding:"10px 14px",marginTop:12,fontSize:12,color:"#15803d"}}>
+            <div style={{background:"var(--c-success-bg)",border:"1px solid var(--c-success-border)",borderRadius:"var(--r-sm)",padding:"10px 14px",marginTop:12,fontSize:"var(--text-sm)",color:"var(--c-success)"}}>
               <b>📱 Danh sách SĐT ({list.filter(c=>c.phone).length} số):</b><br/>
-              <span style={{fontFamily:"monospace",wordBreak:"break-all"}}>{totalPhones||"Không có số nào"}</span>
+              <span style={{fontFamily:"var(--font-mono)",wordBreak:"break-all"}}>{totalPhones||"Không có số nào"}</span>
             </div>
           )}
           {channel==="email"&&(
-            <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:"10px 14px",marginTop:12,fontSize:12,color:"#1d4ed8"}}>
+            <div style={{background:"var(--c-primary-light)",border:"1px solid var(--c-primary-pale)",borderRadius:"var(--r-sm)",padding:"10px 14px",marginTop:12,fontSize:"var(--text-sm)",color:"var(--c-primary-hover)"}}>
               <b>✉️ Danh sách email ({list.filter(c=>c.email).length} địa chỉ):</b><br/>
-              <span style={{fontFamily:"monospace",wordBreak:"break-all"}}>{totalEmails||"Không có email nào"}</span>
+              <span style={{fontFamily:"var(--font-mono)",wordBreak:"break-all"}}>{totalEmails||"Không có email nào"}</span>
             </div>
           )}
 
-          <div style={{background:"#fffbeb",borderRadius:8,padding:"10px 14px",marginTop:12,fontSize:12,color:"#92400e"}}>
+          <div style={{background:"var(--c-warning-bg)",borderRadius:"var(--r-sm)",padding:"10px 14px",marginTop:12,fontSize:"var(--text-sm)",color:"var(--c-warning)"}}>
             💡 <b>Gửi thủ công:</b> Copy danh sách liên hệ, paste vào Zalo/Gmail. Sau khi gửi xong, nhấn "Ghi lịch sử" để lưu vào hệ thống.
           </div>
 
-          {sent&&<div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:8,padding:"12px 14px",marginTop:12,fontSize:13,color:"#15803d",fontWeight:600,textAlign:"center"}}>✅ Đã ghi lịch sử {list.length} tin nhắn!</div>}
+          {sent&&<div style={{background:"var(--c-success-bg)",border:"1px solid var(--c-success-border)",borderRadius:"var(--r-sm)",padding:"12px 14px",marginTop:12,fontSize:"var(--text-base)",color:"var(--c-success)",fontWeight:600,textAlign:"center"}}>✅ Đã ghi lịch sử {list.length} tin nhắn!</div>}
         </div>
-        <div style={{padding:"14px 24px",borderTop:"1px solid #f1f5f9",display:"flex",gap:10}}>
-          <button onClick={copyContacts} style={{background:"#f1f5f9",border:"none",borderRadius:8,padding:"10px 16px",cursor:"pointer",fontWeight:600,fontSize:13}}>📋 Copy liên hệ</button>
-          <button onClick={handleLogAll} disabled={sent} style={{flex:1,background:sent?"#e2e8f0":"#1e3a8a",color:sent?"#94a3b8":"#fff",border:"none",borderRadius:8,padding:"10px",cursor:sent?"default":"pointer",fontWeight:700,fontSize:13}}>{sent?"✅ Đã ghi lịch sử":"📝 Ghi lịch sử gửi tin"}</button>
+        <div style={{padding:"14px 24px",borderTop:"1px solid var(--c-border)",display:"flex",gap:10}}>
+          <Btn variant="secondary" onClick={copyContacts}>📋 Copy liên hệ</Btn>
+          <Btn style={{flex:1,justifyContent:"center",background:sent?"var(--c-border)":"var(--c-primary)",color:sent?"var(--c-text-muted)":"#fff"}} disabled={sent} onClick={handleLogAll}>{sent?"✅ Đã ghi lịch sử":"📝 Ghi lịch sử gửi tin"}</Btn>
         </div>
       </div>
     </div>
