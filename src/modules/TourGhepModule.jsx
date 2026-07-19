@@ -44,14 +44,14 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
   const setDep = (id,k,v) => setForm(f=>({...f, departures:(f.departures||[]).map(d=>d.id===id?{...d,[k]:v}:d)}));
   const setDepPrice = (id,grp,k,v) => setForm(f=>({...f, departures:(f.departures||[]).map(d=>d.id===id?{...d,[grp]:{...d[grp],[k]:Number(v)}}:d)}));
 
-  const lbl = { display:"block", fontSize:12, fontWeight:600, marginBottom:4, color:"#374151" };
-  const inp = { width:"100%", border:"0.5px solid #e2e8f0", borderRadius:8, padding:"9px 12px", fontSize:13, boxSizing:"border-box", outline:"none" };
-  const th  = { padding:"9px 12px", textAlign:"left", fontSize:11, fontWeight:600, borderBottom:"0.5px solid #e2e8f0", color:"#374151" };
-  const td  = { padding:"9px 12px", borderBottom:"0.5px solid #f1f5f9" };
-  const secLbl = { gridColumn:"1/-1", fontSize:11, fontWeight:600, textTransform:"uppercase", letterSpacing:".7px", color:"#94a3b8", paddingBottom:6, borderBottom:"0.5px solid #f1f5f9", marginTop:4 };
+  const lbl = { display:"block", fontSize:12, fontWeight:600, marginBottom:4, color:"var(--c-text-2)" };
+  const inp = { width:"100%", border:"0.5px solid var(--c-border)", borderRadius:8, padding:"9px 12px", fontSize:13, boxSizing:"border-box", outline:"none" };
+  const th  = { padding:"9px 12px", textAlign:"left", fontSize:11, fontWeight:600, borderBottom:"0.5px solid var(--c-border)", color:"var(--c-text-2)" };
+  const td  = { padding:"9px 12px", borderBottom:"0.5px solid var(--c-surface-3)" };
+  const secLbl = { gridColumn:"1/-1", fontSize:11, fontWeight:600, textTransform:"uppercase", letterSpacing:".7px", color:"var(--c-text-muted)", paddingBottom:6, borderBottom:"0.5px solid var(--c-surface-3)", marginTop:4 };
 
   return (
-    <div style={{ background:"#fff", borderRadius:14, padding:24, border:"0.5px solid #e2e8f0", marginBottom:20 }}>
+    <div style={{ background:"var(--c-surface)", borderRadius:"var(--r-lg)", padding:24, border:"1px solid var(--c-border)", marginBottom:20 }}>
       <h3 style={{ margin:"0 0 20px", fontSize:15, fontWeight:600 }}>
         {isClone ? "Nhân bản sản phẩm — chỉ sửa phần khác biệt" : initial ? "Sửa sản phẩm" : "Thêm sản phẩm tour ghép"}
       </h3>
@@ -64,15 +64,15 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
           <label style={lbl}>Loại tour *</label>
           <div style={{ display:"flex", gap:8 }}>
             {[
-              { val:"domestic",      label:"🏔 Quốc nội", color:"#0F6E56", bg:"#E1F5EE" },
-              { val:"international", label:"🌍 Quốc tế",  color:"#534AB7", bg:"#EEEDFE" },
+              { val:"domestic",      label:"🏔 Quốc nội", color:"var(--c-success)", bg:"var(--c-success-bg)" },
+              { val:"international", label:"🌍 Quốc tế",  color:"var(--c-purple)", bg:"var(--c-purple-bg)" },
             ].map(o => (
               <button key={o.val} type="button" onClick={()=>set("type",o.val)}
                 style={{ flex:1, padding:"10px 0", borderRadius:8, cursor:"pointer",
-                  border:`1.5px solid ${form.type===o.val?o.color:"#e2e8f0"}`,
+                  border:`1.5px solid ${form.type===o.val?o.color:"var(--c-border)"}`,
                   background:form.type===o.val?o.bg:"#fff",
                   fontSize:13, fontWeight:600,
-                  color:form.type===o.val?o.color:"#64748b" }}>
+                  color:form.type===o.val?o.color:"var(--c-text-3)" }}>
                 {o.label}
               </button>
             ))}
@@ -154,7 +154,7 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
             <input value={form.ageLabels.infant} onChange={e=>setAge("infant",e.target.value)}
               placeholder="VD: Em bé < 24 tháng" style={inp} />
           </div>
-          <div style={{ gridColumn:"1/-1", fontSize:11, color:"#64748b", marginTop:-4 }}>
+          <div style={{ gridColumn:"1/-1", fontSize:11, color:"var(--c-text-3)", marginTop:-4 }}>
             💡 Mỗi NCC quy định độ tuổi khác nhau — sửa nhãn cho đúng tour này. Nhãn sẽ hiển thị ở bảng giá, báo giá và hợp đồng.
           </div>
         </div>
@@ -169,22 +169,22 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
             ].map(o=>(
               <button key={String(o.val)} type="button" onClick={()=>set("useSchedule",o.val)}
                 style={{ flex:1, padding:"10px 14px", borderRadius:8, cursor:"pointer",
-                  border:`1.5px solid ${!!form.useSchedule===o.val?"#185FA5":"#e2e8f0"}`,
-                  background:!!form.useSchedule===o.val?"#E6F1FB":"#fff", textAlign:"left" }}>
-                <div style={{ fontSize:13, fontWeight:600, color:!!form.useSchedule===o.val?"#185FA5":"#374151" }}>{o.label}</div>
-                <div style={{ fontSize:11, color:"#64748b", marginTop:2 }}>{o.desc}</div>
+                  border:`1.5px solid ${!!form.useSchedule===o.val?"var(--c-primary-mid)":"var(--c-border)"}`,
+                  background:!!form.useSchedule===o.val?"var(--c-primary-light)":"#fff", textAlign:"left" }}>
+                <div style={{ fontSize:13, fontWeight:600, color:!!form.useSchedule===o.val?"var(--c-primary-mid)":"var(--c-text-2)" }}>{o.label}</div>
+                <div style={{ fontSize:11, color:"var(--c-text-3)", marginTop:2 }}>{o.desc}</div>
               </button>
             ))}
           </div>
 
           {!form.useSchedule ? (
-          <table style={{ width:"100%", borderCollapse:"separate", borderSpacing:0, border:"0.5px solid #e2e8f0", borderRadius:10, overflow:"hidden", fontSize:13 }}>
+          <table style={{ width:"100%", borderCollapse:"separate", borderSpacing:0, border:"0.5px solid var(--c-border)", borderRadius:10, overflow:"hidden", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f8fafc" }}>
+              <tr style={{ background:"var(--c-surface-2)" }}>
                 <th style={th}>Loại khách</th>
-                <th style={{ ...th, color:"#A32D2D" }}>Giá mua (NCC)</th>
-                <th style={{ ...th, color:"#0F6E56" }}>Giá bán (KH)</th>
-                <th style={{ ...th, color:"#854F0B" }}>Lãi / suất</th>
+                <th style={{ ...th, color:"var(--c-danger)" }}>Giá mua (NCC)</th>
+                <th style={{ ...th, color:"var(--c-success)" }}>Giá bán (KH)</th>
+                <th style={{ ...th, color:"var(--c-warning)" }}>Lãi / suất</th>
               </tr>
             </thead>
             <tbody>
@@ -201,18 +201,18 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
                       <input type="number" min={0}
                         value={form.buyPrices[row.key]||""}
                         onChange={e=>setBuy(row.key,e.target.value)}
-                        style={{ width:"100%", padding:"7px 10px", borderRadius:6, border:"0.5px solid #fecaca", textAlign:"right", fontSize:13, background:"#fff5f5", boxSizing:"border-box" }}
+                        style={{ width:"100%", padding:"7px 10px", borderRadius:6, border:"0.5px solid var(--c-danger-border)", textAlign:"right", fontSize:13, background:"var(--c-danger-bg)", boxSizing:"border-box" }}
                         placeholder="0" />
                     </td>
                     <td style={td}>
                       <input type="number" min={0}
                         value={form.sellPrices[row.key]||""}
                         onChange={e=>setSell(row.key,e.target.value)}
-                        style={{ width:"100%", padding:"7px 10px", borderRadius:6, border:"0.5px solid #bbf7d0", textAlign:"right", fontSize:13, background:"#f0fdf4", boxSizing:"border-box" }}
+                        style={{ width:"100%", padding:"7px 10px", borderRadius:6, border:"0.5px solid var(--c-success-border)", textAlign:"right", fontSize:13, background:"var(--c-success-bg)", boxSizing:"border-box" }}
                         placeholder="0" />
                     </td>
                     <td style={{ ...td, fontWeight:600, textAlign:"right",
-                      color:profit>0?"#854F0B":profit<0?"#A32D2D":"#94a3b8" }}>
+                      color:profit>0?"var(--c-warning)":profit<0?"var(--c-danger)":"var(--c-text-muted)" }}>
                       {profit>0?"+":""}{profit.toLocaleString("vi-VN")}đ
                     </td>
                   </tr>
@@ -223,12 +223,12 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
           ) : (
           <div>
             {(form.departures||[]).length===0&&(
-              <div style={{ padding:16, textAlign:"center", color:"#94a3b8", fontSize:13, border:"1px dashed #cbd5e1", borderRadius:10, marginBottom:10 }}>
+              <div style={{ padding:16, textAlign:"center", color:"var(--c-text-muted)", fontSize:13, border:"1px dashed var(--c-border-mid)", borderRadius:10, marginBottom:10 }}>
                 Chưa có đợt khởi hành nào. Bấm "+ Thêm đợt" để khai báo theo tháng/ngày.
               </div>
             )}
             {(form.departures||[]).map((d,idx)=>(
-              <div key={d.id} style={{ border:"0.5px solid #e2e8f0", borderRadius:10, padding:14, marginBottom:10, background:"#fafdff" }}>
+              <div key={d.id} style={{ border:"0.5px solid var(--c-border)", borderRadius:10, padding:14, marginBottom:10, background:"#fafdff" }}>
                 <div style={{ display:"flex", gap:8, marginBottom:10, alignItems:"flex-end" }}>
                   <div style={{ flex:1.2 }}>
                     <label style={lbl}>Nhãn đợt</label>
@@ -246,22 +246,22 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
                       placeholder="VD: 40" style={inp} />
                   </div>
                   <button type="button" onClick={()=>removeDeparture(d.id)}
-                    style={{ background:"#fef2f2", color:"#dc2626", border:"0.5px solid #fca5a5", borderRadius:8, padding:"9px 12px", cursor:"pointer", fontSize:12, fontWeight:600, whiteSpace:"nowrap" }}>🗑 Xóa đợt</button>
+                    style={{ background:"var(--c-danger-bg)", color:"var(--c-danger-mid)", border:"0.5px solid var(--c-danger-border)", borderRadius:8, padding:"9px 12px", cursor:"pointer", fontSize:12, fontWeight:600, whiteSpace:"nowrap" }}>🗑 Xóa đợt</button>
                 </div>
-                <table style={{ width:"100%", borderCollapse:"separate", borderSpacing:0, border:"0.5px solid #e2e8f0", borderRadius:8, overflow:"hidden", fontSize:12 }}>
-                  <thead><tr style={{ background:"#f1f5f9" }}>
+                <table style={{ width:"100%", borderCollapse:"separate", borderSpacing:0, border:"0.5px solid var(--c-border)", borderRadius:8, overflow:"hidden", fontSize:12 }}>
+                  <thead><tr style={{ background:"var(--c-surface-3)" }}>
                     <th style={{...th,fontSize:10}}>Loại khách</th>
-                    <th style={{...th,fontSize:10,color:"#A32D2D"}}>Giá mua</th>
-                    <th style={{...th,fontSize:10,color:"#0F6E56"}}>Giá bán</th>
+                    <th style={{...th,fontSize:10,color:"var(--c-danger)"}}>Giá mua</th>
+                    <th style={{...th,fontSize:10,color:"var(--c-success)"}}>Giá bán</th>
                   </tr></thead>
                   <tbody>
                     {[{key:"adult",label:form.ageLabels.adult},{key:"child",label:form.ageLabels.child},{key:"infant",label:form.ageLabels.infant}].map(row=>(
                       <tr key={row.key}>
                         <td style={{...td,fontWeight:600}}>{row.label}</td>
                         <td style={td}><input type="number" min={0} value={(d.buy&&d.buy[row.key])||""} onChange={e=>setDepPrice(d.id,"buy",row.key,e.target.value)}
-                          style={{ width:"100%", padding:"6px 8px", borderRadius:6, border:"0.5px solid #fecaca", textAlign:"right", fontSize:12, background:"#fff5f5", boxSizing:"border-box" }} placeholder="0" /></td>
+                          style={{ width:"100%", padding:"6px 8px", borderRadius:6, border:"0.5px solid var(--c-danger-border)", textAlign:"right", fontSize:12, background:"var(--c-danger-bg)", boxSizing:"border-box" }} placeholder="0" /></td>
                         <td style={td}><input type="number" min={0} value={(d.sell&&d.sell[row.key])||""} onChange={e=>setDepPrice(d.id,"sell",row.key,e.target.value)}
-                          style={{ width:"100%", padding:"6px 8px", borderRadius:6, border:"0.5px solid #bbf7d0", textAlign:"right", fontSize:12, background:"#f0fdf4", boxSizing:"border-box" }} placeholder="0" /></td>
+                          style={{ width:"100%", padding:"6px 8px", borderRadius:6, border:"0.5px solid var(--c-success-border)", textAlign:"right", fontSize:12, background:"var(--c-success-bg)", boxSizing:"border-box" }} placeholder="0" /></td>
                       </tr>
                     ))}
                   </tbody>
@@ -271,7 +271,7 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
               </div>
             ))}
             <button type="button" onClick={addDeparture}
-              style={{ width:"100%", background:"#eff6ff", color:"#2563eb", border:"1px dashed #93c5fd", borderRadius:8, padding:"10px", cursor:"pointer", fontSize:13, fontWeight:700 }}>
+              style={{ width:"100%", background:"var(--c-primary-light)", color:"var(--c-primary-mid)", border:"1px dashed var(--c-primary-pale)", borderRadius:8, padding:"10px", cursor:"pointer", fontSize:13, fontWeight:700 }}>
               + Thêm đợt khởi hành
             </button>
           </div>
@@ -281,7 +281,7 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
         <div style={secLbl}>Links tài liệu (Google Drive của đối tác)</div>
 
         <div style={{ gridColumn:"1/-1" }}>
-          <div style={{ padding:"10px 14px", background:"#E6F1FB", borderRadius:8, fontSize:12, color:"#0C447C", marginBottom:10 }}>
+          <div style={{ padding:"10px 14px", background:"var(--c-primary-light)", borderRadius:8, fontSize:12, color:"var(--c-primary-hover)", marginBottom:10 }}>
             💡 Paste link Google Drive của đối tác — không cần upload file lên server.
           </div>
         </div>
@@ -303,8 +303,8 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
                   fontSize:form.links[l.key]?11:13 }} />
               {form.links[l.key]&&(
                 <a href={form.links[l.key]} target="_blank" rel="noreferrer"
-                  style={{ padding:"9px 14px", borderRadius:8, background:"#E6F1FB",
-                    color:"#185FA5", fontSize:12, fontWeight:600,
+                  style={{ padding:"9px 14px", borderRadius:8, background:"var(--c-primary-light)",
+                    color:"var(--c-primary-mid)", fontSize:12, fontWeight:600,
                     textDecoration:"none", whiteSpace:"nowrap",
                     display:"flex", alignItems:"center", gap:4 }}>
                   ↗ Mở
@@ -379,12 +379,12 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
           );
           onSave({ ...form, id, updatedAt:new Date().toISOString() });
         }}
-          style={{ background:"#0F6E56", color:"#fff", border:"none", borderRadius:8,
+          style={{ background:"var(--c-success)", color:"#fff", border:"none", borderRadius:8,
             padding:"10px 28px", cursor:"pointer", fontSize:13, fontWeight:600 }}>
           {isClone ? "Tạo bản sao" : initial ? "Lưu thay đổi" : "Thêm sản phẩm"}
         </button>
         <button type="button" onClick={onCancel}
-          style={{ background:"#f1f5f9", border:"none", borderRadius:8,
+          style={{ background:"var(--c-surface-3)", border:"none", borderRadius:8,
             padding:"10px 20px", cursor:"pointer", fontSize:13 }}>
           Hủy
         </button>
@@ -404,91 +404,91 @@ function TourGhepProductCard({ product:p, onEdit, onClone, onSelect, orderCount,
   const profit = dispSell-dispBuy;
   const margin = dispSell>0 ? (profit/dispSell*100).toFixed(1) : 0;
   const linkBtn = { display:"inline-flex", alignItems:"center", gap:4, padding:"4px 10px",
-    borderRadius:6, fontSize:11, fontWeight:500, background:"#E6F1FB",
-    color:"#185FA5", textDecoration:"none" };
+    borderRadius:6, fontSize:11, fontWeight:500, background:"var(--c-primary-light)",
+    color:"var(--c-primary-mid)", textDecoration:"none" };
 
   return (
-    <div style={{ background:"#fff", borderRadius:12,
-      border:`0.5px solid ${p.active?"#e2e8f0":"#f1f5f9"}`,
+    <div style={{ background:"var(--c-surface)", borderRadius:"var(--r-md)",
+      border:`1px solid ${p.active?"var(--c-border)":"var(--c-surface-3)"}`,
       opacity:p.active?1:0.6, display:"flex", flexDirection:"column",
       boxShadow:"0 1px 4px rgba(0,0,0,.06)" }}>
 
       <div style={{ height:3, borderRadius:"12px 12px 0 0",
-        background:p.type==="international"?"#534AB7":"#0F6E56" }} />
+        background:p.type==="international"?"var(--c-purple)":"var(--c-success)" }} />
 
       <div style={{ padding:"14px 16px", flex:1, display:"flex", flexDirection:"column", gap:10 }}>
 
         <div>
           <div style={{ fontSize:10, fontWeight:600, letterSpacing:".5px",
             textTransform:"uppercase", marginBottom:4,
-            color:p.type==="international"?"#534AB7":"#0F6E56" }}>
+            color:p.type==="international"?"var(--c-purple)":"var(--c-success)" }}>
             {p.type==="international"?"🌍 Quốc tế":"🏔 Quốc nội"}
             {p.region&&` · ${p.region}`}
           </div>
-          <div style={{ fontWeight:600, fontSize:14, color:"#1e293b", lineHeight:1.3 }}>
+          <div style={{ fontWeight:600, fontSize:14, color:"var(--c-text)", lineHeight:1.3 }}>
             {p.name}
           </div>
-          <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>
+          <div style={{ fontSize:12, color:"var(--c-text-3)", marginTop:2 }}>
             {p.duration}{p.typicalSchedule&&` · ${p.typicalSchedule}`}
           </div>
         </div>
 
         <div style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 10px",
-          background:"#f8fafc", borderRadius:8, fontSize:12 }}>
-          <span style={{ fontSize:13, color:"#64748b" }}>🏢</span>
+          background:"var(--c-surface-2)", borderRadius:8, fontSize:12 }}>
+          <span style={{ fontSize:13, color:"var(--c-text-3)" }}>🏢</span>
           {canSeeSecret
-            ? <span><strong>{p.partnerName||"—"}</strong>{p.partnerCode&&<span style={{ color:"#94a3b8", fontFamily:"monospace", marginLeft:6, fontSize:11 }}>{p.partnerCode}</span>}</span>
-            : <span style={{ color:"#94a3b8", fontStyle:"italic" }}>Đối tác uy tín</span>
+            ? <span><strong>{p.partnerName||"—"}</strong>{p.partnerCode&&<span style={{ color:"var(--c-text-muted)", fontFamily:"monospace", marginLeft:6, fontSize:11 }}>{p.partnerCode}</span>}</span>
+            : <span style={{ color:"var(--c-text-muted)", fontStyle:"italic" }}>Đối tác uy tín</span>
           }
         </div>
 
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
           {canSeeSecret ? (
-            <div style={{ padding:"8px 10px", background:"#fff5f5", borderRadius:8, fontSize:11 }}>
-              <div style={{ color:"#94a3b8", marginBottom:2 }}>Giá mua NL{hasSchedule&&" (từ)"}</div>
-              <div style={{ fontWeight:600, color:"#A32D2D" }}>
+            <div style={{ padding:"8px 10px", background:"var(--c-danger-bg)", borderRadius:8, fontSize:11 }}>
+              <div style={{ color:"var(--c-text-muted)", marginBottom:2 }}>Giá mua NL{hasSchedule&&" (từ)"}</div>
+              <div style={{ fontWeight:600, color:"var(--c-danger)" }}>
                 {dispBuy.toLocaleString("vi-VN")}đ
               </div>
             </div>
           ) : (
-            <div style={{ padding:"8px 10px", background:"#f8fafc", borderRadius:8, fontSize:11 }}>
-              <div style={{ color:"#94a3b8", marginBottom:2 }}>Giá vốn</div>
-              <div style={{ fontWeight:600, color:"#94a3b8", letterSpacing:3 }}>••••••</div>
+            <div style={{ padding:"8px 10px", background:"var(--c-surface-2)", borderRadius:8, fontSize:11 }}>
+              <div style={{ color:"var(--c-text-muted)", marginBottom:2 }}>Giá vốn</div>
+              <div style={{ fontWeight:600, color:"var(--c-text-muted)", letterSpacing:3 }}>••••••</div>
             </div>
           )}
-          <div style={{ padding:"8px 10px", background:"#f0fdf4", borderRadius:8, fontSize:11 }}>
-            <div style={{ color:"#94a3b8", marginBottom:2 }}>Giá bán NL{hasSchedule&&" (từ)"}</div>
-            <div style={{ fontWeight:600, color:"#0F6E56" }}>
+          <div style={{ padding:"8px 10px", background:"var(--c-success-bg)", borderRadius:8, fontSize:11 }}>
+            <div style={{ color:"var(--c-text-muted)", marginBottom:2 }}>Giá bán NL{hasSchedule&&" (từ)"}</div>
+            <div style={{ fontWeight:600, color:"var(--c-success)" }}>
               {dispSell.toLocaleString("vi-VN")}đ
             </div>
           </div>
         </div>
 
         {hasSchedule&&(
-          <div style={{ background:"#fff7ed", border:"0.5px solid #fed7aa", borderRadius:8, padding:"8px 10px", fontSize:11 }}>
-            <div style={{ color:"#9a3412", fontWeight:700, marginBottom:4 }}>📅 Lịch khởi hành ({deps.length} đợt)</div>
+          <div style={{ background:"var(--c-warning-bg)", border:"0.5px solid var(--c-warning-border)", borderRadius:8, padding:"8px 10px", fontSize:11 }}>
+            <div style={{ color:"var(--c-warning)", fontWeight:700, marginBottom:4 }}>📅 Lịch khởi hành ({deps.length} đợt)</div>
             <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
               {deps.slice(0,4).map(d=>(
-                <div key={d.id} style={{ color:"#7c2d12" }}>
+                <div key={d.id} style={{ color:"var(--c-warning)" }}>
                   <b>{d.label||"Đợt"}</b>{d.dates?`: ${d.dates}`:""}
                 </div>
               ))}
-              {deps.length>4&&<div style={{ color:"#9a3412" }}>… +{deps.length-4} đợt khác</div>}
+              {deps.length>4&&<div style={{ color:"var(--c-warning)" }}>… +{deps.length-4} đợt khác</div>}
             </div>
           </div>
         )}
 
         {canSeeSecret&&(
           <div style={{ display:"flex", justifyContent:"space-between", fontSize:12 }}>
-            <span style={{ color:"#64748b" }}>Lãi / suất NL</span>
-            <span style={{ fontWeight:700, color: profit>0?"#854F0B":"#A32D2D" }}>
+            <span style={{ color:"var(--c-text-3)" }}>Lãi / suất NL</span>
+            <span style={{ fontWeight:700, color: profit>0?"var(--c-warning)":"var(--c-danger)" }}>
               {profit>0?"+":""}{profit.toLocaleString("vi-VN")}đ ({margin}%)
             </span>
           </div>
         )}
 
         {p.visaRequired&&(
-          <div style={{ fontSize:11, color:"#534AB7", background:"#EEEDFE",
+          <div style={{ fontSize:11, color:"var(--c-purple)", background:"var(--c-purple-bg)",
             borderRadius:6, padding:"4px 8px" }}>
             🛂 Visa bắt buộc{p.visaNote&&` · ${p.visaNote}`}
           </div>
@@ -508,13 +508,13 @@ function TourGhepProductCard({ product:p, onEdit, onClone, onSelect, orderCount,
             )}
             {canSeeSecret&&p.links?.pricelist&&(
               <a href={p.links.pricelist} target="_blank" rel="noreferrer"
-                style={{ ...linkBtn, background:"#FAEEDA", color:"#633806" }}>
+                style={{ ...linkBtn, background:"var(--c-warning-bg)", color:"var(--c-warning)" }}>
                 💰 Bảng giá NCC
               </a>
             )}
             {canSeeSecret&&p.links?.other&&(
               <a href={p.links.other} target="_blank" rel="noreferrer"
-                style={{ ...linkBtn, background:"#f1f5f9", color:"#374151" }}>
+                style={{ ...linkBtn, background:"var(--c-surface-3)", color:"var(--c-text-2)" }}>
                 📎 File khác
               </a>
             )}
@@ -522,36 +522,36 @@ function TourGhepProductCard({ product:p, onEdit, onClone, onSelect, orderCount,
         )}
 
         {orderCount>0&&(
-          <div style={{ fontSize:11, color:"#64748b" }}>Đã bán {orderCount} đơn</div>
+          <div style={{ fontSize:11, color:"var(--c-text-3)" }}>Đã bán {orderCount} đơn</div>
         )}
 
         {p.notes&&(
-          <div style={{ fontSize:11, color:"#633806", padding:"4px 8px",
-            background:"#fef9e7", borderRadius:6, borderLeft:"2px solid #e8c53a" }}>
+          <div style={{ fontSize:11, color:"var(--c-warning)", padding:"4px 8px",
+            background:"var(--c-warning-bg)", borderRadius:6, borderLeft:"2px solid var(--c-warning-mid)" }}>
             {p.notes}
           </div>
         )}
       </div>
 
-      <div style={{ padding:"10px 16px", borderTop:"0.5px solid #f1f5f9", display:"flex", gap:8 }}>
+      <div style={{ padding:"10px 16px", borderTop:"0.5px solid var(--c-surface-3)", display:"flex", gap:8 }}>
         <button type="button" onClick={()=>onSelect(p)}
-          style={{ flex:1, background:"#0F6E56", color:"#fff", border:"none",
+          style={{ flex:1, background:"var(--c-success)", color:"#fff", border:"none",
             borderRadius:8, padding:"8px 0", cursor:"pointer", fontSize:12, fontWeight:600 }}>
           Tạo đơn
         </button>
         {canEdit&&(
           <button type="button" onClick={()=>onClone(p)} title="Tạo bản sao tour này để sửa nhanh"
-            style={{ padding:"8px 12px", background:"#E1F5EE",
-              border:"0.5px solid #b6e3d4", borderRadius:8,
-              cursor:"pointer", fontSize:12, color:"#085041", fontWeight:600 }}>
+            style={{ padding:"8px 12px", background:"var(--c-success-bg)",
+              border:"0.5px solid var(--c-success-border)", borderRadius:8,
+              cursor:"pointer", fontSize:12, color:"var(--c-success)", fontWeight:600 }}>
             ⧉ Nhân bản
           </button>
         )}
         {canEdit&&(
           <button type="button" onClick={()=>onEdit(p)}
-            style={{ padding:"8px 14px", background:"#f8fafc",
-              border:"0.5px solid #e2e8f0", borderRadius:8,
-              cursor:"pointer", fontSize:12, color:"#374151" }}>
+            style={{ padding:"8px 14px", background:"var(--c-surface-2)",
+              border:"0.5px solid var(--c-border)", borderRadius:8,
+              cursor:"pointer", fontSize:12, color:"var(--c-text-2)" }}>
             Sửa
           </button>
         )}
@@ -647,8 +647,8 @@ export default function TourGhepModule({ tourGhepProducts=[], onUpdateTourGhepPr
 
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
         <div>
-          <h2 style={{ margin:0, fontSize:18, fontWeight:500, color:"#1e293b" }}>Tour Ghép</h2>
-          <div style={{ fontSize:13, color:"#64748b", marginTop:3 }}>
+          <h2 style={{ margin:0, fontSize:18, fontWeight:500, color:"var(--c-text)" }}>Tour Ghép</h2>
+          <div style={{ fontSize:13, color:"var(--c-text-3)", marginTop:3 }}>
             {(tourGhepProducts||[]).filter(p=>p.type==="international"&&p.active).length} quốc tế ·{" "}
             {(tourGhepProducts||[]).filter(p=>p.type==="domestic"&&p.active).length} quốc nội ·{" "}
             {(tourGhepProducts||[]).filter(p=>p.active).length} đang kinh doanh
@@ -656,7 +656,7 @@ export default function TourGhepModule({ tourGhepProducts=[], onUpdateTourGhepPr
         </div>
         {canEdit&&!showForm&&(
           <button type="button" onClick={()=>{setEditProduct(null);setCloneMode(false);setShowForm(true);}}
-            style={{ background:"#0F6E56", color:"#fff", border:"none",
+            style={{ background:"var(--c-success)", color:"#fff", border:"none",
               borderRadius:9, padding:"9px 20px", cursor:"pointer",
               fontWeight:600, fontSize:13 }}>
             + Thêm sản phẩm
@@ -677,7 +677,7 @@ export default function TourGhepModule({ tourGhepProducts=[], onUpdateTourGhepPr
       <input placeholder="Tìm tên tour, điểm đến, đối tác, mã tour..."
         value={search} onChange={e=>setSearch(e.target.value)}
         style={{ width:"100%", padding:"10px 14px", borderRadius:10,
-          border:"0.5px solid #e2e8f0", fontSize:13, marginBottom:12,
+          border:"0.5px solid var(--c-border)", fontSize:13, marginBottom:12,
           boxSizing:"border-box", outline:"none" }} />
 
       <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:16 }}>
@@ -689,15 +689,15 @@ export default function TourGhepModule({ tourGhepProducts=[], onUpdateTourGhepPr
           <button key={f.val} type="button" onClick={()=>setFilterType(f.val)}
             style={{ padding:"6px 14px", borderRadius:20, border:"none", cursor:"pointer",
               fontSize:12, fontWeight:600,
-              background:filterType===f.val?"#1e293b":"#f1f5f9",
-              color:filterType===f.val?"#fff":"#64748b" }}>
+              background:filterType===f.val?"var(--c-text)":"var(--c-surface-3)",
+              color:filterType===f.val?"#fff":"var(--c-text-3)" }}>
             {f.label}
           </button>
         ))}
 
         {partnerList.length>0&&(
           <select value={filterPartner} onChange={e=>setFilterPartner(e.target.value)}
-            style={{ padding:"6px 12px", borderRadius:20, border:"0.5px solid #e2e8f0",
+            style={{ padding:"6px 12px", borderRadius:20, border:"0.5px solid var(--c-border)",
               fontSize:12, background:"#fff", cursor:"pointer" }}>
             <option value="">Tất cả đối tác</option>
             {partnerList.map(n=><option key={n} value={n}>{n}</option>)}
@@ -705,7 +705,7 @@ export default function TourGhepModule({ tourGhepProducts=[], onUpdateTourGhepPr
         )}
 
         <select value={filterPrice} onChange={e=>setFilterPrice(e.target.value)}
-          style={{ padding:"6px 12px", borderRadius:20, border:"0.5px solid #e2e8f0",
+          style={{ padding:"6px 12px", borderRadius:20, border:"0.5px solid var(--c-border)",
             fontSize:12, background:"#fff", cursor:"pointer" }}>
           <option value="">Mọi mức giá</option>
           <option value="under5">Dưới 5 triệu</option>
@@ -716,15 +716,15 @@ export default function TourGhepModule({ tourGhepProducts=[], onUpdateTourGhepPr
 
         <button type="button" onClick={()=>setShowInactive(!showInactive)}
           style={{ padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:600,
-            border:"0.5px solid #e2e8f0", cursor:"pointer",
-            background:showInactive?"#FAEEDA":"#fff",
-            color:showInactive?"#633806":"#64748b" }}>
+            border:"0.5px solid var(--c-border)", cursor:"pointer",
+            background:showInactive?"var(--c-warning-bg)":"#fff",
+            color:showInactive?"var(--c-warning)":"var(--c-text-3)" }}>
           {showInactive?"Ẩn tour dừng":"Hiện tour dừng"}
         </button>
       </div>
 
       {filtered.length===0?(
-        <div style={{ textAlign:"center", padding:48, color:"#94a3b8" }}>
+        <div style={{ textAlign:"center", padding:48, color:"var(--c-text-muted)" }}>
           <div style={{ fontSize:32, marginBottom:8 }}>📦</div>
           <div style={{ fontSize:14, fontWeight:500, marginBottom:4 }}>
             {search||filterPartner||filterPrice||(!(tourGhepProducts||[]).length)
@@ -732,7 +732,7 @@ export default function TourGhepModule({ tourGhepProducts=[], onUpdateTourGhepPr
               :"Chưa có sản phẩm tour ghép"}
           </div>
           {canEdit&&!(tourGhepProducts||[]).length&&(
-            <div style={{ fontSize:13, color:"#64748b" }}>
+            <div style={{ fontSize:13, color:"var(--c-text-3)" }}>
               Nhấn "+ Thêm sản phẩm" để bắt đầu xây dựng danh mục
             </div>
           )}
