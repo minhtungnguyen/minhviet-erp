@@ -1,4 +1,5 @@
 import React from "react";
+import { Btn } from "../components/ui.jsx";
 
 export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quotes=[], personalTargets=[], careTasks=[], bookings=[], setView, setSelected }){
   // ── Helpers ──────────────────────────────────────────────
@@ -173,67 +174,67 @@ export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quo
   const totalUrgent = urgentItems.length + overdueTasks.length;
 
   // ── Style objects ─────────────────────────────────────────
-  const kpiCard  = { background: "#f8fafc", borderRadius: 8, padding: "14px 16px", border: "0.5px solid #e2e8f0" };
-  const kpiLabel = { fontSize: 12, color: "#64748b", marginBottom: 6 };
-  const kpiVal   = (color = "#1e293b") => ({ fontSize: 22, fontWeight: 500, color, lineHeight: 1 });
-  const kpiSub   = { fontSize: 11, color: "#94a3b8", marginTop: 4 };
+  const kpiCard  = { background: "var(--c-surface-2)", borderRadius: "var(--r-sm)", padding: "14px 16px", border: "1px solid var(--c-border)" };
+  const kpiLabel = { fontSize: "var(--text-sm)", color: "var(--c-text-3)", marginBottom: 6 };
+  const kpiVal   = (color = "var(--c-text-2)") => ({ fontSize: "var(--text-xl)", fontWeight: 500, color, lineHeight: 1 });
+  const kpiSub   = { fontSize: "var(--text-xs)", color: "var(--c-text-muted)", marginTop: 4 };
   const sectionHeader = { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 };
-  const sectionTitle  = { fontSize: 13, fontWeight: 500, color: "#1e293b", display: "flex", alignItems: "center", gap: 6 };
-  const alertCard = { background: "#fff", borderRadius: 12, border: "0.5px solid #e2e8f0", overflow: "hidden", marginBottom: 0 };
+  const sectionTitle  = { fontSize: "var(--text-base)", fontWeight: 500, color: "var(--c-text-2)", display: "flex", alignItems: "center", gap: 6 };
+  const alertCard = { background: "var(--c-surface)", borderRadius: "var(--r-md)", border: "1px solid var(--c-border)", overflow: "hidden", marginBottom: 0 };
   const alertRow  = { display: "flex", alignItems: "center", gap: 12, padding: "11px 14px" };
   const accent    = { width: 3, height: 36, flexShrink: 0, borderRadius: 0 };
-  const alertTitle = { fontSize: 13, fontWeight: 500, color: "#1e293b", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" };
-  const alertSub   = { fontSize: 11, color: "#64748b", marginTop: 1 };
-  const emptyState = { textAlign: "center", padding: 20, color: "#94a3b8", fontSize: 13 };
+  const alertTitle = { fontSize: "var(--text-base)", fontWeight: 500, color: "var(--c-text-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" };
+  const alertSub   = { fontSize: "var(--text-xs)", color: "var(--c-text-3)", marginTop: 1 };
+  const emptyState = { textAlign: "center", padding: 20, color: "var(--c-text-muted)", fontSize: "var(--text-base)" };
   const badge = (type) => {
-    const map = { danger:{background:"#FCEBEB",color:"#791F1F"}, warn:{background:"#FAEEDA",color:"#633806"}, info:{background:"#E6F1FB",color:"#0C447C"}, ok:{background:"#E1F5EE",color:"#085041"} };
+    const map = { danger:{background:"var(--c-danger-bg)",color:"var(--c-danger)"}, warn:{background:"var(--c-warning-bg)",color:"var(--c-warning)"}, info:{background:"var(--c-primary-light)",color:"var(--c-primary)"}, ok:{background:"var(--c-success-bg)",color:"var(--c-success)"} };
     const c = map[type] || map.info;
-    return { ...c, display:"inline-flex", alignItems:"center", justifyContent:"center", minWidth:20, height:20, padding:"0 6px", borderRadius:999, fontSize:11, fontWeight:500 };
+    return { ...c, display:"inline-flex", alignItems:"center", justifyContent:"center", minWidth:20, height:20, padding:"0 6px", borderRadius:"var(--r-pill)", fontSize:"var(--text-xs)", fontWeight:500 };
   };
   const tagStyle = (type) => {
-    const map = { danger:{background:"#FCEBEB",color:"#791F1F"}, warn:{background:"#FAEEDA",color:"#633806"}, ok:{background:"#E1F5EE",color:"#085041"}, info:{background:"#E6F1FB",color:"#0C447C"} };
+    const map = { danger:{background:"var(--c-danger-bg)",color:"var(--c-danger)"}, warn:{background:"var(--c-warning-bg)",color:"var(--c-warning)"}, ok:{background:"var(--c-success-bg)",color:"var(--c-success)"}, info:{background:"var(--c-primary-light)",color:"var(--c-primary)"} };
     const c = map[type] || map.info;
-    return { ...c, fontSize:11, padding:"2px 7px", borderRadius:999, display:"inline-block", marginTop:3, fontWeight:500 };
+    return { ...c, fontSize:"var(--text-xs)", padding:"2px 7px", borderRadius:"var(--r-pill)", display:"inline-block", marginTop:3, fontWeight:500 };
   };
-  const btnPrimary = { display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:11, borderRadius:8, border:"none", background:"#0F6E56", color:"#fff", fontSize:13, fontWeight:500, cursor:"pointer", width:"100%" };
-  const btnOutline = { display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:11, borderRadius:8, border:"0.5px solid #e2e8f0", background:"#fff", fontSize:13, fontWeight:500, cursor:"pointer", width:"100%", color:"#374151" };
+  const btnPrimary = { display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:11, borderRadius:"var(--r-sm)", border:"none", background:"var(--c-success)", color:"#fff", fontSize:"var(--text-base)", fontWeight:500, cursor:"pointer", width:"100%" };
+  const btnOutline = { display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:11, borderRadius:"var(--r-sm)", border:"1px solid var(--c-border)", background:"var(--c-surface)", fontSize:"var(--text-base)", fontWeight:500, cursor:"pointer", width:"100%", color:"var(--c-text-2)" };
 
   return (
-    <div style={{ padding:24, background:"#f1f5f9", minHeight:"100vh" }}>
+    <div style={{ padding:24, background:"var(--c-bg)", minHeight:"100vh" }}>
 
       {/* HEADER */}
       <div style={{ marginBottom:20, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div>
-          <h2 style={{ margin:0, fontSize:22, fontWeight:800, color:"#0f172a" }}>
+          <h2 style={{ margin:0, fontSize:"var(--text-2xl)", fontWeight:800, color:"var(--c-text)" }}>
             {greeting}, {currentUser?.name?.split("–").pop().trim()||currentUser?.name} 👋
           </h2>
-          <div style={{ fontSize:14, color:"#64748b", marginTop:4, display:"flex", alignItems:"center", gap:12 }}>
+          <div style={{ fontSize:"var(--text-md)", color:"var(--c-text-3)", marginTop:4, display:"flex", alignItems:"center", gap:12 }}>
             <span>{now.toLocaleDateString("vi-VN",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"})}</span>
-            <span style={{ background:"#1e40af", color:"#fff", borderRadius:8, padding:"2px 10px", fontWeight:700, fontSize:13, fontVariantNumeric:"tabular-nums" }}>{timeStr}</span>
-            {totalUrgent>0 && <span style={{ background:"#fee2e2", color:"#dc2626", padding:"2px 10px", borderRadius:99, fontWeight:600, fontSize:13 }}>⚠ {totalUrgent} việc cần xử lý</span>}
+            <span style={{ background:"var(--c-primary)", color:"#fff", borderRadius:"var(--r-sm)", padding:"2px 10px", fontWeight:700, fontSize:"var(--text-base)", fontVariantNumeric:"tabular-nums" }}>{timeStr}</span>
+            {totalUrgent>0 && <span style={{ background:"var(--c-danger-bg)", color:"var(--c-danger-mid)", padding:"2px 10px", borderRadius:"var(--r-pill)", fontWeight:600, fontSize:"var(--text-base)" }}>⚠ {totalUrgent} việc cần xử lý</span>}
           </div>
         </div>
-        <button onClick={()=>setView?.("create")} style={{ background:"linear-gradient(135deg,#059669,#047857)", color:"#fff", border:"none", borderRadius:12, padding:"12px 24px", fontWeight:700, fontSize:14, cursor:"pointer", boxShadow:"0 4px 12px rgba(5,150,105,.4)", display:"flex", alignItems:"center", gap:8 }}>
+        <Btn size="lg" variant="success" style={{background:"linear-gradient(135deg,var(--c-success-mid),#047857)",color:"#fff",border:"none",boxShadow:"0 4px 12px rgba(5,150,105,.4)"}} onClick={()=>setView?.("create")}>
           + Tạo đơn hàng mới
-        </button>
+        </Btn>
       </div>
 
       {/* KPI GRADIENT CARDS */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:20 }}>
         {[
-          { bg:"linear-gradient(135deg,#2563eb,#1d4ed8)", icon:"📋", label:"Đơn đang theo dõi", val:myOrders.length, sub:activeOrders.length+" đang xử lý" },
-          { bg: targetPct>=100 ? "linear-gradient(135deg,#059669,#047857)" : "linear-gradient(135deg,#7c3aed,#5b21b6)", icon:"💰", label:`Doanh thu ${thisMonthStr}`, val:fmtM(revenue), sub: targetAmt>0 ? `Chỉ tiêu: ${fmtM(targetAmt)} · ${targetPct}%` : "Chưa set chỉ tiêu" },
-          { bg: debtOrders.length>0 ? "linear-gradient(135deg,#dc2626,#b91c1c)" : "linear-gradient(135deg,#059669,#047857)", icon:"👥", label:"KH còn nợ", val:debtOrders.length+" KH", sub:fmtM(totalDebt) },
-          { bg: pendingQuotes.some(q=>q._daysLeft<=1) ? "linear-gradient(135deg,#dc2626,#b91c1c)" : "linear-gradient(135deg,#d97706,#b45309)", icon:"📄", label:"Báo giá chờ phản hồi", val:pendingQuotes.length, sub: pendingQuotes.filter(q=>q._daysLeft!==null&&q._daysLeft<=2).length>0 ? pendingQuotes.filter(q=>q._daysLeft!==null&&q._daysLeft<=2).length+" sắp hết hạn" : "Chờ phản hồi" },
+          { bg:"linear-gradient(135deg,var(--c-primary-mid),var(--c-primary-hover))", icon:"📋", label:"Đơn đang theo dõi", val:myOrders.length, sub:activeOrders.length+" đang xử lý" },
+          { bg: targetPct>=100 ? "linear-gradient(135deg,var(--c-success-mid),#047857)" : "linear-gradient(135deg,var(--c-purple),#5b21b6)", icon:"💰", label:`Doanh thu ${thisMonthStr}`, val:fmtM(revenue), sub: targetAmt>0 ? `Chỉ tiêu: ${fmtM(targetAmt)} · ${targetPct}%` : "Chưa set chỉ tiêu" },
+          { bg: debtOrders.length>0 ? "linear-gradient(135deg,var(--c-danger-mid),#b91c1c)" : "linear-gradient(135deg,var(--c-success-mid),#047857)", icon:"👥", label:"KH còn nợ", val:debtOrders.length+" KH", sub:fmtM(totalDebt) },
+          { bg: pendingQuotes.some(q=>q._daysLeft<=1) ? "linear-gradient(135deg,var(--c-danger-mid),#b91c1c)" : "linear-gradient(135deg,var(--c-warning-mid),#b45309)", icon:"📄", label:"Báo giá chờ phản hồi", val:pendingQuotes.length, sub: pendingQuotes.filter(q=>q._daysLeft!==null&&q._daysLeft<=2).length>0 ? pendingQuotes.filter(q=>q._daysLeft!==null&&q._daysLeft<=2).length+" sắp hết hạn" : "Chờ phản hồi" },
         ].map(k=>(
-          <div key={k.label} style={{ background:k.bg, borderRadius:16, padding:"20px 22px", boxShadow:"0 4px 14px rgba(0,0,0,.13)", position:"relative", overflow:"hidden" }}>
+          <div key={k.label} style={{ background:k.bg, borderRadius:"var(--r-xl)", padding:"20px 22px", boxShadow:"var(--sh-md)", position:"relative", overflow:"hidden" }}>
             <div style={{ position:"absolute", right:16, top:14, fontSize:30, opacity:.22 }}>{k.icon}</div>
-            <div style={{ fontSize:12, color:"rgba(255,255,255,.75)", fontWeight:500, marginBottom:6 }}>{k.label}</div>
-            <div style={{ fontSize:28, fontWeight:800, color:"#fff", lineHeight:1, marginBottom:4 }}>{k.val}</div>
-            <div style={{ fontSize:12, color:"rgba(255,255,255,.65)" }}>{k.sub}</div>
+            <div style={{ fontSize:"var(--text-sm)", color:"rgba(255,255,255,.75)", fontWeight:500, marginBottom:6 }}>{k.label}</div>
+            <div style={{ fontSize:"var(--text-3xl)", fontWeight:800, color:"#fff", lineHeight:1, marginBottom:4 }}>{k.val}</div>
+            <div style={{ fontSize:"var(--text-sm)", color:"rgba(255,255,255,.65)" }}>{k.sub}</div>
             {k.label.includes("Doanh thu") && targetAmt>0 && (
-              <div style={{ background:"rgba(255,255,255,.2)", borderRadius:99, height:5, marginTop:10 }}>
-                <div style={{ background:"#fff", height:5, borderRadius:99, width:Math.min(100,targetPct)+"%" }}/>
+              <div style={{ background:"rgba(255,255,255,.2)", borderRadius:"var(--r-pill)", height:5, marginTop:10 }}>
+                <div style={{ background:"#fff", height:5, borderRadius:"var(--r-pill)", width:Math.min(100,targetPct)+"%" }}/>
               </div>
             )}
           </div>
@@ -248,52 +249,52 @@ export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quo
 
           {/* Cần xử lý ngay */}
           {urgentItems.length>0&&(
-            <div style={{ background:"#fff", borderRadius:14, padding:20, boxShadow:"0 1px 8px rgba(0,0,0,.07)" }}>
+            <div style={{ background:"var(--c-surface)", borderRadius:"var(--r-lg)", padding:20, boxShadow:"var(--sh-sm)" }}>
               <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
                 <span style={{ fontSize:18 }}>⚠️</span>
-                <span style={{ fontWeight:700, fontSize:15, color:"#0f172a" }}>Cần xử lý ngay</span>
-                <span style={{ background:"#fee2e2", color:"#dc2626", borderRadius:99, fontSize:12, fontWeight:700, padding:"2px 9px", marginLeft:"auto" }}>{urgentItems.length}</span>
+                <span style={{ fontWeight:700, fontSize:"var(--text-lg)", color:"var(--c-text)" }}>Cần xử lý ngay</span>
+                <span style={{ background:"var(--c-danger-bg)", color:"var(--c-danger-mid)", borderRadius:"var(--r-pill)", fontSize:"var(--text-sm)", fontWeight:700, padding:"2px 9px", marginLeft:"auto" }}>{urgentItems.length}</span>
               </div>
               {urgentItems.map((item,idx)=>(
                 <div key={idx} onClick={()=>{ if(item.order){const orig=orders.find(x=>x.id===item.order.id)||item.order;setSelected?.(orig);setView?.("detail");}}}
-                  style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:idx<urgentItems.length-1?"1px solid #f8fafc":"none", cursor:item.order?"pointer":"default" }}>
-                  <div style={{ width:4, height:36, background:item.level==="danger"?"#dc2626":"#d97706", borderRadius:2, flexShrink:0 }}/>
+                  style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:idx<urgentItems.length-1?"1px solid var(--c-border)":"none", cursor:item.order?"pointer":"default" }}>
+                  <div style={{ width:4, height:36, background:item.level==="danger"?"var(--c-danger-mid)":"var(--c-warning-mid)", borderRadius:2, flexShrink:0 }}/>
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:14, fontWeight:600, color:"#0f172a", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.title}</div>
-                    <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{item.sub}</div>
+                    <div style={{ fontSize:"var(--text-md)", fontWeight:600, color:"var(--c-text)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.title}</div>
+                    <div style={{ fontSize:"var(--text-sm)", color:"var(--c-text-3)", marginTop:2 }}>{item.sub}</div>
                   </div>
-                  <span style={{ background:item.level==="danger"?"#fee2e2":"#fef3c7", color:item.level==="danger"?"#dc2626":"#d97706", fontSize:12, padding:"4px 10px", borderRadius:99, fontWeight:700, flexShrink:0 }}>{item.tag}</span>
+                  <span style={{ background:item.level==="danger"?"var(--c-danger-bg)":"var(--c-warning-bg)", color:item.level==="danger"?"var(--c-danger-mid)":"var(--c-warning-mid)", fontSize:"var(--text-sm)", padding:"4px 10px", borderRadius:"var(--r-pill)", fontWeight:700, flexShrink:0 }}>{item.tag}</span>
                 </div>
               ))}
             </div>
           )}
 
           {/* Sắp khởi hành */}
-          <div style={{ background:"#fff", borderRadius:14, padding:20, boxShadow:"0 1px 8px rgba(0,0,0,.07)" }}>
+          <div style={{ background:"var(--c-surface)", borderRadius:"var(--r-lg)", padding:20, boxShadow:"var(--sh-sm)" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
               <span style={{ fontSize:18 }}>✈️</span>
-              <span style={{ fontWeight:700, fontSize:15, color:"#0f172a" }}>Sắp khởi hành (14 ngày tới)</span>
-              <span style={{ background:"#eff6ff", color:"#2563eb", borderRadius:99, fontSize:12, fontWeight:700, padding:"2px 9px", marginLeft:"auto" }}>{upcoming.length} đoàn</span>
+              <span style={{ fontWeight:700, fontSize:"var(--text-lg)", color:"var(--c-text)" }}>Sắp khởi hành (14 ngày tới)</span>
+              <span style={{ background:"var(--c-primary-light)", color:"var(--c-primary-mid)", borderRadius:"var(--r-pill)", fontSize:"var(--text-sm)", fontWeight:700, padding:"2px 9px", marginLeft:"auto" }}>{upcoming.length} đoàn</span>
             </div>
             {upcoming.length===0?(
-              <div style={{ textAlign:"center", padding:"24px 0", color:"#94a3b8" }}>
+              <div style={{ textAlign:"center", padding:"24px 0", color:"var(--c-text-muted)" }}>
                 <div style={{ fontSize:32, marginBottom:8 }}>📅</div>
-                <div style={{ fontSize:14 }}>Không có tour nào sắp khởi hành</div>
+                <div style={{ fontSize:"var(--text-md)" }}>Không có tour nào sắp khởi hành</div>
               </div>
             ):upcoming.map((o,idx)=>(
               <div key={o.id} onClick={()=>{const orig=orders.find(x=>x.id===o.id)||o;setSelected?.(orig);setView?.("detail");}}
-                style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:idx<upcoming.length-1?"1px solid #f8fafc":"none", cursor:"pointer" }}>
-                <div style={{ width:4, height:40, background:o._urgency==="danger"?"#dc2626":o._urgency==="warn"?"#d97706":"#059669", borderRadius:2, flexShrink:0 }}/>
+                style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:idx<upcoming.length-1?"1px solid var(--c-border)":"none", cursor:"pointer" }}>
+                <div style={{ width:4, height:40, background:o._urgency==="danger"?"var(--c-danger-mid)":o._urgency==="warn"?"var(--c-warning-mid)":"var(--c-success-mid)", borderRadius:2, flexShrink:0 }}/>
                 <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:14, fontWeight:600, color:"#0f172a", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                  <div style={{ fontSize:"var(--text-md)", fontWeight:600, color:"var(--c-text)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                     {o.id} · {o.tourName||o.serviceName||o.service}
                   </div>
-                  <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>
+                  <div style={{ fontSize:"var(--text-sm)", color:"var(--c-text-3)", marginTop:2 }}>
                     {new Date(o.departDate).toLocaleDateString("vi-VN")} · {o.customerName}
-                    {o._issues.length>0&&<span style={{ color:"#dc2626" }}> · {o._issues.join(" · ")}</span>}
+                    {o._issues.length>0&&<span style={{ color:"var(--c-danger-mid)" }}> · {o._issues.join(" · ")}</span>}
                   </div>
                 </div>
-                <span style={{ background:o._urgency==="danger"?"#fee2e2":o._urgency==="warn"?"#fef3c7":"#ecfdf5", color:o._urgency==="danger"?"#dc2626":o._urgency==="warn"?"#d97706":"#059669", fontSize:13, padding:"4px 12px", borderRadius:99, fontWeight:700, flexShrink:0 }}>
+                <span style={{ background:o._urgency==="danger"?"var(--c-danger-bg)":o._urgency==="warn"?"var(--c-warning-bg)":"var(--c-success-bg)", color:o._urgency==="danger"?"var(--c-danger-mid)":o._urgency==="warn"?"var(--c-warning-mid)":"var(--c-success-mid)", fontSize:"var(--text-base)", padding:"4px 12px", borderRadius:"var(--r-pill)", fontWeight:700, flexShrink:0 }}>
                   {o._days===0?"Hôm nay":`${o._days} ngày nữa`}
                 </span>
               </div>
@@ -301,28 +302,28 @@ export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quo
           </div>
 
           {/* KH còn nợ */}
-          <div style={{ background:"#fff", borderRadius:14, padding:20, boxShadow:"0 1px 8px rgba(0,0,0,.07)" }}>
+          <div style={{ background:"var(--c-surface)", borderRadius:"var(--r-lg)", padding:20, boxShadow:"var(--sh-sm)" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
               <span style={{ fontSize:18 }}>💳</span>
-              <span style={{ fontWeight:700, fontSize:15, color:"#0f172a" }}>Khách hàng còn nợ</span>
-              {debtOrders.length>0&&<span style={{ background:"#fef3c7", color:"#d97706", borderRadius:99, fontSize:12, fontWeight:700, padding:"2px 9px", marginLeft:"auto" }}>{debtOrders.length} KH · {fmtM(totalDebt)}</span>}
+              <span style={{ fontWeight:700, fontSize:"var(--text-lg)", color:"var(--c-text)" }}>Khách hàng còn nợ</span>
+              {debtOrders.length>0&&<span style={{ background:"var(--c-warning-bg)", color:"var(--c-warning-mid)", borderRadius:"var(--r-pill)", fontSize:"var(--text-sm)", fontWeight:700, padding:"2px 9px", marginLeft:"auto" }}>{debtOrders.length} KH · {fmtM(totalDebt)}</span>}
             </div>
             {debtOrders.length===0?(
-              <div style={{ background:"#ecfdf5", borderRadius:10, padding:"14px", textAlign:"center", fontSize:14, color:"#059669", fontWeight:600 }}>✓ Tất cả khách đã thanh toán đủ</div>
+              <div style={{ background:"var(--c-success-bg)", borderRadius:"var(--r-md)", padding:"14px", textAlign:"center", fontSize:"var(--text-md)", color:"var(--c-success-mid)", fontWeight:600 }}>✓ Tất cả khách đã thanh toán đủ</div>
             ):debtOrders.slice(0,5).map((o,idx)=>{
               const dl=daysFrom(o.paymentDeadline);
               const isUrgent=dl!==null&&dl<=3;
               return(
                 <div key={o.id} onClick={()=>{const orig=orders.find(x=>x.id===o.id)||o;setSelected?.(orig);setView?.("detail");}}
-                  style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:idx<Math.min(debtOrders.length,5)-1?"1px solid #f8fafc":"none", cursor:"pointer" }}>
-                  <div style={{ width:4, height:36, background:isUrgent?"#dc2626":"#d97706", borderRadius:2, flexShrink:0 }}/>
+                  style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:idx<Math.min(debtOrders.length,5)-1?"1px solid var(--c-border)":"none", cursor:"pointer" }}>
+                  <div style={{ width:4, height:36, background:isUrgent?"var(--c-danger-mid)":"var(--c-warning-mid)", borderRadius:2, flexShrink:0 }}/>
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:14, fontWeight:600, color:"#0f172a" }}>{o.customerName}</div>
-                    <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{o.id}{o.paymentDeadline&&` · HH: ${new Date(o.paymentDeadline).toLocaleDateString("vi-VN")}`}</div>
+                    <div style={{ fontSize:"var(--text-md)", fontWeight:600, color:"var(--c-text)" }}>{o.customerName}</div>
+                    <div style={{ fontSize:"var(--text-sm)", color:"var(--c-text-3)", marginTop:2 }}>{o.id}{o.paymentDeadline&&` · HH: ${new Date(o.paymentDeadline).toLocaleDateString("vi-VN")}`}</div>
                   </div>
                   <div style={{ textAlign:"right", flexShrink:0 }}>
-                    <div style={{ fontSize:14, fontWeight:700, color:isUrgent?"#dc2626":"#d97706" }}>{fmtM(o.debt)}</div>
-                    {o.paymentDeadline&&<span style={{ fontSize:11, background:isUrgent?"#fee2e2":"#fef3c7", color:isUrgent?"#dc2626":"#d97706", padding:"2px 7px", borderRadius:99, fontWeight:600 }}>{dl===0?"Hôm nay":dl!==null?`${dl} ngày`:""}</span>}
+                    <div style={{ fontSize:"var(--text-md)", fontWeight:700, color:isUrgent?"var(--c-danger-mid)":"var(--c-warning-mid)" }}>{fmtM(o.debt)}</div>
+                    {o.paymentDeadline&&<span style={{ fontSize:"var(--text-xs)", background:isUrgent?"var(--c-danger-bg)":"var(--c-warning-bg)", color:isUrgent?"var(--c-danger-mid)":"var(--c-warning-mid)", padding:"2px 7px", borderRadius:"var(--r-pill)", fontWeight:600 }}>{dl===0?"Hôm nay":dl!==null?`${dl} ngày`:""}</span>}
                   </div>
                 </div>
               );
@@ -334,41 +335,41 @@ export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quo
         <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
 
           {/* Chỉ tiêu tháng */}
-          <div style={{ background:"linear-gradient(135deg,#1e3a8a,#1d4ed8)", borderRadius:14, padding:22, boxShadow:"0 4px 14px rgba(30,58,138,.3)" }}>
-            <div style={{ fontSize:13, color:"rgba(255,255,255,.7)", marginBottom:6 }}>Chỉ tiêu {thisMonthStr}</div>
-            <div style={{ fontSize:28, fontWeight:800, color:"#fff", marginBottom:4 }}>{fmtM(revenue)}</div>
-            <div style={{ fontSize:13, color:"rgba(255,255,255,.6)", marginBottom:14 }}>/ {targetAmt>0?fmtM(targetAmt):"Chưa set chỉ tiêu"}</div>
-            <div style={{ background:"rgba(255,255,255,.2)", borderRadius:99, height:10 }}>
-              <div style={{ background:"#fff", height:10, borderRadius:99, width:Math.min(100,targetPct)+"%", transition:"width .5s" }}/>
+          <div style={{ background:"linear-gradient(135deg,var(--c-primary),var(--c-primary-hover))", borderRadius:"var(--r-lg)", padding:22, boxShadow:"0 4px 14px rgba(30,58,138,.3)" }}>
+            <div style={{ fontSize:"var(--text-base)", color:"rgba(255,255,255,.7)", marginBottom:6 }}>Chỉ tiêu {thisMonthStr}</div>
+            <div style={{ fontSize:"var(--text-3xl)", fontWeight:800, color:"#fff", marginBottom:4 }}>{fmtM(revenue)}</div>
+            <div style={{ fontSize:"var(--text-base)", color:"rgba(255,255,255,.6)", marginBottom:14 }}>/ {targetAmt>0?fmtM(targetAmt):"Chưa set chỉ tiêu"}</div>
+            <div style={{ background:"rgba(255,255,255,.2)", borderRadius:"var(--r-pill)", height:10 }}>
+              <div style={{ background:"#fff", height:10, borderRadius:"var(--r-pill)", width:Math.min(100,targetPct)+"%", transition:"width .5s" }}/>
             </div>
-            <div style={{ display:"flex", justifyContent:"space-between", marginTop:10, fontSize:13 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", marginTop:10, fontSize:"var(--text-base)" }}>
               <span style={{ color:"rgba(255,255,255,.7)" }}>
                 {targetPct>=100?`🎉 Vượt ${fmtM(revenue-targetAmt)}`:targetAmt>0?`Còn ${fmtM(targetAmt-revenue)}`:""}
               </span>
-              <span style={{ color:"#fff", fontWeight:800, fontSize:16 }}>{targetPct}%</span>
+              <span style={{ color:"#fff", fontWeight:800, fontSize:"var(--text-lg)" }}>{targetPct}%</span>
             </div>
           </div>
 
           {/* Báo giá chờ */}
-          <div style={{ background:"#fff", borderRadius:14, padding:20, boxShadow:"0 1px 8px rgba(0,0,0,.07)" }}>
+          <div style={{ background:"var(--c-surface)", borderRadius:"var(--r-lg)", padding:20, boxShadow:"var(--sh-sm)" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
               <span style={{ fontSize:18 }}>📄</span>
-              <span style={{ fontWeight:700, fontSize:15, color:"#0f172a" }}>Báo giá đang chờ</span>
-              <span style={{ background:"#f5f3ff", color:"#7c3aed", borderRadius:99, fontSize:12, fontWeight:700, padding:"2px 9px", marginLeft:"auto" }}>{pendingQuotes.length}</span>
+              <span style={{ fontWeight:700, fontSize:"var(--text-lg)", color:"var(--c-text)" }}>Báo giá đang chờ</span>
+              <span style={{ background:"var(--c-purple-bg)", color:"var(--c-purple)", borderRadius:"var(--r-pill)", fontSize:"var(--text-sm)", fontWeight:700, padding:"2px 9px", marginLeft:"auto" }}>{pendingQuotes.length}</span>
             </div>
             {pendingQuotes.length===0?(
-              <div style={{ textAlign:"center", padding:"20px 0", color:"#94a3b8", fontSize:14 }}>📭 Không có báo giá đang chờ</div>
+              <div style={{ textAlign:"center", padding:"20px 0", color:"var(--c-text-muted)", fontSize:"var(--text-md)" }}>📭 Không có báo giá đang chờ</div>
             ):pendingQuotes.map((q,idx)=>{
               const level=q._daysLeft!==null&&q._daysLeft<=1?"danger":q._daysLeft!==null&&q._daysLeft<=3?"warn":"ok";
               return(
                 <div key={q.id} onClick={()=>setView?.("quotes")}
-                  style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:idx<pendingQuotes.length-1?"1px solid #f8fafc":"none", cursor:"pointer" }}>
-                  <div style={{ width:4, height:36, background:level==="danger"?"#dc2626":level==="warn"?"#d97706":"#059669", borderRadius:2, flexShrink:0 }}/>
+                  style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:idx<pendingQuotes.length-1?"1px solid var(--c-border)":"none", cursor:"pointer" }}>
+                  <div style={{ width:4, height:36, background:level==="danger"?"var(--c-danger-mid)":level==="warn"?"var(--c-warning-mid)":"var(--c-success-mid)", borderRadius:2, flexShrink:0 }}/>
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:13, fontWeight:600, color:"#0f172a", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{q.customerName} · {q.id}</div>
-                    <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{q.tourName||q.service||""}{q.validUntil?` · HH: ${new Date(q.validUntil).toLocaleDateString("vi-VN")}`:""}</div>
+                    <div style={{ fontSize:"var(--text-sm)", fontWeight:600, color:"var(--c-text)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{q.customerName} · {q.id}</div>
+                    <div style={{ fontSize:"var(--text-sm)", color:"var(--c-text-3)", marginTop:2 }}>{q.tourName||q.service||""}{q.validUntil?` · HH: ${new Date(q.validUntil).toLocaleDateString("vi-VN")}`:""}</div>
                   </div>
-                  <span style={{ fontSize:12, background:level==="danger"?"#fee2e2":level==="warn"?"#fef3c7":"#ecfdf5", color:level==="danger"?"#dc2626":level==="warn"?"#d97706":"#059669", padding:"3px 8px", borderRadius:99, fontWeight:700, flexShrink:0 }}>
+                  <span style={{ fontSize:"var(--text-sm)", background:level==="danger"?"var(--c-danger-bg)":level==="warn"?"var(--c-warning-bg)":"var(--c-success-bg)", color:level==="danger"?"var(--c-danger-mid)":level==="warn"?"var(--c-warning-mid)":"var(--c-success-mid)", padding:"3px 8px", borderRadius:"var(--r-pill)", fontWeight:700, flexShrink:0 }}>
                     {q._daysLeft===null?"—":q._daysLeft<0?"Hết hạn":q._daysLeft===0?"Hôm nay":`${q._daysLeft} ngày`}
                   </span>
                 </div>
@@ -378,15 +379,15 @@ export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quo
 
           {/* Quick actions */}
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-            <button onClick={()=>setView?.("create")} style={{ background:"linear-gradient(135deg,#059669,#047857)", color:"#fff", border:"none", borderRadius:12, padding:"14px", fontWeight:700, fontSize:14, cursor:"pointer", boxShadow:"0 4px 12px rgba(5,150,105,.3)", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+            <Btn variant="success" style={{background:"linear-gradient(135deg,var(--c-success-mid),#047857)",color:"#fff",border:"none",boxShadow:"0 4px 12px rgba(5,150,105,.3)",justifyContent:"center",padding:"14px"}} onClick={()=>setView?.("create")}>
               <i className="ti ti-plus" style={{ fontSize:18 }}/> Tạo đơn hàng mới
-            </button>
-            <button onClick={()=>setView?.("quotes")} style={{ background:"#fff", color:"#1e40af", border:"2px solid #bfdbfe", borderRadius:12, padding:"13px", fontWeight:700, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+            </Btn>
+            <Btn variant="secondary" style={{color:"var(--c-primary)",border:"2px solid var(--c-primary-pale)",justifyContent:"center",padding:"13px"}} onClick={()=>setView?.("quotes")}>
               <i className="ti ti-file-plus" style={{ fontSize:18 }}/> Tạo báo giá mới
-            </button>
-            <button onClick={()=>setView?.("orders")} style={{ background:"#f8fafc", color:"#374151", border:"1px solid #e2e8f0", borderRadius:12, padding:"13px", fontWeight:600, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+            </Btn>
+            <Btn variant="secondary" style={{justifyContent:"center",padding:"13px"}} onClick={()=>setView?.("orders")}>
               <i className="ti ti-list" style={{ fontSize:18 }}/> Xem tất cả đơn hàng
-            </button>
+            </Btn>
           </div>
         </div>
       </div>
