@@ -1,5 +1,6 @@
 import React from "react";
 import { ORDER_STATUS } from "../constants/statuses.js";
+import { StatCard, SearchInp, Sel, Btn, SBadge, PageHeader, EmptyState } from "../components/ui.jsx";
 
 export default function OrderList({orders,vouchers,onView,onCreate,onQuickSale,currentRole,currentUser}){
   const [search,setSearch]=React.useState("");
@@ -30,96 +31,95 @@ export default function OrderList({orders,vouchers,onView,onCreate,onQuickSale,c
   const fmtM=(n)=>{const a=Math.abs(n||0),s=(n||0)<0?"-":"";if(a>=1e9)return s+(a/1e9).toFixed(1)+"tỷ";return s+Math.round(a).toLocaleString("vi-VN")+"đ";};
   const debt=(o)=>(o.totalPrice||o.pricing?.totalRevenue||0)-(o.totalPaid||0);
 
+  const th = { padding:"11px 14px", textAlign:"left", fontSize:"var(--text-xs)", fontWeight:700, color:"var(--c-text-3)", textTransform:"uppercase", letterSpacing:"0.4px", whiteSpace:"nowrap", borderBottom:"1px solid var(--c-border)" };
+  const td = { padding:"12px 14px", borderBottom:"1px solid var(--c-border)", fontSize:"var(--text-base)" };
+
   return(
-    <div style={{padding:24}}>
+    <div style={{padding:"var(--sp-6)"}}>
+      <PageHeader
+        title="Đơn hàng"
+        subtitle={`${summary.total} đơn ${currentRole==="sale"?"của bạn":"trong hệ thống"}`}
+        actions={<>
+          {onQuickSale&&<Btn variant="secondary" onClick={onQuickSale}><i className="ti ti-bolt" style={{fontSize:14}}/> Bán nhanh</Btn>}
+          <Btn onClick={onCreate}><i className="ti ti-plus" style={{fontSize:14}}/> Tạo đơn</Btn>
+        </>}
+      />
+
       {/* Summary cards */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-        {[["Tổng đơn",summary.total,"#2563eb"],["Chờ thu",summary.pending,"#d97706"],["Đang chạy",summary.active,"#16a34a"],["Doanh thu",fmtM(summary.revenue)+"₫","#7c3aed"]].map(([label,val,color])=>(
-          <div key={label} style={{background:"#fff",borderRadius:12,padding:"16px 18px",boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
-            <div style={{fontSize:12,color:"#64748b",fontWeight:600}}>{label}</div>
-            <div style={{fontSize:22,fontWeight:800,color,marginTop:4}}>{val}</div>
-          </div>
-        ))}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"var(--sp-3)",marginBottom:"var(--sp-5)"}}>
+        <StatCard label="Tổng đơn"   value={summary.total}         icon={<i className="ti ti-file-text"/>}       color="var(--c-primary-mid)"/>
+        <StatCard label="Chờ thu"    value={summary.pending}       icon={<i className="ti ti-clock"/>}           color="var(--c-warning-mid)"/>
+        <StatCard label="Đang chạy"  value={summary.active}        icon={<i className="ti ti-route"/>}           color="var(--c-success-mid)"/>
+        <StatCard label="Doanh thu"  value={fmtM(summary.revenue)+"₫"} icon={<i className="ti ti-report-money"/>} color="var(--c-accent)"/>
       </div>
 
       {/* Toolbar */}
-      <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap"}}>
-        <div style={{position:"relative",flex:1,minWidth:200}}>
-          <span style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"#94a3b8"}}>🔍</span>
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Tìm mã đơn, tên khách, SĐT, tour..."
-            style={{width:"100%",border:"1px solid #e2e8f0",borderRadius:9,padding:"9px 12px 9px 32px",fontSize:13,boxSizing:"border-box"}}/>
-        </div>
-        <select value={filterStatus} onChange={e=>setFilterStatus(e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:9,padding:"9px 12px",fontSize:13,background:"#fff"}}>
+      <div style={{display:"flex",gap:"var(--sp-2)",marginBottom:"var(--sp-4)",flexWrap:"wrap"}}>
+        <SearchInp value={search} onChange={e=>setSearch(e.target.value)} placeholder="Tìm mã đơn, tên khách, SĐT, tour..." style={{flex:1,minWidth:220}}/>
+        <Sel value={filterStatus} onChange={e=>setFilterStatus(e.target.value)} style={{width:180}}>
           <option value="all">Tất cả trạng thái</option>
           {Object.entries(ORDER_STATUS).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
-        </select>
-        <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:9,padding:"9px 12px",fontSize:13,background:"#fff"}}>
+        </Sel>
+        <Sel value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{width:180}}>
           <option value="newest">Mới nhất</option>
           <option value="depart">Ngày đi gần nhất</option>
           <option value="value">Giá trị cao nhất</option>
-        </select>
-        {onQuickSale&&<button onClick={onQuickSale} style={{background:"#fff",color:"#2563eb",border:"2px solid #2563eb",borderRadius:9,padding:"9px 16px",cursor:"pointer",fontWeight:700,fontSize:13,whiteSpace:"nowrap"}}>
-          ⚡ Bán nhanh
-        </button>}
-        <button onClick={onCreate} style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:9,padding:"9px 18px",cursor:"pointer",fontWeight:700,fontSize:13,whiteSpace:"nowrap"}}>
-          + Tạo đơn
-        </button>
+        </Sel>
       </div>
 
       {/* Table */}
-      <div style={{background:"#fff",borderRadius:14,boxShadow:"0 1px 6px rgba(0,0,0,.07)",overflow:"hidden"}}>
+      <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",border:"1px solid var(--c-border)",boxShadow:"var(--sh-xs)",overflow:"hidden"}}>
+        {myOrders.length===0 ? (
+          <EmptyState icon="🧳" title={search||filterStatus!=="all"?"Không có đơn nào khớp điều kiện lọc":"Chưa có đơn hàng nào"}
+            desc={!(search||filterStatus!=="all")?"Bấm \"Tạo đơn\" để bắt đầu đơn hàng đầu tiên.":undefined}/>
+        ) : (
+        <div style={{overflowX:"auto"}}>
         <table style={{width:"100%",borderCollapse:"collapse"}}>
           <thead>
-            <tr style={{background:"#f8fafc"}}>
+            <tr style={{background:"var(--c-surface-2)"}}>
               {["Mã đơn","Khách hàng","Tour / Dịch vụ","Ngày đi","Pax","Giá bán","Còn nợ","Trạng thái",""].map(h=>(
-                <th key={h} style={{padding:"11px 14px",textAlign:"left",fontSize:12,fontWeight:700,color:"#64748b",whiteSpace:"nowrap"}}>{h}</th>
+                <th key={h} style={th}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {myOrders.length===0&&(
-              <tr><td colSpan={9} style={{textAlign:"center",color:"#94a3b8",padding:48,fontSize:14}}>
-                {search||filterStatus!=="all"?"Không có đơn nào khớp điều kiện lọc":"Chưa có đơn hàng nào"}
-              </td></tr>
-            )}
             {myOrders.map(o=>{
-              const sc=ORDER_STATUS[o.status]||{bg:"#f1f5f9",color:"#475569"};
               const d=debt(o);
               return(
-                <tr key={o.id} style={{borderTop:"1px solid #f1f5f9",cursor:"pointer",transition:"background .1s"}}
-                  onMouseEnter={e=>e.currentTarget.style.background="#f8fafc"}
+                <tr key={o.id} style={{cursor:"pointer",transition:"background var(--t-fast)"}}
+                  onMouseEnter={e=>e.currentTarget.style.background="var(--c-primary-xpale)"}
                   onMouseLeave={e=>e.currentTarget.style.background=""}
                   onClick={()=>onView(o)}>
-                  <td style={{padding:"12px 14px"}}>
-                    <div style={{fontWeight:700,fontSize:13,color:"#2563eb"}}>{o.id}</div>
-                    <div style={{fontSize:11,color:"#94a3b8"}}>{o.sale}</div>
+                  <td style={td}>
+                    <div style={{fontWeight:700,fontSize:"var(--text-base)",color:"var(--c-primary-mid)"}}>{o.id}</div>
+                    <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)"}}>{o.sale}</div>
                   </td>
-                  <td style={{padding:"12px 14px"}}>
-                    <div style={{fontWeight:600,fontSize:13}}>{o.customerName||(o.customer?.name)||"—"}</div>
-                    <div style={{fontSize:11,color:"#94a3b8"}}>{o.customerPhone||(o.customer?.phone)||""}</div>
+                  <td style={td}>
+                    <div style={{fontWeight:600}}>{o.customerName||(o.customer?.name)||"—"}</div>
+                    <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)"}}>{o.customerPhone||(o.customer?.phone)||""}</div>
                   </td>
-                  <td style={{padding:"12px 14px",fontSize:13,maxWidth:180}}>
+                  <td style={{...td,maxWidth:180}}>
                     <div style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.serviceName||o.tourName||o.service||"—"}</div>
                   </td>
-                  <td style={{padding:"12px 14px",fontSize:12,color:"#64748b",whiteSpace:"nowrap"}}>{o.departDate?new Date(o.departDate).toLocaleDateString("vi-VN"):"—"}</td>
-                  <td style={{padding:"12px 14px",fontSize:13,textAlign:"center"}}>{typeof o.pax==="number"?o.pax:(o.adultQty||0)+(o.child10Qty||0)+(o.child5Qty||0)+(o.child2Qty||0)+(o.infantQty||0)||(o.pax?.adults||0)+(o.pax?.children||0)+(o.pax?.babies||0)||1}</td>
-                  <td style={{padding:"12px 14px",fontSize:13,fontWeight:700,color:"#1e293b",whiteSpace:"nowrap"}}>{(o.totalPrice||o.pricing?.totalRevenue||0).toLocaleString("vi-VN")}₫</td>
-                  <td style={{padding:"12px 14px",fontSize:13,fontWeight:700,color:d>0?"#dc2626":"#16a34a",whiteSpace:"nowrap"}}>{d>0?d.toLocaleString("vi-VN")+"₫":"✓"}</td>
-                  <td style={{padding:"12px 14px"}}>
-                    <span style={{background:sc.bg,color:sc.color,borderRadius:20,padding:"3px 10px",fontSize:11,fontWeight:700,whiteSpace:"nowrap"}}>
-                      {ORDER_STATUS[o.status]?.label||o.status}
-                    </span>
+                  <td style={{...td,color:"var(--c-text-3)",whiteSpace:"nowrap"}}>{o.departDate?new Date(o.departDate).toLocaleDateString("vi-VN"):"—"}</td>
+                  <td style={{...td,textAlign:"center"}}>{typeof o.pax==="number"?o.pax:(o.adultQty||0)+(o.child10Qty||0)+(o.child5Qty||0)+(o.child2Qty||0)+(o.infantQty||0)||(o.pax?.adults||0)+(o.pax?.children||0)+(o.pax?.babies||0)||1}</td>
+                  <td style={{...td,fontWeight:700,color:"var(--c-text)",whiteSpace:"nowrap",fontVariantNumeric:"tabular-nums"}}>{(o.totalPrice||o.pricing?.totalRevenue||0).toLocaleString("vi-VN")}₫</td>
+                  <td style={{...td,fontWeight:700,color:d>0?"var(--c-danger-mid)":"var(--c-success-mid)",whiteSpace:"nowrap",fontVariantNumeric:"tabular-nums"}}>{d>0?d.toLocaleString("vi-VN")+"₫":"✓"}</td>
+                  <td style={td}>
+                    <SBadge status={o.status} cfg={ORDER_STATUS}/>
                   </td>
-                  <td style={{padding:"12px 14px"}}>
-                    <button onClick={e=>{e.stopPropagation();onView(o);}} style={{background:"#eff6ff",color:"#2563eb",border:"none",borderRadius:6,padding:"4px 10px",cursor:"pointer",fontSize:12,fontWeight:600}}>Xem →</button>
+                  <td style={td}>
+                    <Btn size="xs" variant="secondary" onClick={e=>{e.stopPropagation();onView(o);}}>Xem →</Btn>
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+        </div>
+        )}
       </div>
-      <div style={{textAlign:"right",fontSize:12,color:"#94a3b8",marginTop:8}}>{myOrders.length} đơn</div>
+      <div style={{textAlign:"right",fontSize:"var(--text-xs)",color:"var(--c-text-muted)",marginTop:"var(--sp-2)"}}>{myOrders.length} đơn</div>
     </div>
   );
 }
