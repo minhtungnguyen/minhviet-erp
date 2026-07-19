@@ -47,3 +47,17 @@ export const getEffectivePerms = (user) => {
   const base = Array.isArray(user.perms) ? user.perms : (ROLE_DEFAULT_PERMS[user.role]||[]);
   return ["dashboard","tasks",...base];
 };
+
+// Lưu ý: 2 hàm dưới đây có nội dung giống hệt nhau (khả năng lịch sử để lại) —
+// giữ nguyên cả 2 tên khi di chuyển, không gộp vì đó là thay đổi API/behavior
+// ngoài phạm vi tách file thuần túy.
+export const canSeeTourGhepSensitive = (user) => {
+  if (!user) return false;
+  if (["manager","accountant","dieu_hanh"].includes(user.role)) return true;
+  return user.canViewTourGhep === true;
+};
+export const canAccessTourGhep = (user) => {
+  if (!user) return false;
+  if (["manager","accountant","dieu_hanh"].includes(user.role)) return true;
+  return user.canViewTourGhep === true;
+};
