@@ -1,5 +1,6 @@
 // Shared UI atoms — tất cả dùng CSS vars từ theme.css
 // Import: import { Btn, Inp, Card, ... } from "../components/ui"
+import { useState, useEffect } from "react";
 
 /* ──────────────────────────────────────────────────────────
    BADGE — status chip với dot
@@ -685,5 +686,33 @@ export const Alert = ({ type = "info", children, style = {}, ...rest }) => {
       <span style={{ fontWeight: 700, flexShrink: 0 }}>{cfg.icon}</span>
       <div style={{ flex: 1 }}>{children}</div>
     </div>
+  );
+};
+
+/* ──────────────────────────────────────────────────────────
+   NUMBER INPUT — text input hiển thị số có dấu chấm ngăn cách,
+   onChange trả về number thô
+   ────────────────────────────────────────────────────────── */
+export const fmtNum = (n) => (Math.round(n||0)).toLocaleString("vi-VN");
+
+export const NumberInput = ({value, onChange, placeholder="0", style={}, disabled=false, min=0}) => {
+  const [display, setDisplay] = useState(value ? fmtNum(value) : "");
+  useEffect(()=>{ setDisplay(value ? fmtNum(value) : ""); },[value]);
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      value={display}
+      disabled={disabled}
+      placeholder={placeholder}
+      style={style}
+      onChange={e=>{
+        const raw = e.target.value.replace(/\./g,"").replace(/[^\d]/g,"");
+        const num = parseInt(raw,10)||0;
+        if(min!==undefined&&num<min) return;
+        setDisplay(raw ? num.toLocaleString("vi-VN") : "");
+        onChange(num);
+      }}
+    />
   );
 };
