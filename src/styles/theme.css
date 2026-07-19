@@ -108,7 +108,7 @@
   --c-sidebar-activetext: #ffffff;
 
   /* ── Layout dimensions ────────────────────────────────── */
-  --sidebar-w:    240px;    /* +20px so chữ tiếng Việt không bị cắt */
+  --sidebar-w:    272px;    /* đủ rộng cho nhãn tiếng Việt dài + icon + badge */
   --topbar-h:     56px;
   --content-max:  1320px;
   --card-radius:  12px;
