@@ -70,8 +70,8 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
 
   const DESC_PH={ flight:"VD: Vé HAN-SGN khứ hồi · VN · 05/07", hotel:"VD: KS Vinpearl Phú Quốc · 2 đêm · phòng Deluxe", cruise:"VD: Du thuyền Hạ Long 2N1Đ · cabin Deluxe", ticket:"VD: Vé Sun World Bà Nà · 2 vé" };
 
-  const lbl={display:"block",fontSize:11,fontWeight:700,letterSpacing:.3,marginBottom:5,color:"#64748b",textTransform:"uppercase"};
-  const inp={width:"100%",border:"1px solid #e2e8f0",borderRadius:8,padding:"9px 12px",fontSize:13,boxSizing:"border-box",outline:"none"};
+  const lbl={display:"block",fontSize:11,fontWeight:700,letterSpacing:.3,marginBottom:5,color:"var(--c-text-3)",textTransform:"uppercase"};
+  const inp={width:"100%",border:"1px solid var(--c-border)",borderRadius:8,padding:"9px 12px",fontSize:13,boxSizing:"border-box",outline:"none"};
 
   const save=()=>{
     if(!f.customerName.trim()){alert("Nhập tên khách hàng");return;}
@@ -96,20 +96,20 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
   return(
     <div style={{padding:24,maxWidth:760,margin:"0 auto"}}>
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4}}>
-        <i className="ti ti-bolt" style={{fontSize:22,color:"#2563eb"}}/>
+        <i className="ti ti-bolt" style={{fontSize:22,color:"var(--c-primary-mid)"}}/>
         <h2 style={{margin:0,fontSize:20,fontWeight:700}}>Bán nhanh</h2>
-        <span style={{marginLeft:"auto",fontSize:12,color:"#94a3b8"}}>1 màn hình · vé bay / khách sạn / du thuyền / vé lẻ</span>
+        <span style={{marginLeft:"auto",fontSize:12,color:"var(--c-text-muted)"}}>1 màn hình · vé bay / khách sạn / du thuyền / vé lẻ</span>
       </div>
-      <div style={{fontSize:13,color:"#64748b",marginBottom:18}}>Đơn ít khách, dịch vụ đơn giản. Tour đoàn đông vẫn dùng "Tạo đơn" 3 bước.</div>
+      <div style={{fontSize:13,color:"var(--c-text-3)",marginBottom:18}}>Đơn ít khách, dịch vụ đơn giản. Tour đoàn đông vẫn dùng "Tạo đơn" 3 bước.</div>
 
-      <div style={{background:"#fff",borderRadius:14,padding:22,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
+      <div style={{background:"var(--c-surface)",borderRadius:14,padding:22,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
         {/* Chọn loại dịch vụ */}
         <div style={{display:"flex",gap:8,marginBottom:18,flexWrap:"wrap"}}>
           {QUICK_SERVICES.map(s=>{
             const on=f.service===s.id;
             return <button key={s.id} type="button" onClick={()=>{setNccSearch("");setF(p=>({...p,service:s.id,nccId:"",nccName:"",tgpId:"",tgpDepId:""}));}}
               style={{flex:1,minWidth:120,padding:"10px 0",borderRadius:9,cursor:"pointer",fontSize:13,fontWeight:600,
-                border:`2px solid ${on?"#2563eb":"#e2e8f0"}`,background:on?"#eff6ff":"#fff",color:on?"#1d4ed8":"#64748b"}}>
+                border:`2px solid ${on?"var(--c-primary-mid)":"var(--c-border)"}`,background:on?"var(--c-primary-light)":"var(--c-surface)",color:on?"var(--c-primary)":"var(--c-text-3)"}}>
               {s.icon} {s.label}</button>;
           })}
         </div>
@@ -122,22 +122,22 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
             <input value={f.customerPhone} onChange={e=>set("customerPhone",e.target.value)} placeholder="0912 345 678" style={{...inp,flex:1}}/>
           </div>
           {suggestions.length>0&&(
-            <div style={{position:"absolute",zIndex:20,left:0,right:0,background:"#fff",border:"1px solid #e2e8f0",borderRadius:8,marginTop:4,boxShadow:"0 4px 14px rgba(0,0,0,.1)",overflow:"hidden"}}>
+            <div style={{position:"absolute",zIndex:20,left:0,right:0,background:"var(--c-surface)",border:"1px solid var(--c-border)",borderRadius:8,marginTop:4,boxShadow:"0 4px 14px rgba(0,0,0,.1)",overflow:"hidden"}}>
               {suggestions.map(c=>(
-                <div key={c.id} onClick={()=>pickCustomer(c)} style={{padding:"8px 12px",cursor:"pointer",fontSize:13,borderBottom:"0.5px solid #f1f5f9"}}
-                  onMouseEnter={e=>e.currentTarget.style.background="#f0f9ff"} onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
-                  <b>{c.name}</b> <span style={{color:"#94a3b8"}}>· {c.phone||"—"}</span>
+                <div key={c.id} onClick={()=>pickCustomer(c)} style={{padding:"8px 12px",cursor:"pointer",fontSize:13,borderBottom:"0.5px solid var(--c-surface-3)"}}
+                  onMouseEnter={e=>e.currentTarget.style.background="var(--c-info-bg)"} onMouseLeave={e=>e.currentTarget.style.background="var(--c-surface)"}>
+                  <b>{c.name}</b> <span style={{color:"var(--c-text-muted)"}}>· {c.phone||"—"}</span>
                 </div>
               ))}
             </div>
           )}
-          {f.customerId&&<div style={{fontSize:11,color:"#16a34a",marginTop:4}}>✓ Khách có sẵn trong CRM</div>}
+          {f.customerId&&<div style={{fontSize:11,color:"var(--c-success-mid)",marginTop:4}}>✓ Khách có sẵn trong CRM</div>}
         </div>
 
         {/* Chọn sản phẩm Tour ghép (chỉ khi loại = Tour ghép) */}
         {f.service==="tour_ghep"&&(
-          <div style={{background:"#f0f9ff",border:"1.5px solid #7dd3fc",borderRadius:10,padding:14,marginBottom:14}}>
-            <label style={{...lbl,color:"#0369a1"}}>🔗 Chọn sản phẩm Tour ghép (giá tự tính theo số khách)</label>
+          <div style={{background:"var(--c-info-bg)",border:"1.5px solid var(--c-info-border)",borderRadius:10,padding:14,marginBottom:14}}>
+            <label style={{...lbl,color:"var(--c-info)"}}>🔗 Chọn sản phẩm Tour ghép (giá tự tính theo số khách)</label>
             <select value={f.tgpId} onChange={e=>{const prod=(tourGhepProducts||[]).find(x=>x.id===e.target.value);applyTgp(prod,"",f.guests);}} style={inp}>
               <option value="">— Chọn tour ghép —</option>
               {(tourGhepProducts||[]).filter(p=>p.active!==false).map(p=>(
@@ -145,13 +145,13 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
               ))}
             </select>
             {selectedTgp&&selectedTgp.useSchedule&&Array.isArray(selectedTgp.departures)&&selectedTgp.departures.length>0&&(
-              <select value={f.tgpDepId} onChange={e=>applyTgp(selectedTgp,e.target.value,f.guests)} style={{...inp,marginTop:8,background:"#fff7ed",border:"1.5px solid #fed7aa"}}>
+              <select value={f.tgpDepId} onChange={e=>applyTgp(selectedTgp,e.target.value,f.guests)} style={{...inp,marginTop:8,background:"var(--c-warning-bg)",border:"1.5px solid var(--c-warning-border)"}}>
                 {selectedTgp.departures.map(d=>(
                   <option key={d.id} value={d.id}>{(d.label||"Đợt")}{d.dates?` — ${d.dates}`:""}{d.sell?.adult?` · ${(d.sell.adult).toLocaleString("vi-VN")}đ/khách`:""}</option>
                 ))}
               </select>
             )}
-            {selectedTgp&&<div style={{fontSize:11,color:"#0369a1",marginTop:6}}>💡 Phù hợp khách mua lẻ 2-3 người. Đổi "Số khách" bên dưới, giá tự nhân lại.</div>}
+            {selectedTgp&&<div style={{fontSize:11,color:"var(--c-info)",marginTop:6}}>💡 Phù hợp khách mua lẻ 2-3 người. Đổi "Số khách" bên dưới, giá tự nhân lại.</div>}
           </div>
         )}
 
@@ -165,7 +165,7 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
           <div><label style={lbl}>Ngày khởi hành/sử dụng</label><input type="date" value={f.departDate} onChange={e=>set("departDate",e.target.value)} style={inp}/></div>
           <div><label style={lbl}>Số khách</label><input type="number" min={1} value={f.guests} onChange={e=>{const g=e.target.value; if(f.service==="tour_ghep"&&selectedTgp){applyTgp(selectedTgp,f.tgpDepId,g);}else{set("guests",g);}}} style={inp}/></div>
           <div>
-            <label style={lbl}>Nhà cung cấp <span style={{color:"#94a3b8",fontWeight:400,textTransform:"none"}}>({filteredSuppliers.length})</span></label>
+            <label style={lbl}>Nhà cung cấp <span style={{color:"var(--c-text-muted)",fontWeight:400,textTransform:"none"}}>({filteredSuppliers.length})</span></label>
             <input value={nccSearch} onChange={e=>setNccSearch(e.target.value)} placeholder="Tìm NCC…" style={{...inp,marginBottom:6,fontSize:12}}/>
             <select value={f.nccId} onChange={e=>{const s=(suppliers||[]).find(x=>x.id===e.target.value);setF(p=>({...p,nccId:e.target.value,nccName:s?(s.ten||s.name||""):""}));}} style={inp}>
               <option value="">— Chọn NCC —</option>
@@ -176,11 +176,11 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
 
         {/* Tiền */}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14,alignItems:"end"}}>
-          <div><label style={{...lbl,color:"#A32D2D"}}>Tổng giá vốn (NCC)</label><NumberInput value={f.costTotal} onChange={v=>set("costTotal",v)} placeholder="VD: 2.600.000" style={inp}/></div>
-          <div><label style={{...lbl,color:"#0F6E56"}}>Tổng giá bán (KH) *</label><NumberInput value={f.sellTotal} onChange={v=>set("sellTotal",v)} placeholder="VD: 3.200.000" style={inp}/></div>
-          <div style={{background:profit>=0?"#FAEEDA":"#fee2e2",borderRadius:8,padding:"8px 12px",textAlign:"right"}}>
-            <div style={{fontSize:11,color:profit>=0?"#854F0B":"#dc2626",fontWeight:700}}>LÃI TẠM TÍNH</div>
-            <div style={{fontSize:17,fontWeight:800,color:profit>=0?"#854F0B":"#dc2626"}}>{profit>=0?"+":""}{profit.toLocaleString("vi-VN")}đ</div>
+          <div><label style={{...lbl,color:"var(--c-danger)"}}>Tổng giá vốn (NCC)</label><NumberInput value={f.costTotal} onChange={v=>set("costTotal",v)} placeholder="VD: 2.600.000" style={inp}/></div>
+          <div><label style={{...lbl,color:"var(--c-success)"}}>Tổng giá bán (KH) *</label><NumberInput value={f.sellTotal} onChange={v=>set("sellTotal",v)} placeholder="VD: 3.200.000" style={inp}/></div>
+          <div style={{background:profit>=0?"var(--c-warning-bg)":"var(--c-danger-bg)",borderRadius:8,padding:"8px 12px",textAlign:"right"}}>
+            <div style={{fontSize:11,color:profit>=0?"var(--c-warning)":"var(--c-danger-mid)",fontWeight:700}}>LÃI TẠM TÍNH</div>
+            <div style={{fontSize:17,fontWeight:800,color:profit>=0?"var(--c-warning)":"var(--c-danger-mid)"}}>{profit>=0?"+":""}{profit.toLocaleString("vi-VN")}đ</div>
           </div>
         </div>
 
@@ -194,10 +194,10 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
         </div>
 
         <div style={{display:"flex",gap:10}}>
-          <button type="button" onClick={save} style={{flex:1,background:"#2563eb",color:"#fff",border:"none",borderRadius:10,padding:"12px 0",cursor:"pointer",fontSize:14,fontWeight:700}}>
+          <button type="button" onClick={save} style={{flex:1,background:"var(--c-primary-mid)",color:"var(--c-text-inverse)",border:"none",borderRadius:10,padding:"12px 0",cursor:"pointer",fontSize:14,fontWeight:700}}>
             ✓ Lưu đơn (1 phát xong)
           </button>
-          <button type="button" onClick={onCancel} style={{padding:"12px 22px",background:"#f1f5f9",border:"none",borderRadius:10,cursor:"pointer",fontSize:14,fontWeight:600}}>Hủy</button>
+          <button type="button" onClick={onCancel} style={{padding:"12px 22px",background:"var(--c-surface-3)",border:"none",borderRadius:10,cursor:"pointer",fontSize:14,fontWeight:600}}>Hủy</button>
         </div>
       </div>
     </div>
