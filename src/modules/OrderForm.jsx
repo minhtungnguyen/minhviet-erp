@@ -1,5 +1,5 @@
 import React from "react";
-import { NumberInput } from "../components/ui.jsx";
+import { NumberInput, Btn } from "../components/ui.jsx";
 import { SERVICE_TYPES } from "../constants/serviceTypes.js";
 
 const SALE_STAFF = ["Nguyễn Thị Hoa","Trần Văn Nam","Lê Thị Mai","Phạm Quốc Hùng","Đỗ Thị Lan"];
@@ -197,28 +197,28 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
     });
   };
 
-  const inputStyle=(key)=>({width:"100%",border:"1px solid "+(errors[key]?"#ef4444":"#e2e8f0"),borderRadius:8,padding:"9px 12px",fontSize:13,boxSizing:"border-box",outline:"none"});
-  const labelStyle={display:"block",fontSize:11,fontWeight:700,letterSpacing:.3,marginBottom:5,color:"#64748b",textTransform:"uppercase"};
+  const inputStyle=(key)=>({width:"100%",border:"1.5px solid "+(errors[key]?"var(--c-danger-border)":"var(--c-border-mid)"),borderRadius:"var(--r-sm)",padding:"9px 12px",fontSize:"var(--text-base)",boxSizing:"border-box",outline:"none",background:"var(--c-surface)",color:"var(--c-text)"});
+  const labelStyle={display:"block",fontSize:"var(--text-xs)",fontWeight:700,letterSpacing:.3,marginBottom:5,color:"var(--c-text-3)",textTransform:"uppercase"};
 
   return(
     <div style={{maxWidth:1000,margin:"0 auto"}}>
       {/* Stepper */}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:0,marginBottom:24,background:"#fff",borderRadius:14,padding:"18px 24px",boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:0,marginBottom:24,background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:"18px 24px",boxShadow:"var(--sh-sm)"}}>
         {STEPS.map((s,i)=>(
           <React.Fragment key={s.n}>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <div style={{width:30,height:30,borderRadius:"50%",background:step>s.n?"#16a34a":step===s.n?"#1e3a8a":"#f1f5f9",color:step>=s.n?"#fff":"#94a3b8",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13}}>
+              <div style={{width:30,height:30,borderRadius:"50%",background:step>s.n?"var(--c-success-mid)":step===s.n?"var(--c-primary)":"var(--c-surface-2)",color:step>=s.n?"#fff":"var(--c-text-muted)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:"var(--text-base)"}}>
                 {step>s.n?"✓":s.n}
               </div>
-              <span style={{fontWeight:700,fontSize:13,color:step===s.n?"#1e293b":step>s.n?"#16a34a":"#94a3b8"}}>{s.label}</span>
+              <span style={{fontWeight:700,fontSize:"var(--text-base)",color:step===s.n?"var(--c-text-2)":step>s.n?"var(--c-success-mid)":"var(--c-text-muted)"}}>{s.label}</span>
             </div>
-            {i<STEPS.length-1&&<div style={{width:60,height:2,background:step>s.n?"#16a34a":"#e2e8f0",margin:"0 16px"}}/>}
+            {i<STEPS.length-1&&<div style={{width:60,height:2,background:step>s.n?"var(--c-success-mid)":"var(--c-border)",margin:"0 16px"}}/>}
           </React.Fragment>
         ))}
       </div>
 
       <div style={{display:"grid",gridTemplateColumns:"1fr 300px",gap:16}}>
-        <div style={{background:"#fff",borderRadius:14,padding:24,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
+        <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:24,boxShadow:"var(--sh-sm)"}}>
           {step===1&&(
             <div>
               {/* BƯỚC 0: Hóa đơn VAT */}
@@ -226,12 +226,12 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                 <label style={labelStyle}>Khách có lấy hóa đơn VAT không? *</label>
                 <div style={{display:"flex",gap:10,marginTop:6}}>
                   {[
-                    {val:"no_invoice",label:"Không lấy hóa đơn",desc:"TK thu: VCB Thùy Anh",color:"#0F6E56",bg:"#E1F5EE"},
-                    {val:"invoice",label:"Có lấy hóa đơn VAT",desc:"TK thu: HDBank Công ty",color:"#185FA5",bg:"#E6F1FB"},
+                    {val:"no_invoice",label:"Không lấy hóa đơn",desc:"TK thu: VCB Thùy Anh",color:"var(--c-success)",bg:"var(--c-success-bg)"},
+                    {val:"invoice",label:"Có lấy hóa đơn VAT",desc:"TK thu: HDBank Công ty",color:"var(--c-primary-mid)",bg:"var(--c-primary-light)"},
                   ].map(opt=>(
-                    <button key={opt.val} type="button" onClick={()=>set("invoiceType",opt.val)} style={{flex:1,padding:"12px 16px",borderRadius:10,cursor:"pointer",border:"1.5px solid "+(form.invoiceType===opt.val?opt.color:"#e2e8f0"),background:form.invoiceType===opt.val?opt.bg:"#fff",textAlign:"left"}}>
-                      <div style={{fontWeight:600,fontSize:13,color:form.invoiceType===opt.val?opt.color:"#374151"}}>{opt.label}</div>
-                      <div style={{fontSize:11,color:"#64748b",marginTop:3}}>{opt.desc}</div>
+                    <button key={opt.val} type="button" onClick={()=>set("invoiceType",opt.val)} style={{flex:1,padding:"12px 16px",borderRadius:"var(--r-md)",cursor:"pointer",border:"1.5px solid "+(form.invoiceType===opt.val?opt.color:"var(--c-border)"),background:form.invoiceType===opt.val?opt.bg:"var(--c-surface)",textAlign:"left"}}>
+                      <div style={{fontWeight:600,fontSize:"var(--text-base)",color:form.invoiceType===opt.val?opt.color:"var(--c-text-2)"}}>{opt.label}</div>
+                      <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginTop:3}}>{opt.desc}</div>
                     </button>
                   ))}
                 </div>
@@ -245,25 +245,25 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                       {val:"personal",label:"Cá nhân",icon:"👤"},
                       {val:"corporate",label:"Doanh nghiệp / Tổ chức",icon:"🏢"},
                     ].map(opt=>(
-                      <button key={opt.val} type="button" onClick={()=>set("customerType",opt.val)} style={{flex:1,padding:"10px 14px",borderRadius:8,cursor:"pointer",border:"1.5px solid "+(form.customerType===opt.val?"#534AB7":"#e2e8f0"),background:form.customerType===opt.val?"#EEEDFE":"#fff",display:"flex",alignItems:"center",gap:8}}>
+                      <button key={opt.val} type="button" onClick={()=>set("customerType",opt.val)} style={{flex:1,padding:"10px 14px",borderRadius:"var(--r-sm)",cursor:"pointer",border:"1.5px solid "+(form.customerType===opt.val?"var(--c-purple)":"var(--c-border)"),background:form.customerType===opt.val?"var(--c-purple-bg)":"var(--c-surface)",display:"flex",alignItems:"center",gap:8}}>
                         <span style={{fontSize:16}}>{opt.icon}</span>
-                        <span style={{fontSize:13,fontWeight:600,color:form.customerType===opt.val?"#534AB7":"#374151"}}>{opt.label}</span>
+                        <span style={{fontSize:"var(--text-base)",fontWeight:600,color:form.customerType===opt.val?"var(--c-purple)":"var(--c-text-2)"}}>{opt.label}</span>
                       </button>
                     ))}
                   </div>
                 </div>
               )}
-              <div style={{fontWeight:700,marginBottom:16,fontSize:15,color:"#1e293b"}}>👤 Thông tin khách hàng</div>
+              <div style={{fontWeight:700,marginBottom:16,fontSize:"var(--text-lg)",color:"var(--c-text-2)"}}>👤 Thông tin khách hàng</div>
               <div style={{position:"relative",marginBottom:14}}>
                 <label style={labelStyle}>Tìm khách có sẵn</label>
                 <input value={custSearch} onChange={e=>{setCustSearch(e.target.value);setShowCustDrop(true);}} onFocus={()=>setShowCustDrop(true)} placeholder="Nhập tên hoặc SĐT..." style={inputStyle("search")}/>
                 {showCustDrop&&filteredCust.length>0&&(
-                  <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",border:"1px solid #e2e8f0",borderRadius:8,boxShadow:"0 4px 16px rgba(0,0,0,.1)",zIndex:100,maxHeight:200,overflowY:"auto"}}>
+                  <div style={{position:"absolute",top:"100%",left:0,right:0,background:"var(--c-surface)",border:"1px solid var(--c-border)",borderRadius:"var(--r-sm)",boxShadow:"var(--sh-md)",zIndex:100,maxHeight:200,overflowY:"auto"}}>
                     {filteredCust.map(c=>(
                       <div key={c.id} onClick={()=>{set("customerName",c.name);set("customerPhone",c.phone);set("customerEmail",c.email||"");set("customerId",c.id);setCustSearch(c.name);setShowCustDrop(false);}}
-                        style={{padding:"10px 14px",cursor:"pointer",fontSize:13,borderBottom:"1px solid #f1f5f9",display:"flex",justifyContent:"space-between"}}
-                        onMouseEnter={e=>e.currentTarget.style.background="#f8fafc"} onMouseLeave={e=>e.currentTarget.style.background=""}>
-                        <span style={{fontWeight:600}}>{c.name}</span><span style={{color:"#64748b"}}>{c.phone}</span>
+                        style={{padding:"10px 14px",cursor:"pointer",fontSize:"var(--text-base)",borderBottom:"1px solid var(--c-border)",display:"flex",justifyContent:"space-between"}}
+                        onMouseEnter={e=>e.currentTarget.style.background="var(--c-surface-2)"} onMouseLeave={e=>e.currentTarget.style.background=""}>
+                        <span style={{fontWeight:600}}>{c.name}</span><span style={{color:"var(--c-text-3)"}}>{c.phone}</span>
                       </div>
                     ))}
                   </div>
@@ -281,9 +281,9 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                 </div>
                 <div><label style={labelStyle}>Số CCCD/CMND</label><input value={form.cccd} onChange={e=>set("cccd",e.target.value)} style={inputStyle("cccd")}/></div>
                 <div>
-                  <label style={labelStyle}>Ảnh CCCD / Hộ chiếu <span style={{fontWeight:400,color:"#94a3b8"}}>(tùy chọn)</span></label>
+                  <label style={labelStyle}>Ảnh CCCD / Hộ chiếu <span style={{fontWeight:400,color:"var(--c-text-muted)"}}>(tùy chọn)</span></label>
                   <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:form.cccdImg?"6px":0}}>
-                    <label style={{display:"inline-flex",alignItems:"center",gap:5,padding:"7px 12px",background:"#eff6ff",color:"#1e40af",border:"1px solid #bfdbfe",borderRadius:7,cursor:"pointer",fontSize:12,fontWeight:600,flexShrink:0}}>
+                    <label style={{display:"inline-flex",alignItems:"center",gap:5,padding:"7px 12px",background:"var(--c-primary-light)",color:"var(--c-primary-hover)",border:"1px solid var(--c-primary-pale)",borderRadius:"var(--r-sm)",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:600,flexShrink:0}}>
                       📎 Tải ảnh lên
                       <input type="file" accept="image/*,.pdf" style={{display:"none"}} onChange={e=>{
                         const file=e.target.files?.[0];
@@ -296,31 +296,31 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                     </label>
                     {form.cccdImg&&(
                       form.cccdImg.startsWith("data:")?(
-                        <img src={form.cccdImg} alt="CCCD" onClick={()=>window.open(form.cccdImg)} style={{height:34,borderRadius:5,cursor:"zoom-in",border:"1px solid #e2e8f0",objectFit:"cover"}}/>
+                        <img src={form.cccdImg} alt="CCCD" onClick={()=>window.open(form.cccdImg)} style={{height:34,borderRadius:5,cursor:"zoom-in",border:"1px solid var(--c-border)",objectFit:"cover"}}/>
                       ):(
-                        <a href={form.cccdImg} target="_blank" rel="noreferrer" style={{fontSize:12,color:"#2563eb"}}>🔗 Xem ảnh</a>
+                        <a href={form.cccdImg} target="_blank" rel="noreferrer" style={{fontSize:"var(--text-sm)",color:"var(--c-primary-mid)"}}>🔗 Xem ảnh</a>
                       )
                     )}
-                    {form.cccdImg&&<button type="button" onClick={()=>set("cccdImg","")} style={{background:"none",border:"none",color:"#dc2626",cursor:"pointer",fontSize:12,padding:0}}>✕</button>}
+                    {form.cccdImg&&<button type="button" onClick={()=>set("cccdImg","")} style={{background:"none",border:"none",color:"var(--c-danger-mid)",cursor:"pointer",fontSize:"var(--text-sm)",padding:0}}>✕</button>}
                   </div>
-                  {!form.cccdImg&&<input value={form.cccdImg} onChange={e=>set("cccdImg",e.target.value)} placeholder="hoặc dán link Google Drive..." style={{...inputStyle("cccdImg"),fontSize:11,padding:"5px 10px",marginTop:4}}/>}
+                  {!form.cccdImg&&<input value={form.cccdImg} onChange={e=>set("cccdImg",e.target.value)} placeholder="hoặc dán link Google Drive..." style={{...inputStyle("cccdImg"),fontSize:"var(--text-xs)",padding:"5px 10px",marginTop:4}}/>}
                 </div>
               </div>
               {/* Fields doanh nghiệp — chỉ hiện khi có HĐ + corporate */}
               {form.invoiceType==="invoice"&&form.customerType==="corporate"&&(
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14,paddingTop:14,borderTop:"1px solid #e2e8f0"}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14,paddingTop:14,borderTop:"1px solid var(--c-border)"}}>
                   <div style={{gridColumn:"1/-1"}}>
-                    <div style={{fontSize:12,color:"#534AB7",fontWeight:700,marginBottom:10}}>Thông tin xuất hóa đơn</div>
+                    <div style={{fontSize:"var(--text-sm)",color:"var(--c-purple)",fontWeight:700,marginBottom:10}}>Thông tin xuất hóa đơn</div>
                   </div>
                   <div style={{gridColumn:"1/-1"}}>
                     <label style={labelStyle}>Tên công ty / Tổ chức *</label>
                     <input value={form.companyName} onChange={e=>set("companyName",e.target.value)} placeholder="VD: Công ty CP ABC" style={inputStyle("companyName")}/>
-                    {errors.companyName&&<span style={{color:"#ef4444",fontSize:11}}>{errors.companyName}</span>}
+                    {errors.companyName&&<span style={{color:"var(--c-danger-mid)",fontSize:"var(--text-xs)"}}>{errors.companyName}</span>}
                   </div>
                   <div>
                     <label style={labelStyle}>Mã số thuế *</label>
                     <input value={form.taxCode} onChange={e=>set("taxCode",e.target.value)} placeholder="VD: 0312345678" style={inputStyle("taxCode")}/>
-                    {errors.taxCode&&<span style={{color:"#ef4444",fontSize:11}}>{errors.taxCode}</span>}
+                    {errors.taxCode&&<span style={{color:"var(--c-danger-mid)",fontSize:"var(--text-xs)"}}>{errors.taxCode}</span>}
                   </div>
                   <div>
                     <label style={labelStyle}>Tỉnh / Thành phố</label>
@@ -337,13 +337,13 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
 
           {step===2&&(
             <div>
-              <div style={{fontWeight:700,marginBottom:16,fontSize:15,color:"#1e293b"}}>🧳 Dịch vụ & Cấu trúc giá</div>
+              <div style={{fontWeight:700,marginBottom:16,fontSize:"var(--text-lg)",color:"var(--c-text-2)"}}>🧳 Dịch vụ & Cấu trúc giá</div>
 
               {/* 7 nút loại dịch vụ */}
               <label style={labelStyle}>Loại dịch vụ *</label>
               <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}}>
                 {SERVICE_TYPES.map(s=>(
-                  <button key={s.id} onClick={()=>{set("service",s.id);if(s.id!=="combo")set("comboComponents",{...COMBO_COMPONENTS_DEFAULT});}} style={{display:"flex",alignItems:"center",gap:7,padding:"10px 12px",borderRadius:9,border:"1.5px solid "+(form.service===s.id?(s.id==="combo"?"#7c3aed":"#1e3a8a"):"#e2e8f0"),background:form.service===s.id?(s.id==="combo"?"#f5f3ff":"#eff6ff"):"#fff",cursor:"pointer",fontWeight:form.service===s.id?700:500,fontSize:13,color:form.service===s.id?(s.id==="combo"?"#7c3aed":"#1e3a8a"):"#374151",transition:"all .15s"}}>
+                  <button key={s.id} onClick={()=>{set("service",s.id);if(s.id!=="combo")set("comboComponents",{...COMBO_COMPONENTS_DEFAULT});}} style={{display:"flex",alignItems:"center",gap:7,padding:"10px 12px",borderRadius:"var(--r-md)",border:"1.5px solid "+(form.service===s.id?(s.id==="combo"?"var(--c-purple)":"var(--c-primary)"):"var(--c-border)"),background:form.service===s.id?(s.id==="combo"?"var(--c-purple-bg)":"var(--c-primary-light)"):"var(--c-surface)",cursor:"pointer",fontWeight:form.service===s.id?700:500,fontSize:"var(--text-base)",color:form.service===s.id?(s.id==="combo"?"var(--c-purple)":"var(--c-primary)"):"var(--c-text-2)",transition:"all .15s"}}>
                     <span>{s.icon}</span>{s.label}
                   </button>
                 ))}
@@ -351,35 +351,35 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
 
               {/* ── PANEL COMBO ĐỘNG ── */}
               {isCombo&&(
-                <div style={{background:"#faf5ff",border:"1.5px solid #c4b5fd",borderRadius:12,padding:18,marginBottom:16}}>
-                  <div style={{fontWeight:700,fontSize:13,color:"#7c3aed",marginBottom:14,display:"flex",alignItems:"center",gap:6}}>
+                <div style={{background:"var(--c-purple-bg)",border:"1.5px solid var(--c-purple-border)",borderRadius:"var(--r-md)",padding:18,marginBottom:16}}>
+                  <div style={{fontWeight:700,fontSize:"var(--text-base)",color:"var(--c-purple)",marginBottom:14,display:"flex",alignItems:"center",gap:6}}>
                     📦 Thành phần Combo
-                    {errors.combo&&<span style={{marginLeft:8,color:"#dc2626",fontWeight:600,fontSize:12}}>⚠ {errors.combo}</span>}
+                    {errors.combo&&<span style={{marginLeft:8,color:"var(--c-danger-mid)",fontWeight:600,fontSize:"var(--text-sm)"}}>⚠ {errors.combo}</span>}
                   </div>
                   {Object.entries(form.comboComponents||{}).map(([key,comp])=>(
-                    <div key={key} style={{display:"grid",gridTemplateColumns:"auto 1fr auto",gap:12,alignItems:"center",marginBottom:10,padding:"10px 12px",background:comp.enabled?"#fff":"#f5f3ff",borderRadius:8,border:"1px solid "+(comp.enabled?"#c4b5fd":"transparent"),transition:"all .15s"}}>
+                    <div key={key} style={{display:"grid",gridTemplateColumns:"auto 1fr auto",gap:12,alignItems:"center",marginBottom:10,padding:"10px 12px",background:comp.enabled?"var(--c-surface)":"var(--c-purple-bg)",borderRadius:"var(--r-sm)",border:"1px solid "+(comp.enabled?"var(--c-purple-border)":"transparent"),transition:"all .15s"}}>
                       <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",minWidth:140}}>
-                        <input type="checkbox" checked={comp.enabled} onChange={e=>setComboComp(key,"enabled",e.target.checked)} style={{width:16,height:16,accentColor:"#7c3aed",cursor:"pointer"}}/>
-                        <span style={{fontSize:13,fontWeight:comp.enabled?600:400,color:comp.enabled?"#1e293b":"#94a3b8"}}>{comp.icon} {comp.label}</span>
+                        <input type="checkbox" checked={comp.enabled} onChange={e=>setComboComp(key,"enabled",e.target.checked)} style={{width:16,height:16,accentColor:"var(--c-purple)",cursor:"pointer"}}/>
+                        <span style={{fontSize:"var(--text-base)",fontWeight:comp.enabled?600:400,color:comp.enabled?"var(--c-text-2)":"var(--c-text-muted)"}}>{comp.icon} {comp.label}</span>
                       </label>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
-                        <span style={{fontSize:11,color:"#94a3b8",whiteSpace:"nowrap"}}>Giá NL:</span>
-                        <NumberInput value={comp.priceAdult||0} onChange={v=>setComboComp(key,"priceAdult",v)} placeholder="Giá NL" disabled={!comp.enabled} style={{flex:1,border:"1px solid "+(comp.enabled?"#c4b5fd":"#e2e8f0"),borderRadius:7,padding:"6px 10px",fontSize:13,background:comp.enabled?"#fff":"#f8fafc",color:comp.enabled?"#1e293b":"#94a3b8"}}/>
+                        <span style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)",whiteSpace:"nowrap"}}>Giá NL:</span>
+                        <NumberInput value={comp.priceAdult||0} onChange={v=>setComboComp(key,"priceAdult",v)} placeholder="Giá NL" disabled={!comp.enabled} style={{flex:1,border:"1px solid "+(comp.enabled?"var(--c-purple-border)":"var(--c-border)"),borderRadius:"var(--r-sm)",padding:"6px 10px",fontSize:"var(--text-base)",background:comp.enabled?"var(--c-surface)":"var(--c-surface-2)",color:comp.enabled?"var(--c-text-2)":"var(--c-text-muted)"}}/>
                       </div>
                       {comp.enabled&&fmtNum(comp.priceAdult)>0&&(
-                        <span style={{fontSize:11,color:"#7c3aed",fontWeight:600,whiteSpace:"nowrap"}}>{fmtMoney(fmtNum(comp.priceAdult)*fmtNum(form.adultQty))}</span>
+                        <span style={{fontSize:"var(--text-xs)",color:"var(--c-purple)",fontWeight:600,whiteSpace:"nowrap"}}>{fmtMoney(fmtNum(comp.priceAdult)*fmtNum(form.adultQty))}</span>
                       )}
                       {(!comp.enabled||!fmtNum(comp.priceAdult))&&<span/>}
                     </div>
                   ))}
-                  <div style={{borderTop:"1px dashed #c4b5fd",paddingTop:12,marginTop:4}}>
+                  <div style={{borderTop:"1px dashed var(--c-purple-border)",paddingTop:12,marginTop:4}}>
                     <div style={{display:"grid",gridTemplateColumns:"1fr auto",gap:12,alignItems:"center",marginBottom:8}}>
-                      <label style={{fontSize:13,color:"#374151"}}>Chiết khấu Combo (₫)</label>
-                      <input type="number" min={0} value={form.comboDiscount} onChange={e=>set("comboDiscount",Math.max(0,Number(e.target.value)))} placeholder="0" style={{width:140,border:"1px solid #c4b5fd",borderRadius:7,padding:"6px 10px",fontSize:13,textAlign:"right"}}/>
+                      <label style={{fontSize:"var(--text-base)",color:"var(--c-text-2)"}}>Chiết khấu Combo (₫)</label>
+                      <input type="number" min={0} value={form.comboDiscount} onChange={e=>set("comboDiscount",Math.max(0,Number(e.target.value)))} placeholder="0" style={{width:140,border:"1px solid var(--c-purple-border)",borderRadius:"var(--r-sm)",padding:"6px 10px",fontSize:"var(--text-base)",textAlign:"right"}}/>
                     </div>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"#ede9fe",borderRadius:8,padding:"10px 14px"}}>
-                      <span style={{fontWeight:700,fontSize:13,color:"#7c3aed"}}>Tổng Combo (NL × {fmtNum(form.adultQty)} khách):</span>
-                      <span style={{fontWeight:800,fontSize:16,color:"#7c3aed"}}>{fmtMoney(comboTotal)}</span>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"var(--c-purple-bg)",borderRadius:"var(--r-sm)",padding:"10px 14px"}}>
+                      <span style={{fontWeight:700,fontSize:"var(--text-base)",color:"var(--c-purple)"}}>Tổng Combo (NL × {fmtNum(form.adultQty)} khách):</span>
+                      <span style={{fontWeight:800,fontSize:"var(--text-lg)",color:"var(--c-purple)"}}>{fmtMoney(comboTotal)}</span>
                     </div>
                   </div>
                   <div style={{marginTop:12}}>
@@ -432,47 +432,47 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                 };
 
                 return(
-                  <div style={{background:"linear-gradient(135deg,#f0f9ff,#e0f2fe)",border:"2px solid #7dd3fc",borderRadius:14,padding:16,marginBottom:16}}>
+                  <div style={{background:"var(--c-info-bg)",border:"2px solid var(--c-info-border)",borderRadius:"var(--r-lg)",padding:16,marginBottom:16}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
                       <span style={{fontSize:18}}>🔗</span>
-                      <div style={{fontWeight:700,fontSize:14,color:"#0369a1"}}>Chọn sản phẩm Tour ghép</div>
-                      {activeProducts.length===0&&<span style={{fontSize:12,color:"#dc2626",fontWeight:600}}>⚠ Chưa có sản phẩm — Admin cần nhập trong module Tour ghép trước</span>}
-                      {activeProducts.length>0&&<span style={{fontSize:12,color:"#64748b"}}>{activeProducts.length} sản phẩm</span>}
+                      <div style={{fontWeight:700,fontSize:"var(--text-md)",color:"var(--c-info)"}}>Chọn sản phẩm Tour ghép</div>
+                      {activeProducts.length===0&&<span style={{fontSize:"var(--text-sm)",color:"var(--c-danger-mid)",fontWeight:600}}>⚠ Chưa có sản phẩm — Admin cần nhập trong module Tour ghép trước</span>}
+                      {activeProducts.length>0&&<span style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)"}}>{activeProducts.length} sản phẩm</span>}
                     </div>
 
                     {/* Sản phẩm đã chọn */}
                     {selectedProduct&&(
-                      <div style={{background:"#fff",borderRadius:10,padding:14,marginBottom:12,border:"2px solid #0891b2",position:"relative"}}>
+                      <div style={{background:"var(--c-surface)",borderRadius:"var(--r-md)",padding:14,marginBottom:12,border:"2px solid var(--c-info)",position:"relative"}}>
                         <div style={{position:"absolute",top:10,right:10}}>
-                          <button onClick={()=>{set("tourGhepProductId","");set("tourGhepProductName","");set("tourName","");}} style={{background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:6,padding:"3px 8px",fontSize:11,cursor:"pointer",fontWeight:600}}>✕ Bỏ chọn</button>
+                          <button onClick={()=>{set("tourGhepProductId","");set("tourGhepProductName","");set("tourName","");}} style={{background:"var(--c-danger-bg)",color:"var(--c-danger-mid)",border:"none",borderRadius:"var(--r-xs)",padding:"3px 8px",fontSize:"var(--text-xs)",cursor:"pointer",fontWeight:600}}>✕ Bỏ chọn</button>
                         </div>
                         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-                          <span style={{background:"#0891b2",color:"#fff",borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:700}}>✓ Đã chọn</span>
-                          <span style={{fontWeight:800,fontSize:15,color:"#0c4a6e"}}>{selectedProduct.name}</span>
+                          <span style={{background:"var(--c-info)",color:"#fff",borderRadius:"var(--r-xs)",padding:"2px 8px",fontSize:"var(--text-xs)",fontWeight:700}}>✓ Đã chọn</span>
+                          <span style={{fontWeight:800,fontSize:"var(--text-lg)",color:"var(--c-info)"}}>{selectedProduct.name}</span>
                         </div>
-                        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,fontSize:12}}>
-                          <div><span style={{color:"#64748b"}}>Điểm đến:</span><br/><b>{selectedProduct.destination||"—"}</b></div>
-                          <div><span style={{color:"#64748b"}}>Đối tác/NCC:</span><br/><b>{selectedProduct.partnerName||"—"}</b></div>
-                          <div><span style={{color:"#64748b"}}>Thời gian:</span><br/><b>{selectedProduct.duration||"—"}</b></div>
-                          <div><span style={{color:"#64748b"}}>Giá bán NL:</span><br/><b style={{color:"#2563eb"}}>{(selectedProduct.sellPrices?.adult||0).toLocaleString("vi-VN")}₫</b></div>
-                          {canViewGhepCost&&<div><span style={{color:"#64748b"}}>Giá mua NCC:</span><br/><b style={{color:"#dc2626"}}>{(selectedProduct.buyPrices?.adult||0).toLocaleString("vi-VN")}₫</b></div>}
-                          {canViewGhepCost&&<div><span style={{color:"#64748b"}}>Biên LN NL:</span><br/><b style={{color:"#059669"}}>{selectedProduct.sellPrices?.adult&&selectedProduct.buyPrices?.adult?Math.round((selectedProduct.sellPrices.adult-selectedProduct.buyPrices.adult)/selectedProduct.sellPrices.adult*100)+"%" :"—"}</b></div>}
+                        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,fontSize:"var(--text-sm)"}}>
+                          <div><span style={{color:"var(--c-text-3)"}}>Điểm đến:</span><br/><b>{selectedProduct.destination||"—"}</b></div>
+                          <div><span style={{color:"var(--c-text-3)"}}>Đối tác/NCC:</span><br/><b>{selectedProduct.partnerName||"—"}</b></div>
+                          <div><span style={{color:"var(--c-text-3)"}}>Thời gian:</span><br/><b>{selectedProduct.duration||"—"}</b></div>
+                          <div><span style={{color:"var(--c-text-3)"}}>Giá bán NL:</span><br/><b style={{color:"var(--c-primary-mid)"}}>{(selectedProduct.sellPrices?.adult||0).toLocaleString("vi-VN")}₫</b></div>
+                          {canViewGhepCost&&<div><span style={{color:"var(--c-text-3)"}}>Giá mua NCC:</span><br/><b style={{color:"var(--c-danger-mid)"}}>{(selectedProduct.buyPrices?.adult||0).toLocaleString("vi-VN")}₫</b></div>}
+                          {canViewGhepCost&&<div><span style={{color:"var(--c-text-3)"}}>Biên LN NL:</span><br/><b style={{color:"var(--c-success-mid)"}}>{selectedProduct.sellPrices?.adult&&selectedProduct.buyPrices?.adult?Math.round((selectedProduct.sellPrices.adult-selectedProduct.buyPrices.adult)/selectedProduct.sellPrices.adult*100)+"%" :"—"}</b></div>}
                         </div>
                         {selectedProduct.useSchedule&&Array.isArray(selectedProduct.departures)&&selectedProduct.departures.length>0&&(
-                          <div style={{marginTop:12,paddingTop:12,borderTop:"1px dashed #cbd5e1"}}>
-                            <div style={{fontSize:12,fontWeight:700,color:"#9a3412",marginBottom:6}}>📅 Chọn đợt khởi hành (giá tự điền theo đợt)</div>
+                          <div style={{marginTop:12,paddingTop:12,borderTop:"1px dashed var(--c-border-mid)"}}>
+                            <div style={{fontSize:"var(--text-sm)",fontWeight:700,color:"var(--c-warning)",marginBottom:6}}>📅 Chọn đợt khởi hành (giá tự điền theo đợt)</div>
                             <select value={form.tourGhepDepartureId||""} onChange={e=>selectDeparture(e.target.value)}
-                              style={{width:"100%",border:"1.5px solid #fed7aa",borderRadius:9,padding:"9px 12px",fontSize:13,background:"#fff7ed",outline:"none",boxSizing:"border-box"}}>
+                              style={{width:"100%",border:"1.5px solid var(--c-warning-border)",borderRadius:"var(--r-md)",padding:"9px 12px",fontSize:"var(--text-base)",background:"var(--c-warning-bg)",outline:"none",boxSizing:"border-box"}}>
                               {selectedProduct.departures.map(d=>(
                                 <option key={d.id} value={d.id}>
                                   {(d.label||"Đợt")}{d.dates?` — ${d.dates}`:""}{d.sell?.adult?` · ${(d.sell.adult).toLocaleString("vi-VN")}đ/NL`:""}
                                 </option>
                               ))}
                             </select>
-                            <div style={{fontSize:11,color:"#9a3412",marginTop:5}}>Nhớ chọn đúng ngày khởi hành ở ô "Ngày khởi hành" bên dưới cho khớp đợt.</div>
+                            <div style={{fontSize:"var(--text-xs)",color:"var(--c-warning)",marginTop:5}}>Nhớ chọn đúng ngày khởi hành ở ô "Ngày khởi hành" bên dưới cho khớp đợt.</div>
                           </div>
                         )}
-                        {!canViewGhepCost&&<div style={{marginTop:8,fontSize:11,color:"#94a3b8"}}>💡 Giá mua NCC chỉ hiển thị với người có quyền xem Tour ghép</div>}
+                        {!canViewGhepCost&&<div style={{marginTop:8,fontSize:"var(--text-xs)",color:"var(--c-text-muted)"}}>💡 Giá mua NCC chỉ hiển thị với người có quyền xem Tour ghép</div>}
                       </div>
                     )}
 
@@ -480,24 +480,24 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                     {activeProducts.length>0&&(
                       <>
                         <div style={{position:"relative",marginBottom:10}}>
-                          <i className="ti ti-search" style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"#94a3b8",fontSize:15}}/>
+                          <i className="ti ti-search" style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"var(--c-text-muted)",fontSize:15}}/>
                           <input value={ghepSearch} onChange={e=>setGhepSearch(e.target.value)}
                             placeholder="Tìm theo tên tour, điểm đến, đối tác..."
-                            style={{width:"100%",border:"1.5px solid #bae6fd",borderRadius:9,padding:"9px 12px 9px 34px",fontSize:13,outline:"none",background:"#fff",boxSizing:"border-box"}}/>
+                            style={{width:"100%",border:"1.5px solid var(--c-info-border)",borderRadius:"var(--r-md)",padding:"9px 12px 9px 34px",fontSize:"var(--text-base)",outline:"none",background:"var(--c-surface)",boxSizing:"border-box"}}/>
                         </div>
                         {!selectedProduct&&(
                           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,maxHeight:240,overflowY:"auto"}}>
-                            {filteredProducts.length===0&&<div style={{gridColumn:"1/-1",textAlign:"center",color:"#94a3b8",padding:16,fontSize:13}}>Không tìm thấy sản phẩm</div>}
+                            {filteredProducts.length===0&&<div style={{gridColumn:"1/-1",textAlign:"center",color:"var(--c-text-muted)",padding:16,fontSize:"var(--text-base)"}}>Không tìm thấy sản phẩm</div>}
                             {filteredProducts.map(p=>(
                               <div key={p.id} onClick={()=>selectProduct(p)}
-                                style={{background:"#fff",borderRadius:9,padding:12,cursor:"pointer",border:"1.5px solid #e2e8f0",transition:"all .15s"}}
-                                onMouseEnter={e=>{e.currentTarget.style.border="1.5px solid #0891b2";e.currentTarget.style.background="#f0f9ff";}}
-                                onMouseLeave={e=>{e.currentTarget.style.border="1.5px solid #e2e8f0";e.currentTarget.style.background="#fff";}}>
-                                <div style={{fontWeight:700,fontSize:13,color:"#0c4a6e",marginBottom:4}}>{p.name}</div>
-                                <div style={{fontSize:11,color:"#64748b",marginBottom:6}}>{p.destination||""}{p.duration?` · ${p.duration}`:""}{p.partnerName?` · ${p.partnerName}`:""}</div>
+                                style={{background:"var(--c-surface)",borderRadius:"var(--r-md)",padding:12,cursor:"pointer",border:"1.5px solid var(--c-border)",transition:"all .15s"}}
+                                onMouseEnter={e=>{e.currentTarget.style.border="1.5px solid var(--c-info)";e.currentTarget.style.background="var(--c-info-bg)";}}
+                                onMouseLeave={e=>{e.currentTarget.style.border="1.5px solid var(--c-border)";e.currentTarget.style.background="var(--c-surface)";}}>
+                                <div style={{fontWeight:700,fontSize:"var(--text-base)",color:"var(--c-info)",marginBottom:4}}>{p.name}</div>
+                                <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginBottom:6}}>{p.destination||""}{p.duration?` · ${p.duration}`:""}{p.partnerName?` · ${p.partnerName}`:""}</div>
                                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                                  <span style={{fontSize:13,fontWeight:700,color:"#2563eb"}}>{(p.sellPrices?.adult||0).toLocaleString("vi-VN")}₫/NL</span>
-                                  <span style={{background:"#eff6ff",color:"#2563eb",borderRadius:99,fontSize:10,padding:"2px 6px",fontWeight:600}}>{p.type==="international"?"🌍 QT":"🏔 NĐ"}</span>
+                                  <span style={{fontSize:"var(--text-base)",fontWeight:700,color:"var(--c-primary-mid)"}}>{(p.sellPrices?.adult||0).toLocaleString("vi-VN")}₫/NL</span>
+                                  <span style={{background:"var(--c-primary-light)",color:"var(--c-primary-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-2xs)",padding:"2px 6px",fontWeight:600}}>{p.type==="international"?"🌍 QT":"🏔 NĐ"}</span>
                                 </div>
                               </div>
                             ))}
@@ -512,13 +512,13 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
               {/* Tên dịch vụ */}
               <label style={labelStyle}>{isCombo?"Tên Combo (đã tự sinh ở trên)":"Tên dịch vụ / Tour"} *</label>
               <input value={isCombo?(form.comboName||autoComboName):form.tourName} onChange={e=>isCombo?set("comboName",e.target.value):set("tourName",e.target.value)} placeholder={isCombo?(autoComboName||"Nhập tên combo…"):"Nhập tên dịch vụ / tour…"} style={{...inputStyle("tourName"),marginBottom:14}}/>
-              {errors.tourName&&<div style={{color:"#ef4444",fontSize:11,marginTop:-10,marginBottom:10}}>{errors.tourName}</div>}
+              {errors.tourName&&<div style={{color:"var(--c-danger-mid)",fontSize:"var(--text-xs)",marginTop:-10,marginBottom:10}}>{errors.tourName}</div>}
 
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:16}}>
                 <div>
                   <label style={labelStyle}>Ngày khởi hành *</label>
                   <input type="date" value={form.departDate} onChange={e=>set("departDate",e.target.value)} style={inputStyle("departDate")}/>
-                  {errors.departDate&&<div style={{color:"#ef4444",fontSize:11,marginTop:3}}>{errors.departDate}</div>}
+                  {errors.departDate&&<div style={{color:"var(--c-danger-mid)",fontSize:"var(--text-xs)",marginTop:3}}>{errors.departDate}</div>}
                 </div>
                 <div><label style={labelStyle}>Ngày về</label><input type="date" value={form.returnDate} onChange={e=>set("returnDate",e.target.value)} style={inputStyle("returnDate")}/></div>
                 <div>
@@ -530,36 +530,36 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
               </div>
 
               {/* Số lượng & đơn giá — ẩn input đơn giá khi là Combo (đã có panel combo) */}
-              <div style={{background:"#f8fafc",borderRadius:10,padding:16,marginBottom:16}}>
-                <div style={{fontWeight:700,fontSize:13,marginBottom:12,color:"#374151"}}>
+              <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-md)",padding:16,marginBottom:16}}>
+                <div style={{fontWeight:700,fontSize:"var(--text-base)",marginBottom:12,color:"var(--c-text-2)"}}>
                   {isCombo?"Số lượng khách":"Số lượng & Đơn giá khách"}
                 </div>
                 {[["Người lớn (≥18t)","adultQty","adultPrice"],["Trẻ em 10–18t","child10Qty","child10Price"],["Trẻ em 5–10t","child5Qty","child5Price"],["Trẻ em 2–5t","child2Qty","child2Price"],["Em bé <2t","infantQty","infantPrice"]].map(([label,qKey,pKey])=>(
                   <div key={qKey} style={{display:"grid",gridTemplateColumns:"140px 80px"+(isCombo?"":" 1fr"),gap:10,alignItems:"center",marginBottom:8}}>
-                    <span style={{fontSize:13,color:"#374151"}}>{label}</span>
-                    <input type="number" min={0} value={form[qKey]} onChange={e=>set(qKey,e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:7,padding:"6px 8px",fontSize:13,width:"100%"}}/>
+                    <span style={{fontSize:"var(--text-base)",color:"var(--c-text-2)"}}>{label}</span>
+                    <input type="number" min={0} value={form[qKey]} onChange={e=>set(qKey,e.target.value)} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-sm)",padding:"6px 8px",fontSize:"var(--text-base)",width:"100%"}}/>
                     {!isCombo&&<NumberInput value={fmtNum(form[pKey])?parseNum(fmtNum(form[pKey])):0} onChange={v=>set(pKey,v)} placeholder="Đơn giá (VD: 1.500.000)" style={{...inputStyle(pKey)}}/>}
                   </div>
                 ))}
-                {errors.adultPrice&&!isCombo&&<div style={{color:"#ef4444",fontSize:11,marginTop:4}}>{errors.adultPrice}</div>}
-                <div style={{display:"flex",justifyContent:"space-between",marginTop:10,paddingTop:10,borderTop:"1px solid #e2e8f0"}}>
-                  <span style={{fontWeight:700,fontSize:13}}>{isCombo?"Tổng Combo":"Tổng cộng tạm tính"}</span>
-                  <span style={{fontWeight:800,fontSize:15,color:isCombo?"#7c3aed":"#1e3a8a"}}>{fmtMoney(totalPrice)}</span>
+                {errors.adultPrice&&!isCombo&&<div style={{color:"var(--c-danger-mid)",fontSize:"var(--text-xs)",marginTop:4}}>{errors.adultPrice}</div>}
+                <div style={{display:"flex",justifyContent:"space-between",marginTop:10,paddingTop:10,borderTop:"1px solid var(--c-border)"}}>
+                  <span style={{fontWeight:700,fontSize:"var(--text-base)"}}>{isCombo?"Tổng Combo":"Tổng cộng tạm tính"}</span>
+                  <span style={{fontWeight:800,fontSize:"var(--text-lg)",color:isCombo?"var(--c-purple)":"var(--c-primary)"}}>{fmtMoney(totalPrice)}</span>
                 </div>
               </div>
 
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
                 <div>
-                  <label style={labelStyle}>Giá vốn (NCC dự kiến){isTourGhep&&!canViewGhepCost&&<span style={{color:"#dc2626",fontWeight:400}}> — ẩn</span>}</label>
+                  <label style={labelStyle}>Giá vốn (NCC dự kiến){isTourGhep&&!canViewGhepCost&&<span style={{color:"var(--c-danger-mid)",fontWeight:400}}> — ẩn</span>}</label>
                   {(!isTourGhep||canViewGhepCost)
                     ? <NumberInput value={form.costPrice||0} onChange={v=>set("costPrice",v)} placeholder="VD: 1.200.000" style={{...inputStyle("costPrice")}}/>
-                    : <div style={{padding:"9px 12px",background:"#f1f5f9",borderRadius:8,fontSize:13,color:"#94a3b8"}}>Bạn không có quyền xem giá vốn tour ghép</div>
+                    : <div style={{padding:"9px 12px",background:"var(--c-surface-2)",borderRadius:"var(--r-sm)",fontSize:"var(--text-base)",color:"var(--c-text-muted)"}}>Bạn không có quyền xem giá vốn tour ghép</div>
                   }
                 </div>
                 <div><label style={labelStyle}>Tiền cọc ban đầu</label><NumberInput value={form.depositAmount||0} onChange={v=>set("depositAmount",v)} placeholder="VD: 500.000" style={{...inputStyle("depositAmount")}}/></div>
               </div>
               {dupOrder&&(
-                <div style={{background:"#fef9c3",borderRadius:8,padding:"10px 14px",marginTop:14,fontSize:12,color:"#92400e",fontWeight:600}}>
+                <div style={{background:"var(--c-warning-bg)",borderRadius:"var(--r-sm)",padding:"10px 14px",marginTop:14,fontSize:"var(--text-sm)",color:"var(--c-warning)",fontWeight:600}}>
                   ⚠️ Khách đã có đơn {dupOrder.id} cùng ngày khởi hành
                 </div>
               )}
@@ -568,7 +568,7 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
 
           {step===3&&(
             <div>
-              <div style={{fontWeight:700,marginBottom:16,fontSize:15,color:"#1e293b"}}>🔍 Kiểm soát trước khi tạo đơn</div>
+              <div style={{fontWeight:700,marginBottom:16,fontSize:"var(--text-lg)",color:"var(--c-text-2)"}}>🔍 Kiểm soát trước khi tạo đơn</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
                 {[
                   ["Khách hàng",form.customerName],
@@ -580,89 +580,89 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                   ["Tổng tiền",(totalPrice||0).toLocaleString("vi-VN")+"đ"],
                   ["Nhân viên",form.sale],
                 ].map(([k,v])=>(
-                  <div key={k} style={{background:"#f8fafc",borderRadius:8,padding:"10px 12px"}}>
-                    <div style={{fontSize:11,color:"#94a3b8"}}>{k}</div>
-                    <div style={{fontSize:13,fontWeight:600,marginTop:2}}>{v||"—"}</div>
+                  <div key={k} style={{background:"var(--c-surface-2)",borderRadius:"var(--r-sm)",padding:"10px 12px"}}>
+                    <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)"}}>{k}</div>
+                    <div style={{fontSize:"var(--text-base)",fontWeight:600,marginTop:2}}>{v||"—"}</div>
                   </div>
                 ))}
               </div>
 
               {/* Combo breakdown */}
               {isCombo&&comboEnabledItems.length>0&&(
-                <div style={{background:"#faf5ff",border:"1px solid #e9d5ff",borderRadius:10,padding:14,marginBottom:16}}>
-                  <div style={{fontWeight:700,fontSize:12,color:"#7c3aed",marginBottom:10}}>📦 Chi tiết Combo</div>
+                <div style={{background:"var(--c-purple-bg)",border:"1px solid var(--c-purple-border)",borderRadius:"var(--r-md)",padding:14,marginBottom:16}}>
+                  <div style={{fontWeight:700,fontSize:"var(--text-sm)",color:"var(--c-purple)",marginBottom:10}}>📦 Chi tiết Combo</div>
                   {comboEnabledItems.map(([key,comp])=>(
-                    <div key={key} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid #f3e8ff",fontSize:13}}>
-                      <span style={{color:"#374151"}}>{comp.icon} {comp.label}</span>
-                      <span style={{fontWeight:600,color:"#7c3aed"}}>{fmtMoney(fmtNum(comp.priceAdult)*fmtNum(form.adultQty))}</span>
+                    <div key={key} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid var(--c-purple-border)",fontSize:"var(--text-base)"}}>
+                      <span style={{color:"var(--c-text-2)"}}>{comp.icon} {comp.label}</span>
+                      <span style={{fontWeight:600,color:"var(--c-purple)"}}>{fmtMoney(fmtNum(comp.priceAdult)*fmtNum(form.adultQty))}</span>
                     </div>
                   ))}
                   {fmtNum(form.comboDiscount||0)>0&&(
-                    <div style={{display:"flex",justifyContent:"space-between",padding:"5px 0",fontSize:13,color:"#dc2626"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",padding:"5px 0",fontSize:"var(--text-base)",color:"var(--c-danger-mid)"}}>
                       <span>Chiết khấu</span>
                       <span>−{fmtMoney(fmtNum(form.comboDiscount||0))}</span>
                     </div>
                   )}
-                  <div style={{display:"flex",justifyContent:"space-between",paddingTop:8,marginTop:4,borderTop:"1px solid #e9d5ff",fontWeight:800,fontSize:14,color:"#7c3aed"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",paddingTop:8,marginTop:4,borderTop:"1px solid var(--c-purple-border)",fontWeight:800,fontSize:"var(--text-md)",color:"var(--c-purple)"}}>
                     <span>Tổng Combo</span>
                     <span>{fmtMoney(comboTotal)}</span>
                   </div>
                 </div>
               )}
 
-              <textarea value={form.note} onChange={e=>set("note",e.target.value)} rows={3} placeholder="Ghi chú nội bộ: yêu cầu đặc biệt, dị ứng, phòng..." style={{width:"100%",border:"1px solid #e2e8f0",borderRadius:8,padding:"10px 12px",fontSize:13,boxSizing:"border-box",resize:"vertical"}}/>
+              <textarea value={form.note} onChange={e=>set("note",e.target.value)} rows={3} placeholder="Ghi chú nội bộ: yêu cầu đặc biệt, dị ứng, phòng..." style={{width:"100%",border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-sm)",padding:"10px 12px",fontSize:"var(--text-base)",boxSizing:"border-box",resize:"vertical",background:"var(--c-surface)",color:"var(--c-text)"}}/>
               {checklistDone<checklist.length&&(
-                <div style={{background:"#fef9c3",borderRadius:8,padding:"10px 14px",marginTop:14,fontSize:12,color:"#92400e",fontWeight:600}}>
+                <div style={{background:"var(--c-warning-bg)",borderRadius:"var(--r-sm)",padding:"10px 14px",marginTop:14,fontSize:"var(--text-sm)",color:"var(--c-warning)",fontWeight:600}}>
                   ⚠️ Còn {checklist.length-checklistDone} tiêu chí chưa hoàn thành — xem cột bên phải
                 </div>
               )}
             </div>
           )}
 
-          <div style={{display:"flex",gap:10,marginTop:24,paddingTop:20,borderTop:"1px solid #f1f5f9"}}>
-            {step>1?<button onClick={goBack} style={{background:"#f1f5f9",border:"none",borderRadius:9,padding:"11px 22px",cursor:"pointer",fontWeight:600,fontSize:13}}>← Quay lại</button>
-              :<button onClick={onCancel} style={{background:"#f1f5f9",border:"none",borderRadius:9,padding:"11px 22px",cursor:"pointer",fontWeight:600,fontSize:13}}>Hủy</button>}
+          <div style={{display:"flex",gap:10,marginTop:24,paddingTop:20,borderTop:"1px solid var(--c-border)"}}>
+            {step>1?<Btn variant="secondary" onClick={goBack}>← Quay lại</Btn>
+              :<Btn variant="secondary" onClick={onCancel}>Hủy</Btn>}
             <div style={{flex:1}}/>
-            {step<3?<button onClick={goNext} style={{background:"#1e3a8a",color:"#fff",border:"none",borderRadius:9,padding:"11px 26px",cursor:"pointer",fontWeight:700,fontSize:13}}>Tiếp tục →</button>
-              :<button onClick={handleSave} style={{background:"#16a34a",color:"#fff",border:"none",borderRadius:9,padding:"11px 26px",cursor:"pointer",fontWeight:700,fontSize:13}}>✓ Tạo đơn hàng</button>}
+            {step<3?<Btn size="lg" onClick={goNext}>Tiếp tục →</Btn>
+              :<Btn size="lg" variant="success" style={{background:"var(--c-success-mid)",color:"#fff",border:"none"}} onClick={handleSave}>✓ Tạo đơn hàng</Btn>}
           </div>
         </div>
 
         {/* Right sidebar */}
         <div>
-          <div style={{background:"#fff",borderRadius:14,padding:18,boxShadow:"0 1px 6px rgba(0,0,0,.07)",marginBottom:14}}>
-            <div style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:.5,marginBottom:12,textTransform:"uppercase"}}>Kiểm tra nhanh</div>
+          <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:18,boxShadow:"var(--sh-sm)",marginBottom:14}}>
+            <div style={{fontSize:"var(--text-xs)",fontWeight:700,color:"var(--c-text-muted)",letterSpacing:.5,marginBottom:12,textTransform:"uppercase"}}>Kiểm tra nhanh</div>
             {checklist.map(c=>(
-              <div key={c.label} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 0",fontSize:13}}>
-                <span style={{color:c.ok?"#16a34a":"#dc2626",fontWeight:800}}>{c.ok?"✓":"✗"}</span>
-                <span style={{color:c.ok?"#374151":"#94a3b8"}}>{c.label}</span>
+              <div key={c.label} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 0",fontSize:"var(--text-base)"}}>
+                <span style={{color:c.ok?"var(--c-success-mid)":"var(--c-danger-mid)",fontWeight:800}}>{c.ok?"✓":"✗"}</span>
+                <span style={{color:c.ok?"var(--c-text-2)":"var(--c-text-muted)"}}>{c.label}</span>
               </div>
             ))}
           </div>
-          <div style={{background:"#fff",borderRadius:14,padding:18,boxShadow:"0 1px 6px rgba(0,0,0,.07)",marginBottom:14}}>
-            <div style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:.5,marginBottom:8,textTransform:"uppercase"}}>Doanh thu dự kiến</div>
-            <div style={{fontSize:24,fontWeight:800,color:isCombo?"#7c3aed":"#1e3a8a"}}>{fmtMoney(totalPrice)}</div>
-            <div style={{fontSize:12,color:"#64748b",marginTop:4}}>đồng · Lãi {profitPct.toFixed(0)}%</div>
-            <div style={{background:"#f1f5f9",borderRadius:6,height:8,marginTop:10}}>
-              <div style={{background:profitPct>=15?"#16a34a":profitPct>=5?"#d97706":"#dc2626",height:8,borderRadius:6,width:Math.min(100,Math.max(0,profitPct*2))+"%",transition:"width .4s"}}/>
+          <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:18,boxShadow:"var(--sh-sm)",marginBottom:14}}>
+            <div style={{fontSize:"var(--text-xs)",fontWeight:700,color:"var(--c-text-muted)",letterSpacing:.5,marginBottom:8,textTransform:"uppercase"}}>Doanh thu dự kiến</div>
+            <div style={{fontSize:"var(--text-3xl)",fontWeight:800,color:isCombo?"var(--c-purple)":"var(--c-primary)"}}>{fmtMoney(totalPrice)}</div>
+            <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)",marginTop:4}}>đồng · Lãi {profitPct.toFixed(0)}%</div>
+            <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-xs)",height:8,marginTop:10}}>
+              <div style={{background:profitPct>=15?"var(--c-success-mid)":profitPct>=5?"var(--c-warning-mid)":"var(--c-danger-mid)",height:8,borderRadius:"var(--r-xs)",width:Math.min(100,Math.max(0,profitPct*2))+"%",transition:"width .4s"}}/>
             </div>
           </div>
           {/* Combo mini-summary in sidebar */}
           {isCombo&&comboEnabledItems.length>0&&(
-            <div style={{background:"#faf5ff",border:"1px solid #e9d5ff",borderRadius:12,padding:14}}>
-              <div style={{fontSize:11,fontWeight:700,color:"#7c3aed",letterSpacing:.5,marginBottom:10,textTransform:"uppercase"}}>Thành phần Combo</div>
+            <div style={{background:"var(--c-purple-bg)",border:"1px solid var(--c-purple-border)",borderRadius:"var(--r-md)",padding:14}}>
+              <div style={{fontSize:"var(--text-xs)",fontWeight:700,color:"var(--c-purple)",letterSpacing:.5,marginBottom:10,textTransform:"uppercase"}}>Thành phần Combo</div>
               {comboEnabledItems.map(([key,comp])=>(
-                <div key={key} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",fontSize:12}}>
-                  <span style={{color:"#374151"}}>{comp.icon} {comp.label}</span>
-                  <span style={{fontWeight:600,color:"#7c3aed"}}>{fmtMoney(fmtNum(comp.priceAdult))}<span style={{fontSize:10,color:"#94a3b8"}}>/NL</span></span>
+                <div key={key} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",fontSize:"var(--text-sm)"}}>
+                  <span style={{color:"var(--c-text-2)"}}>{comp.icon} {comp.label}</span>
+                  <span style={{fontWeight:600,color:"var(--c-purple)"}}>{fmtMoney(fmtNum(comp.priceAdult))}<span style={{fontSize:"var(--text-2xs)",color:"var(--c-text-muted)"}}>/NL</span></span>
                 </div>
               ))}
               {fmtNum(form.comboDiscount||0)>0&&(
-                <div style={{display:"flex",justifyContent:"space-between",padding:"4px 0",fontSize:12,color:"#dc2626"}}>
+                <div style={{display:"flex",justifyContent:"space-between",padding:"4px 0",fontSize:"var(--text-sm)",color:"var(--c-danger-mid)"}}>
                   <span>CK</span><span>−{fmtMoney(fmtNum(form.comboDiscount||0))}</span>
                 </div>
               )}
-              <div style={{borderTop:"1px solid #e9d5ff",marginTop:6,paddingTop:6,display:"flex",justifyContent:"space-between",fontWeight:700,fontSize:13,color:"#7c3aed"}}>
+              <div style={{borderTop:"1px solid var(--c-purple-border)",marginTop:6,paddingTop:6,display:"flex",justifyContent:"space-between",fontWeight:700,fontSize:"var(--text-base)",color:"var(--c-purple)"}}>
                 <span>Tổng × {fmtNum(form.adultQty)} NL</span>
                 <span>{fmtMoney(comboTotal)}</span>
               </div>
