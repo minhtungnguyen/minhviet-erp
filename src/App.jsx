@@ -8019,9 +8019,10 @@ function OrderDetail({order,vouchers,expenses=[],refunds=[],onBack,onUpdate,onDe
     </div>
   );
 }
-function ProfilePage({ currentUser, onUpdate, onBack, pushNotif }){
+function ProfilePage({ currentUser, onUpdate, onBack, pushNotif, verifyLogin }){
   const [form,setForm]=React.useState({name:currentUser?.name||"",email:currentUser?.email||"",phone:currentUser?.phone||"",avatar:currentUser?.avatar||""});
   const [pwForm,setPwForm]=React.useState({current:"",next:"",confirm:""});
+  const [pwBusy,setPwBusy]=React.useState(false);
   const [tab,setTab]=React.useState("info");
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
   const saveInfo=()=>{
@@ -8029,13 +8030,21 @@ function ProfilePage({ currentUser, onUpdate, onBack, pushNotif }){
     onUpdate&&onUpdate({...currentUser,...form});
     pushNotif&&pushNotif("Đã cập nhật thông tin");
   };
-  const changePw=()=>{
-    if(pwForm.current!==currentUser?.password) return pushNotif&&pushNotif("Mật khẩu hiện tại không đúng","error");
+  const changePw=async()=>{
     if(pwForm.next.length<6) return pushNotif&&pushNotif("Mật khẩu mới tối thiểu 6 ký tự","error");
     if(pwForm.next!==pwForm.confirm) return pushNotif&&pushNotif("Xác nhận mật khẩu không khớp","error");
-    onUpdate&&onUpdate({...currentUser,password:pwForm.next});
-    pushNotif&&pushNotif("Đã đổi mật khẩu thành công");
-    setPwForm({current:"",next:"",confirm:""});
+    setPwBusy(true);
+    try{
+      const verified = await verifyLogin?.(currentUser?.username, pwForm.current);
+      if(!verified){ pushNotif&&pushNotif("Mật khẩu hiện tại không đúng","error"); return; }
+      onUpdate&&onUpdate({...currentUser,password:pwForm.next});
+      pushNotif&&pushNotif("Đã đổi mật khẩu thành công");
+      setPwForm({current:"",next:"",confirm:""});
+    }catch(e){
+      pushNotif&&pushNotif("Không thể đổi mật khẩu: "+e.message,"error");
+    }finally{
+      setPwBusy(false);
+    }
   };
   const ROLE_LABEL={manager:"Giám đốc",pho_giam_doc:"Phó Giám đốc",accountant:"Kế toán",cashier:"Thu ngân",sale:"Sale",dieu_hanh:"Điều hành"};
   return(
@@ -8073,7 +8082,7 @@ function ProfilePage({ currentUser, onUpdate, onBack, pushNotif }){
               <input type="password" value={pwForm[key]} onChange={e=>setPwForm(f=>({...f,[key]:e.target.value}))} style={{width:"100%",border:"1px solid #e2e8f0",borderRadius:8,padding:"9px 12px",fontSize:13,boxSizing:"border-box"}}/>
             </div>
           ))}
-          <button onClick={changePw} style={{width:"100%",background:"#2563eb",color:"#fff",border:"none",borderRadius:10,padding:12,cursor:"pointer",fontWeight:700,fontSize:14}}>Đổi mật khẩu</button>
+          <button onClick={changePw} disabled={pwBusy} style={{width:"100%",background:pwBusy?"#94a3b8":"#2563eb",color:"#fff",border:"none",borderRadius:10,padding:12,cursor:pwBusy?"not-allowed":"pointer",fontWeight:700,fontSize:14}}>{pwBusy?"Đang kiểm tra...":"Đổi mật khẩu"}</button>
         </div>
       )}
     </div>
@@ -13029,6 +13038,7 @@ export default function App(){
     dbNotifs,
     setOrders, setVouchers, setExpenses, setRefunds, setCustomers, setUsers: setUserAccounts,
     saveOrder, removeOrder, saveVoucher, saveExpense, saveRefund, saveCustomer, saveUser, removeUser, saveNotification,
+    verifyLogin,
     loading: dbLoading,
   } = useSupabase();
   const [quotes, setQuotes] = React.useState([]);
@@ -13424,7 +13434,7 @@ export default function App(){
   }
 
   if(!currentUser){
-    return <LoginPage onLogin={handleLogin} userAccounts={userAccounts}/>;
+    return <LoginPage onLogin={handleLogin} onVerify={verifyLogin}/>;
   }
 
   return (
@@ -13462,7 +13472,7 @@ export default function App(){
       {view==="aftercare"&&<AfterSaleModule careTasks={careTasks} onUpdateTasks={setCareTasksP} orders={orders} customers={customers} currentUser={currentUser} currentRole={currentRole} pushNotif={pushToast}/>}
       {view==="tasks"&&<TaskModule tasks={tasks} onUpdateTasks={setTasksP} orders={orders} customers={customers} currentUser={currentUser} currentRole={currentRole} userAccounts={userAccounts} pushNotif={pushToast}/>}
       {view==="deploy"&&getEffectivePerms(currentUser).includes("deploy")&&<DeployPanel deploySteps={deploySteps} onUpdateSteps={setDeploySteps}/>}
-      {view==="profile"&&<ProfilePage currentUser={currentUser} onUpdate={handleUpdateCurrentUser} onBack={()=>setView("dashboard")} pushNotif={pushToast}/>}
+      {view==="profile"&&<ProfilePage currentUser={currentUser} onUpdate={handleUpdateCurrentUser} onBack={()=>setView("dashboard")} pushNotif={pushToast} verifyLogin={verifyLogin}/>}
       {view==="banks"&&<BankAccountModule bankAccounts={bankAccounts} onUpdate={setBankAccounts} pushNotif={pushToast}/>}
     </div>
 

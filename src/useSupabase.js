@@ -145,10 +145,21 @@ export function useSupabase() {
     if(SUPABASE_READY){ try{ await DB.upsertCustomer(c) }catch(e){ console.error(e) } }
   },[])
 
+  // Xác thực đăng nhập — server-side qua RPC khi có Supabase; fallback seed data khi chạy offline/dev
+  const verifyLogin = useCallback(async(username, password)=>{
+    if (SUPABASE_READY) return await DB.verifyLogin(username, password)
+    const u = USER_ACCOUNTS.find(a => a.username === username.trim().toLowerCase() && a.password === password)
+    if (!u || u.active === false) return null
+    const { password: _pw, ...safe } = u
+    return safe
+  },[])
+
   const saveUser = useCallback(async(u)=>{
+    // Không giữ password ở local state — chỉ đi kèm request lên server để hash
+    const { password: _pw, ...safeU } = u
     setUsers(prev=>{
       const exists = prev.find(x=>x.id===u.id)
-      return exists ? prev.map(x=>x.id===u.id?u:x) : [...prev,u]
+      return exists ? prev.map(x=>x.id===u.id?safeU:x) : [...prev,safeU]
     })
     if(SUPABASE_READY){
       try{
@@ -181,7 +192,7 @@ export function useSupabase() {
     // DB-synced savers
     saveOrder, removeOrder, saveVoucher, saveExpense, saveRefund,
     saveNcc, removeNcc, saveCustomer, saveUser, removeUser,
-    saveNotification,
+    saveNotification, verifyLogin,
     // Meta
     loading, error,
     supabaseReady: SUPABASE_READY,

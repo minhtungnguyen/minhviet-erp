@@ -9,28 +9,41 @@ import { supabase } from './supabase.js'
 // USER PROFILES
 // ─────────────────────────────────────────
 export async function fetchUsers() {
-  const { data, error } = await supabase.from('user_profiles').select('*').order('created_at')
+  // password bị loại khỏi select — cột này không còn SELECT-able qua anon key (xem migration hash_passwords_and_secure_login)
+  const { data, error } = await supabase.from('user_profiles')
+    .select('id,username,name,role,dept,job_title,phone,email,photo_url,avatar,active,created_at,perms')
+    .order('created_at')
   if (error) throw error
   return data.map(dbToUser)
 }
+// Đăng nhập: xác thực server-side qua RPC (SECURITY DEFINER), không bao giờ trả password về client
+export async function verifyLogin(username, password) {
+  const { data, error } = await supabase.rpc('verify_login', { p_username: username, p_password: password })
+  if (error) throw error
+  if (!data || data.length === 0) return null
+  return dbToUser(data[0])
+}
 export async function upsertUser(u) {
-  const { error } = await supabase.from('user_profiles').upsert(userToDb(u))
+  // Ghi qua RPC upsert_user_account: hash mật khẩu server-side bằng bcrypt (pgcrypto),
+  // chỉ đổi mật khẩu khi p_password có giá trị — để trống = giữ nguyên mật khẩu hiện tại
+  const { error } = await supabase.rpc('upsert_user_account', {
+    p_id: u.id, p_username: u.username, p_name: u.name, p_role: u.role,
+    p_dept: u.dept || null, p_job_title: u.jobTitle || null,
+    p_phone: u.phone || null, p_email: u.email || null,
+    p_photo_url: u.photoUrl || null, p_avatar: u.avatar || null,
+    p_active: u.active !== false,
+    p_perms: { canViewTourGhep: u.canViewTourGhep === true, perms: Array.isArray(u.perms) ? u.perms : null },
+    p_password: u.password || null,
+  })
   if (error) throw error
 }
 export async function deleteUser(id) {
   const { error } = await supabase.from('user_profiles').delete().eq('id', id)
   if (error) throw error
 }
-function userToDb(u) {
-  return { id:u.id, username:u.username, password:u.password, name:u.name,
-    role:u.role, dept:u.dept||null, job_title:u.jobTitle||null,
-    phone:u.phone||null, email:u.email||null, photo_url:u.photoUrl||null,
-    avatar:u.avatar||null, active:u.active!==false,
-    perms: { canViewTourGhep: u.canViewTourGhep===true, perms: Array.isArray(u.perms)?u.perms:null } }
-}
 function dbToUser(r) {
   const p = r.perms || {}
-  return { id:r.id, username:r.username, password:r.password, name:r.name||"",
+  return { id:r.id, username:r.username, name:r.name||"",
     role:r.role, dept:r.dept, jobTitle:r.job_title, phone:r.phone,
     email:r.email, photoUrl:r.photo_url,
     avatar: r.avatar || (r.name?.[0]?.toUpperCase()) || "?",

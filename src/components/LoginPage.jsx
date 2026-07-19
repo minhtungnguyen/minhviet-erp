@@ -1,22 +1,14 @@
 import { useState } from "react";
 import { Alert, Spinner } from "./ui";
 
-// Tài khoản thử — xóa trước khi go-live
-const DEMO_ACCOUNTS = [
-  { u: "hoa.sale",  p: "mv2025",   role: "Sale",     color: "#2563eb", bg: "#eff6ff" },
-  { u: "lien.kt",   p: "mv2025",   role: "Kế toán",  color: "#1d6b4f", bg: "#e8f5ef" },
-  { u: "tung.gd",   p: "mv@admin", role: "Giám đốc", color: "#7a5a00", bg: "#fef9e7" },
-  { u: "van.dh",    p: "mv2025",   role: "Điều hành",color: "#5c2eb0", bg: "#f3f0ff" },
-];
-
-export default function LoginPage({ onLogin, userAccounts = [] }) {
+export default function LoginPage({ onLogin, onVerify }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPw,   setShowPw]   = useState(false);
   const [error,    setError]    = useState("");
   const [loading,  setLoading]  = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e?.preventDefault();
     if (!username.trim() || !password.trim()) {
       setError("Vui lòng nhập đầy đủ thông tin");
@@ -24,22 +16,18 @@ export default function LoginPage({ onLogin, userAccounts = [] }) {
     }
     setLoading(true);
     setError("");
-    setTimeout(() => {
-      const user = userAccounts.find(
-        u => u.username === username.trim().toLowerCase() && u.password === password
-      );
+    try {
+      const user = await onVerify(username, password);
       if (user) {
-        if (user.active === false) {
-          setError("Tài khoản đã bị khóa. Liên hệ Giám đốc để mở lại.");
-          setLoading(false);
-          return;
-        }
         onLogin(user);
       } else {
-        setError("Tên đăng nhập hoặc mật khẩu không đúng");
+        setError("Tên đăng nhập hoặc mật khẩu không đúng, hoặc tài khoản đã bị khóa");
         setLoading(false);
       }
-    }, 600);
+    } catch (err) {
+      setError("Không thể kết nối máy chủ, vui lòng thử lại");
+      setLoading(false);
+    }
   };
 
   const inputStyle = (focused) => ({
@@ -161,37 +149,6 @@ export default function LoginPage({ onLogin, userAccounts = [] }) {
               {loading ? <><Spinner size={16} color="#94a3b8" /> Đang đăng nhập...</> : "Đăng nhập →"}
             </button>
           </form>
-
-          {/* Demo accounts */}
-          <div style={{ marginTop: 24, padding: "14px 16px", background: "#f8fafc", borderRadius: 12, border: "1px solid #e2e8f0" }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 8 }}>
-              Tài khoản thử nghiệm
-            </div>
-            {DEMO_ACCOUNTS.map(a => (
-              <div
-                key={a.u}
-                onClick={() => { setUsername(a.u); setPassword(a.p); setError(""); }}
-                style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  padding: "6px 8px", borderRadius: 8, cursor: "pointer",
-                  marginBottom: 2, transition: "background 0.1s",
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = "#eff6ff"}
-                onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-              >
-                <span style={{ fontSize: 12, color: "#475569", fontFamily: "monospace", fontWeight: 500 }}>{a.u}</span>
-                <span style={{
-                  fontSize: 11, fontWeight: 700, padding: "2px 9px",
-                  borderRadius: 20, background: a.bg, color: a.color,
-                }}>
-                  {a.role}
-                </span>
-              </div>
-            ))}
-            <div style={{ fontSize: 10, color: "#cbd5e1", marginTop: 6 }}>
-              Click để điền nhanh · Xóa khối này trước khi go-live
-            </div>
-          </div>
         </div>
 
         <div style={{ textAlign: "center", marginTop: 20, fontSize: 11, color: "rgba(255,255,255,.3)" }}>
