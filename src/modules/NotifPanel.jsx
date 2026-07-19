@@ -17,30 +17,30 @@ export default function NotifPanel({notifs=[],onClose,onMarkRead,onNav,currentRo
   };
   return(
     <div style={{position:"fixed",inset:0,zIndex:1500}} onClick={onClose}>
-      <div className="anim-scale" onClick={e=>e.stopPropagation()} style={{position:"absolute",top:64,right:16,width:380,maxHeight:500,background:"#fff",borderRadius:14,boxShadow:"0 8px 32px rgba(0,0,0,.18)",overflow:"hidden",display:"flex",flexDirection:"column",transformOrigin:"top right"}}>
-        <div style={{padding:"14px 18px",borderBottom:"1px solid #f1f5f9",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <div className="anim-scale" onClick={e=>e.stopPropagation()} style={{position:"absolute",top:64,right:16,width:380,maxHeight:500,background:"var(--c-surface)",borderRadius:14,boxShadow:"0 8px 32px rgba(0,0,0,.18)",overflow:"hidden",display:"flex",flexDirection:"column",transformOrigin:"top right"}}>
+        <div style={{padding:"14px 18px",borderBottom:"1px solid var(--c-surface-3)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div style={{fontWeight:700,fontSize:14}}>Thông báo</div>
-          {notifs.some(n=>!n.read)&&<button onClick={onMarkRead} style={{background:"none",border:"none",color:"#185FA5",fontSize:12,cursor:"pointer",fontWeight:600}}>Đánh dấu đã đọc</button>}
+          {notifs.some(n=>!n.read)&&<button onClick={onMarkRead} style={{background:"none",border:"none",color:"var(--c-primary-mid)",fontSize:12,cursor:"pointer",fontWeight:600}}>Đánh dấu đã đọc</button>}
         </div>
         <div style={{overflowY:"auto",flex:1}}>
-          {notifs.filter(n=>!n.targetRole||n.targetRole===currentRole||(n.targetRole==="manager"&&currentRole==="pho_giam_doc")).length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:40,fontSize:13}}>Không có thông báo nào</div>}
+          {notifs.filter(n=>!n.targetRole||n.targetRole===currentRole||(n.targetRole==="manager"&&currentRole==="pho_giam_doc")).length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:40,fontSize:13}}>Không có thông báo nào</div>}
           {notifs.filter(n=>!n.targetRole||n.targetRole===currentRole||(n.targetRole==="manager"&&currentRole==="pho_giam_doc")).slice(0,30).map(n=>{
             const canView=canViewOrder(n);
             return(
               <div key={n.id}
-                style={{display:"flex",gap:10,padding:"12px 18px",borderBottom:"1px solid #f8fafc",background:n.read?"#fff":"#E6F1FB",cursor:canView?"pointer":"default",transition:"background .15s"}}
+                style={{display:"flex",gap:10,padding:"12px 18px",borderBottom:"1px solid var(--c-surface-2)",background:n.read?"var(--c-surface)":"var(--c-primary-light)",cursor:canView?"pointer":"default",transition:"background .15s"}}
                 onClick={()=>{ if(canView&&onNav) onNav(n.orderId); }}
-                onMouseEnter={e=>{if(canView) e.currentTarget.style.background=n.read?"#f8fafc":"#dbeafe";}}
-                onMouseLeave={e=>{e.currentTarget.style.background=n.read?"#fff":"#E6F1FB";}}>
+                onMouseEnter={e=>{if(canView) e.currentTarget.style.background=n.read?"var(--c-surface-2)":"var(--c-primary-pale)";}}
+                onMouseLeave={e=>{e.currentTarget.style.background=n.read?"var(--c-surface)":"var(--c-primary-light)";}}>
                 <span style={{fontSize:16,flexShrink:0,marginTop:1}}>{ICON[n.type]||"📌"}</span>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:13,fontWeight:n.read?400:600,color:"#1e293b"}}>{n.msg}</div>
+                  <div style={{fontSize:13,fontWeight:n.read?400:600,color:"var(--c-text-2)"}}>{n.msg}</div>
                   <div style={{display:"flex",alignItems:"center",gap:6,marginTop:3}}>
-                    <span style={{fontSize:11,color:"#94a3b8"}}>{fmtTime(n.time)}</span>
-                    {n.createdBy&&<span style={{fontSize:11,color:"#94a3b8"}}>· {n.createdBy}</span>}
+                    <span style={{fontSize:11,color:"var(--c-text-muted)"}}>{fmtTime(n.time)}</span>
+                    {n.createdBy&&<span style={{fontSize:11,color:"var(--c-text-muted)"}}>· {n.createdBy}</span>}
                   </div>
-                  {canView&&<div style={{fontSize:11,color:"#185FA5",fontWeight:600,marginTop:3}}>Xem đơn hàng →</div>}
-                  {n.orderId&&!canView&&<div style={{fontSize:11,color:"#94a3b8",marginTop:3}}>Chỉ sale phụ trách và kế toán / điều hành có thể xem</div>}
+                  {canView&&<div style={{fontSize:11,color:"var(--c-primary-mid)",fontWeight:600,marginTop:3}}>Xem đơn hàng →</div>}
+                  {n.orderId&&!canView&&<div style={{fontSize:11,color:"var(--c-text-muted)",marginTop:3}}>Chỉ sale phụ trách và kế toán / điều hành có thể xem</div>}
                 </div>
               </div>
             );
