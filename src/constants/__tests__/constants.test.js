@@ -78,9 +78,11 @@ describe('statuses.js', () => {
   validateStatusMap(BK_STATUS, 'BK_STATUS');
   validateStatusMap(INVOICE_TYPES, 'INVOICE_TYPES');
 
-  it('ORDER_STATUS có trạng thái pending_payment và completed', () => {
+  it('ORDER_STATUS khớp vòng lặp trạng thái đơn thực tế: pending_payment → confirmed → in_progress → closed, huỷ được ở mọi bước', () => {
     expect(ORDER_STATUS.pending_payment).toBeDefined();
-    expect(ORDER_STATUS.completed).toBeDefined();
+    expect(ORDER_STATUS.confirmed).toBeDefined();
+    expect(ORDER_STATUS.in_progress).toBeDefined();
+    expect(ORDER_STATUS.closed).toBeDefined();
     expect(ORDER_STATUS.cancelled).toBeDefined();
   });
 

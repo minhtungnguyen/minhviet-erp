@@ -2,6 +2,7 @@ import React from "react";
 import PassengerPanel from "./PassengerPanel.jsx";
 import FinancePanel from "./FinancePanel.jsx";
 import { getProfitStatus } from "../utils/profit.js";
+import { ORDER_STATUS } from "../constants/statuses.js";
 import {
   buildContractAirline, buildContractTour, buildCostStatement,
   buildPaymentRequest, buildLiquidation,
@@ -15,9 +16,6 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
   const [activeTab,setActiveTab]=React.useState("info");
   const [showStatusMenu,setShowStatusMenu]=React.useState(false);
 
-  const STATUS_LABEL={pending_payment:"Chờ thanh toán",confirmed:"Đã xác nhận",in_progress:"Đang chạy",closed:"Đã đóng",cancelled:"Đã hủy"};
-  const STATUS_COLOR={pending_payment:"#d97706",confirmed:"#2563eb",in_progress:"#16a34a",closed:"#475569",cancelled:"#dc2626"};
-  const STATUS_BG={pending_payment:"#fef9c3",confirmed:"#dbeafe",in_progress:"#dcfce7",closed:"#f1f5f9",cancelled:"#fee2e2"};
   const NEXT_STATUSES={pending_payment:["confirmed","cancelled"],confirmed:["in_progress","cancelled"],in_progress:["closed","cancelled"],closed:[],cancelled:[]};
 
   const orderVouchers=(vouchers||[]).filter(v=>v.orderId===order?.id);
@@ -37,7 +35,7 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
     }
     onUpdate&&onUpdate({...order,status});
     setShowStatusMenu(false);
-    pushNotif&&pushNotif("Cập nhật trạng thái: "+STATUS_LABEL[status]);
+    pushNotif&&pushNotif("Cập nhật trạng thái: "+ORDER_STATUS[status]?.label);
   };
 
   const fmtMoney=(n)=>(n||0).toLocaleString("vi-VN")+"₫";
@@ -58,15 +56,15 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
           <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
             <h2 style={{margin:0,fontSize:20,fontWeight:800,color:"#1e293b"}}>{order?.id}</h2>
             <div style={{position:"relative"}}>
-              <button onClick={()=>setShowStatusMenu(v=>!v)} style={{background:STATUS_BG[order?.status]||"#f1f5f9",color:STATUS_COLOR[order?.status]||"#475569",border:"none",borderRadius:20,padding:"5px 14px",cursor:"pointer",fontWeight:700,fontSize:12}}>
-                {STATUS_LABEL[order?.status]||order?.status} ▾
+              <button onClick={()=>setShowStatusMenu(v=>!v)} style={{background:ORDER_STATUS[order?.status]?.bg||"#f1f5f9",color:ORDER_STATUS[order?.status]?.color||"#475569",border:"none",borderRadius:20,padding:"5px 14px",cursor:"pointer",fontWeight:700,fontSize:12}}>
+                {ORDER_STATUS[order?.status]?.label||order?.status} ▾
               </button>
               {showStatusMenu&&(NEXT_STATUSES[order?.status]||[]).length>0&&(
                 <div style={{position:"absolute",top:"100%",left:0,background:"#fff",border:"1px solid #e2e8f0",borderRadius:10,boxShadow:"0 4px 16px rgba(0,0,0,.12)",zIndex:100,marginTop:4,minWidth:160}}>
                   {(NEXT_STATUSES[order?.status]||[]).map(s=>(
-                    <div key={s} onClick={()=>changeStatus(s)} style={{padding:"10px 16px",cursor:"pointer",fontSize:13,fontWeight:600,color:STATUS_COLOR[s]||"#475569"}}
+                    <div key={s} onClick={()=>changeStatus(s)} style={{padding:"10px 16px",cursor:"pointer",fontSize:13,fontWeight:600,color:ORDER_STATUS[s]?.color||"#475569"}}
                       onMouseEnter={e=>e.currentTarget.style.background="#f8fafc"} onMouseLeave={e=>e.currentTarget.style.background=""}>
-                      → {STATUS_LABEL[s]}
+                      → {ORDER_STATUS[s]?.label}
                     </div>
                   ))}
                 </div>

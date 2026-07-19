@@ -15,6 +15,7 @@ import { parsePassengersFromFile, downloadPassengerTemplate, exportCustomersToEx
 import { downloadCSV } from "./utils/csv.js";
 import { DEFAULT_CHECKLIST } from "./constants/checklist.js";
 import { SERVICE_TYPES } from "./constants/serviceTypes.js";
+import { ORDER_STATUS } from "./constants/statuses.js";
 import { PERMISSION_GROUPS, ALL_PERM_KEYS, PERM_LABEL, ROLE_DEFAULT_PERMS, isBanGiamDoc, getEffectivePerms, canSeeTourGhepSensitive, canAccessTourGhep } from "./utils/permissions.js";
 import { NumberInput, fmtNum } from "./components/ui.jsx";
 import CloseOrderModule from "./modules/CloseOrderModule.jsx";
@@ -975,8 +976,7 @@ export default function App(){
     const prevOrder=orders.find(o=>o.id===updated.id);
     let finalOrder=updated;
     if(prevOrder&&updated.status!==prevOrder.status){
-      const STATUS_LABEL={pending_payment:"Chờ thanh toán",confirmed:"Đã xác nhận",in_progress:"Đang chạy",closed:"Đã đóng",cancelled:"Đã hủy"};
-      const entry={ts:new Date().toISOString(),by:currentUser?.name||"?",action:"Đổi trạng thái: "+(STATUS_LABEL[prevOrder.status]||prevOrder.status)+" → "+(STATUS_LABEL[updated.status]||updated.status)};
+      const entry={ts:new Date().toISOString(),by:currentUser?.name||"?",action:"Đổi trạng thái: "+(ORDER_STATUS[prevOrder.status]?.label||prevOrder.status)+" → "+(ORDER_STATUS[updated.status]?.label||updated.status)};
       finalOrder={...updated,auditLog:[...(updated.auditLog||[]),entry]};
     }
     // Đảm bảo passengers được lưu đúng vào pax.passengers cho Supabase

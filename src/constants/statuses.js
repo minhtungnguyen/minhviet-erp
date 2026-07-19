@@ -1,12 +1,14 @@
+// Vòng đời đơn hàng thực tế (khớp NEXT_STATUSES trong OrderDetail):
+// pending_payment → confirmed → in_progress → closed, huỷ được ở bất kỳ bước nào.
+// Đây là NGUỒN SỰ THẬT DUY NHẤT cho label/màu trạng thái đơn — mọi màn hình hiển thị
+// trạng thái đơn (OrderList, OrderDetail, App.jsx audit log...) phải import từ đây,
+// không tự định nghĩa lại (trước đây có 3 bản riêng, lệch nhau).
 export const ORDER_STATUS = {
-  pending_payment:{ label:"Chờ thu tiền",  color:"#7a5a00", bg:"#fef9e7", dot:"#e8c53a" },
-  confirmed:      { label:"Đã xác nhận",   color:"#1d6b4f", bg:"#e8f5ef", dot:"#34b27c" },
-  partial_paid:   { label:"Đã cọc",        color:"#2563eb", bg:"#eff6ff", dot:"#3b82f6" },
-  full_paid:      { label:"Đã thu đủ",     color:"#1a4d8f", bg:"#e6f1fb", dot:"#3a8bd4" },
-  in_service:     { label:"Đang dịch vụ",  color:"#5c2eb0", bg:"#f3f0ff", dot:"#8b5cf6" },
-  completed:      { label:"Hoàn thành",    color:"#444",    bg:"#f0f4ff", dot:"#888"    },
-  cancelled:      { label:"Đã hủy",        color:"#8b2a1a", bg:"#fdf0ee", dot:"#e07060" },
-  locked:         { label:"Khóa đơn",      color:"#b0554a", bg:"#fdf0ee", dot:"#f87171" },
+  pending_payment:{ label:"Chờ thanh toán", color:"#92400e", bg:"#fffbeb", dot:"#d97706" },
+  confirmed:      { label:"Đã xác nhận",    color:"#1e3a8a", bg:"#eff6ff", dot:"#2563eb" },
+  in_progress:    { label:"Đang chạy",      color:"#15803d", bg:"#f0fdf4", dot:"#16a34a" },
+  closed:         { label:"Đã đóng",        color:"#334155", bg:"#f1f5f9", dot:"#64748b" },
+  cancelled:      { label:"Đã hủy",         color:"#991b1b", bg:"#fff1f2", dot:"#dc2626" },
 };
 
 export const VOUCHER_STATUS = {

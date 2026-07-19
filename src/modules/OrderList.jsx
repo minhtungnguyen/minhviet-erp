@@ -1,12 +1,10 @@
 import React from "react";
+import { ORDER_STATUS } from "../constants/statuses.js";
 
 export default function OrderList({orders,vouchers,onView,onCreate,onQuickSale,currentRole,currentUser}){
   const [search,setSearch]=React.useState("");
   const [filterStatus,setFilterStatus]=React.useState("all");
   const [sortBy,setSortBy]=React.useState("newest");
-
-  const STATUS_LABEL={pending_payment:"Chờ thanh toán",partial_paid:"Đã cọc",full_paid:"Đã thu đủ",confirmed:"Đã xác nhận",in_progress:"Đang chạy",closed:"Đã đóng",cancelled:"Đã hủy"};
-  const STATUS_COLOR={pending_payment:{bg:"#fef9c3",color:"#92400e"},partial_paid:{bg:"#eff6ff",color:"#2563eb"},full_paid:{bg:"#dcfce7",color:"#166534"},confirmed:{bg:"#dbeafe",color:"#1d4ed8"},in_progress:{bg:"#dcfce7",color:"#15803d"},closed:{bg:"#f1f5f9",color:"#475569"},cancelled:{bg:"#fee2e2",color:"#dc2626"}};
 
   const myOrders=React.useMemo(()=>{
     let list=[...orders];
@@ -53,7 +51,7 @@ export default function OrderList({orders,vouchers,onView,onCreate,onQuickSale,c
         </div>
         <select value={filterStatus} onChange={e=>setFilterStatus(e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:9,padding:"9px 12px",fontSize:13,background:"#fff"}}>
           <option value="all">Tất cả trạng thái</option>
-          {Object.entries(STATUS_LABEL).map(([k,v])=><option key={k} value={k}>{v}</option>)}
+          {Object.entries(ORDER_STATUS).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
         </select>
         <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:9,padding:"9px 12px",fontSize:13,background:"#fff"}}>
           <option value="newest">Mới nhất</option>
@@ -85,7 +83,7 @@ export default function OrderList({orders,vouchers,onView,onCreate,onQuickSale,c
               </td></tr>
             )}
             {myOrders.map(o=>{
-              const sc=STATUS_COLOR[o.status]||{bg:"#f1f5f9",color:"#475569"};
+              const sc=ORDER_STATUS[o.status]||{bg:"#f1f5f9",color:"#475569"};
               const d=debt(o);
               return(
                 <tr key={o.id} style={{borderTop:"1px solid #f1f5f9",cursor:"pointer",transition:"background .1s"}}
@@ -109,7 +107,7 @@ export default function OrderList({orders,vouchers,onView,onCreate,onQuickSale,c
                   <td style={{padding:"12px 14px",fontSize:13,fontWeight:700,color:d>0?"#dc2626":"#16a34a",whiteSpace:"nowrap"}}>{d>0?d.toLocaleString("vi-VN")+"₫":"✓"}</td>
                   <td style={{padding:"12px 14px"}}>
                     <span style={{background:sc.bg,color:sc.color,borderRadius:20,padding:"3px 10px",fontSize:11,fontWeight:700,whiteSpace:"nowrap"}}>
-                      {STATUS_LABEL[o.status]||o.status}
+                      {ORDER_STATUS[o.status]?.label||o.status}
                     </span>
                   </td>
                   <td style={{padding:"12px 14px"}}>
