@@ -1,5 +1,5 @@
 import React from "react";
-import { NumberInput } from "../components/ui.jsx";
+import { NumberInput, Btn, SearchInp, PageHeader, Sel } from "../components/ui.jsx";
 
 const PROVINCES = [
   "An Giang","Bà Rịa - Vũng Tàu","Bắc Giang","Bắc Kạn","Bạc Liêu",
@@ -76,9 +76,9 @@ function StarRating({ value=0, onChange, size=18 }){
 }
 
 function ContractBadge({ status }){
-  const MAP={co:{bg:"#dcfce7",c:"#15803d",label:"Có HĐ"},chua:{bg:"#fee2e2",c:"#dc2626",label:"Thiếu HĐ"},het_han:{bg:"#fef9c3",c:"#92400e",label:"Hết hạn"}};
+  const MAP={co:{bg:"var(--c-success-bg)",c:"var(--c-success)",label:"Có HĐ"},chua:{bg:"var(--c-danger-bg)",c:"var(--c-danger-mid)",label:"Thiếu HĐ"},het_han:{bg:"var(--c-warning-bg)",c:"var(--c-warning)",label:"Hết hạn"}};
   const s=MAP[status]||MAP.chua;
-  return <span style={{background:s.bg,color:s.c,borderRadius:20,padding:"3px 10px",fontSize:11,fontWeight:700}}>{s.label}</span>;
+  return <span style={{background:s.bg,color:s.c,borderRadius:"var(--r-pill)",padding:"3px 10px",fontSize:"var(--text-xs)",fontWeight:700}}>{s.label}</span>;
 }
 
 function ServiceTypeBadge({ loai }){
@@ -183,8 +183,8 @@ function ServiceMetaFields({ loai, meta={}, onChange }){
   return null;
 }
 
-const lbl={fontSize:12,color:"#64748b",marginBottom:3,fontWeight:600};
-const inp={width:"100%",border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 10px",fontSize:13,fontFamily:"inherit",boxSizing:"border-box",outline:"none"};
+const lbl={fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginBottom:3,fontWeight:600};
+const inp={width:"100%",border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-sm)",padding:"8px 10px",fontSize:"var(--text-base)",fontFamily:"inherit",boxSizing:"border-box",outline:"none",background:"var(--c-surface)",color:"var(--c-text)"};
 
 function ServiceEntryForm({ entry, onSave, onCancel }){
   const blank={id:"sv-"+Date.now(),loai:"Hàng không",ten_dich_vu:"",khu_vuc:{tinh_thanh:[],vung_mien:"Bắc",loai:"Nội địa"},phan_khuc:"Mid-range",gia_tham_khao:{tu:0,den:0,don_vi:"người",ghi_chu:""},mua_cao_diem:"",chinh_sach_huy:"",dieu_kien_booking:"",active:true,meta:{}};
@@ -202,7 +202,7 @@ function ServiceEntryForm({ entry, onSave, onCancel }){
   const filtProv=PROVINCES.filter(p=>!provinceSearch||p.toLowerCase().includes(provinceSearch.toLowerCase()));
 
   return(
-    <div style={{background:"#f8fafc",borderRadius:12,padding:16,border:"1px solid #e2e8f0",marginTop:8}}>
+    <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-lg)",padding:16,border:"1px solid var(--c-border)",marginTop:8}}>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
         <label style={{gridColumn:"1/-1"}}>
           <div style={lbl}>Loại dịch vụ *</div>
@@ -230,17 +230,17 @@ function ServiceEntryForm({ entry, onSave, onCancel }){
         <div style={{gridColumn:"1/-1"}}>
           <div style={lbl}>Tỉnh/thành hoạt động</div>
           <input value={provinceSearch} onChange={e=>setProvinceSearch(e.target.value)} placeholder="Tìm tỉnh/thành..." style={{...inp,marginBottom:6}}/>
-          <div style={{display:"flex",flexWrap:"wrap",gap:4,maxHeight:120,overflowY:"auto",background:"#fff",borderRadius:8,border:"1px solid #e2e8f0",padding:8}}>
+          <div style={{display:"flex",flexWrap:"wrap",gap:4,maxHeight:120,overflowY:"auto",background:"var(--c-surface)",borderRadius:"var(--r-md)",border:"1px solid var(--c-border)",padding:8}}>
             {filtProv.map(p=>{
               const sel=(form.khu_vuc.tinh_thanh||[]).includes(p);
               return(
-                <button key={p} onClick={()=>togProv(p)} style={{padding:"3px 10px",borderRadius:20,border:"1px solid",fontSize:12,cursor:"pointer",fontWeight:600,background:sel?"#2563eb":"transparent",color:sel?"#fff":"#64748b",borderColor:sel?"#2563eb":"#e2e8f0"}}>
+                <button key={p} onClick={()=>togProv(p)} style={{padding:"3px 10px",borderRadius:"var(--r-pill)",border:"1px solid",fontSize:"var(--text-sm)",cursor:"pointer",fontWeight:600,background:sel?"var(--c-primary-mid)":"transparent",color:sel?"#fff":"var(--c-text-3)",borderColor:sel?"var(--c-primary-mid)":"var(--c-border)"}}>
                   {p}
                 </button>
               );
             })}
           </div>
-          {(form.khu_vuc.tinh_thanh||[]).length>0&&<div style={{fontSize:11,color:"#2563eb",marginTop:4}}>Đã chọn: {form.khu_vuc.tinh_thanh.join(", ")}</div>}
+          {(form.khu_vuc.tinh_thanh||[]).length>0&&<div style={{fontSize:"var(--text-xs)",color:"var(--c-primary-mid)",marginTop:4}}>Đã chọn: {form.khu_vuc.tinh_thanh.join(", ")}</div>}
         </div>
 
         <label>
@@ -287,15 +287,15 @@ function ServiceEntryForm({ entry, onSave, onCancel }){
 
       {/* Dynamic meta fields */}
       {["Hàng không","Khách sạn","Villa","Homestay","Bungalow","Nhà nghỉ","Du thuyền ngày","Du thuyền đêm","Nhà hàng","Hướng dẫn viên"].includes(form.loai)&&(
-        <div style={{marginTop:12,padding:12,background:"#fff",borderRadius:8,border:"1px solid #e2e8f0"}}>
-          <div style={{fontSize:12,color:"#2563eb",fontWeight:700,marginBottom:8}}>Chi tiết theo loại — {form.loai}</div>
+        <div style={{marginTop:12,padding:12,background:"var(--c-surface)",borderRadius:"var(--r-md)",border:"1px solid var(--c-border)"}}>
+          <div style={{fontSize:"var(--text-sm)",color:"var(--c-primary-mid)",fontWeight:700,marginBottom:8}}>Chi tiết theo loại — {form.loai}</div>
           <ServiceMetaFields loai={form.loai} meta={form.meta||{}} onChange={m=>upd("meta",m)}/>
         </div>
       )}
 
       <div style={{display:"flex",gap:8,marginTop:14,justifyContent:"flex-end"}}>
-        <button onClick={onCancel} style={{padding:"8px 20px",borderRadius:8,border:"1px solid #e2e8f0",background:"#fff",color:"#475569",cursor:"pointer",fontWeight:600,fontSize:13}}>Hủy</button>
-        <button onClick={()=>onSave(form)} style={{padding:"8px 20px",borderRadius:8,border:"none",background:"#2563eb",color:"#fff",cursor:"pointer",fontWeight:700,fontSize:13}}>Lưu dịch vụ</button>
+        <Btn variant="secondary" onClick={onCancel}>Hủy</Btn>
+        <Btn onClick={()=>onSave(form)}>Lưu dịch vụ</Btn>
       </div>
     </div>
   );
@@ -335,34 +335,34 @@ function QuickFindModal({ suppliers, onClose, onSelect }){
   const fmtM=(n)=>{const a=Math.abs(n||0),s=(n||0)<0?"-":"";if(a>=1e9)return s+(a/1e9).toFixed(1)+"tỷ";return s+Math.round(a).toLocaleString("vi-VN")+"đ";};
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:80}} onClick={onClose}>
-      <div style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:560,boxShadow:"0 20px 60px rgba(0,0,0,.3)",overflow:"hidden"}} onClick={e=>e.stopPropagation()}>
-        <div style={{padding:"14px 16px",borderBottom:"1px solid #f1f5f9",display:"flex",alignItems:"center",gap:10}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,.55)",zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:80}} onClick={onClose}>
+      <div style={{background:"var(--c-surface)",borderRadius:"var(--r-xl)",width:"100%",maxWidth:560,boxShadow:"var(--sh-modal)",overflow:"hidden"}} onClick={e=>e.stopPropagation()}>
+        <div style={{padding:"14px 16px",borderBottom:"1px solid var(--c-border)",display:"flex",alignItems:"center",gap:10}}>
           <span style={{fontSize:18}}>🔍</span>
           <input ref={ref} value={q} onChange={e=>setQ(e.target.value)}
             placeholder="Tìm NCC: nhập tên, loại dịch vụ, tỉnh thành, phân khúc, 3 sao..."
-            style={{flex:1,border:"none",outline:"none",fontSize:15,fontFamily:"inherit"}}/>
-          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",color:"#94a3b8",fontSize:20}}>✕</button>
+            style={{flex:1,border:"none",outline:"none",fontSize:"var(--text-lg)",fontFamily:"inherit",background:"transparent",color:"var(--c-text)"}}/>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",color:"var(--c-text-muted)",fontSize:20}}>✕</button>
         </div>
         <div style={{maxHeight:420,overflowY:"auto"}}>
-          {scored.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:32}}>Không tìm thấy NCC phù hợp</div>}
+          {scored.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:32}}>Không tìm thấy NCC phù hợp</div>}
           {scored.map(({s})=>{
             const activeSvs=s.dich_vu.filter(d=>d.active);
             return(
-              <div key={s.id} style={{padding:"14px 16px",borderBottom:"1px solid #f8fafc",cursor:"pointer",transition:"background .1s"}}
-                onMouseEnter={ev=>ev.currentTarget.style.background="#f8fafc"}
+              <div key={s.id} style={{padding:"14px 16px",borderBottom:"1px solid var(--c-border)",cursor:"pointer",transition:"background var(--t-fast)"}}
+                onMouseEnter={ev=>ev.currentTarget.style.background="var(--c-surface-2)"}
                 onMouseLeave={ev=>ev.currentTarget.style.background=""}
                 onClick={()=>onSelect(s)}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
-                  <span style={{fontWeight:700,fontSize:14}}>{s.ten}</span>
+                  <span style={{fontWeight:700,fontSize:"var(--text-md)",color:"var(--c-text)"}}>{s.ten}</span>
                   <ContractBadge status={s.trang_thai_hop_dong}/>
                 </div>
                 {activeSvs.slice(0,3).map(d=>(
                   <div key={d.id} style={{display:"flex",gap:8,alignItems:"center",marginTop:3}}>
                     <ServiceTypeBadge loai={d.loai}/>
                     {d.meta?.hang_sao>0&&<StarRating value={d.meta.hang_sao} size={12}/>}
-                    <span style={{fontSize:12,color:"#64748b"}}>{d.phan_khuc} · {(d.khu_vuc.tinh_thanh||[]).slice(0,3).join(", ")}</span>
-                    <span style={{fontSize:12,color:"#16a34a",marginLeft:"auto",fontWeight:700}}>
+                    <span style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)"}}>{d.phan_khuc} · {(d.khu_vuc.tinh_thanh||[]).slice(0,3).join(", ")}</span>
+                    <span style={{fontSize:"var(--text-sm)",color:"var(--c-success-mid)",marginLeft:"auto",fontWeight:700}}>
                       {d.gia_tham_khao.tu>0&&fmtM(d.gia_tham_khao.tu)+"–"+fmtM(d.gia_tham_khao.den)+"/"+d.gia_tham_khao.don_vi}
                     </span>
                   </div>
@@ -371,7 +371,7 @@ function QuickFindModal({ suppliers, onClose, onSelect }){
             );
           })}
         </div>
-        <div style={{padding:"8px 16px",background:"#f8fafc",fontSize:11,color:"#94a3b8",textAlign:"center"}}>Nhấn Enter để chọn · Esc để đóng · Ctrl+K để mở</div>
+        <div style={{padding:"8px 16px",background:"var(--c-surface-2)",fontSize:"var(--text-xs)",color:"var(--c-text-muted)",textAlign:"center"}}>Nhấn Enter để chọn · Esc để đóng · Ctrl+K để mở</div>
       </div>
     </div>
   );
@@ -401,7 +401,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
   // Booking state (preserved from old NCCDashboard)
   const [showBkForm,setShowBkForm]=React.useState(false);
   const [bkForm,setBkForm]=React.useState({orderId:"",supplierId:"",nccId:"",nccName:"",service:"",amount:"",pnrCode:"",timeLimit:"",note:""});
-  const BK_STATUS={pending:{bg:"#fef9c3",c:"#92400e",label:"Chờ xác nhận"},confirmed:{bg:"#dbeafe",c:"#1d4ed8",label:"Đã xác nhận"},paid:{bg:"#dcfce7",c:"#15803d",label:"Đã thanh toán"},cancelled:{bg:"#fee2e2",c:"#dc2626",label:"Đã hủy"}};
+  const BK_STATUS={pending:{bg:"var(--c-warning-bg)",c:"var(--c-warning)",label:"Chờ xác nhận"},confirmed:{bg:"var(--c-primary-light)",c:"var(--c-primary-mid)",label:"Đã xác nhận"},paid:{bg:"var(--c-success-bg)",c:"var(--c-success)",label:"Đã thanh toán"},cancelled:{bg:"var(--c-danger-bg)",c:"var(--c-danger-mid)",label:"Đã hủy"}};
 
   const syncBookings=(list)=>{setBookings(list);onUpdateBookings&&onUpdateBookings(list);};
 
@@ -536,24 +536,24 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
       {showQuickFind&&<QuickFindModal suppliers={suppliers} onClose={()=>setShowQuickFind(false)} onSelect={s=>{setSelected(s);setShowQuickFind(false);setTab("suppliers");}}/>}
 
       {/* Header */}
-      <div style={{padding:"16px 24px",borderBottom:"1px solid #f1f5f9",background:"#fff",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+      <div style={{padding:"var(--sp-4) var(--sp-6)",borderBottom:"1px solid var(--c-border)",background:"var(--c-surface)",display:"flex",alignItems:"center",gap:"var(--sp-3)",flexWrap:"wrap"}}>
         <div>
-          <h2 style={{margin:0,fontSize:20,fontWeight:900}}>Nhà cung cấp (NCC)</h2>
-          <div style={{fontSize:12,color:"#64748b",marginTop:1}}>{suppliers.length} NCC · Tổng công nợ: <strong style={{color:totalDebt>0?"#dc2626":"#16a34a"}}>{fmtMoney(totalDebt)}</strong></div>
+          <h2 style={{margin:0,fontSize:"var(--text-2xl)",fontWeight:"var(--fw-black)",color:"var(--c-text)"}}>Nhà cung cấp (NCC)</h2>
+          <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)",marginTop:1}}>{suppliers.length} NCC · Tổng công nợ: <strong style={{color:totalDebt>0?"var(--c-danger-mid)":"var(--c-success-mid)"}}>{fmtMoney(totalDebt)}</strong></div>
         </div>
         <div style={{flex:1}}/>
-        <button onClick={()=>setShowQuickFind(true)} style={{background:"#f1f5f9",border:"1px solid #e2e8f0",borderRadius:8,padding:"7px 14px",cursor:"pointer",fontSize:13,color:"#475569",fontWeight:600,display:"flex",alignItems:"center",gap:6}}>
-          🔍 Tìm nhanh <kbd style={{background:"#e2e8f0",borderRadius:4,padding:"1px 5px",fontSize:11}}>Ctrl+K</kbd>
-        </button>
-        <button onClick={()=>{setShowAdd(true);setSelected(null);setEditMode(false);setForm(blankNcc());setEditingSv(null);}} style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"8px 18px",cursor:"pointer",fontWeight:700,fontSize:13}}>+ Thêm NCC</button>
-        <button onClick={()=>setShowBkForm(true)} style={{background:"#7c3aed",color:"#fff",border:"none",borderRadius:8,padding:"8px 18px",cursor:"pointer",fontWeight:700,fontSize:13}}>+ Tạo booking</button>
+        <Btn variant="secondary" onClick={()=>setShowQuickFind(true)}>
+          🔍 Tìm nhanh <kbd style={{background:"var(--c-border)",borderRadius:"var(--r-xs)",padding:"1px 5px",fontSize:"var(--text-xs)"}}>Ctrl+K</kbd>
+        </Btn>
+        <Btn onClick={()=>{setShowAdd(true);setSelected(null);setEditMode(false);setForm(blankNcc());setEditingSv(null);}}>+ Thêm NCC</Btn>
+        <Btn style={{background:"var(--c-purple)"}} onClick={()=>setShowBkForm(true)}>+ Tạo booking</Btn>
       </div>
 
       {/* Tabs */}
-      <div style={{display:"flex",gap:4,padding:"10px 24px 0",background:"#fff",borderBottom:"1px solid #f1f5f9"}}>
+      <div style={{display:"flex",gap:4,padding:"var(--sp-2-5) var(--sp-6) 0",background:"var(--c-surface)",borderBottom:"1px solid var(--c-border)"}}>
         {[["suppliers","Danh sách NCC",suppliers.length],["bookings","Booking",bookings.length]].map(([k,label,cnt])=>(
-          <button key={k} onClick={()=>setTab(k)} style={{padding:"8px 18px",borderRadius:"8px 8px 0 0",border:"1px solid",borderBottom:"none",cursor:"pointer",fontWeight:600,fontSize:13,background:tab===k?"#fff":"#f8fafc",borderColor:tab===k?"#e2e8f0":"transparent",color:tab===k?"#1e293b":"#64748b",marginBottom:tab===k?-1:0}}>
-            {label} {cnt>0&&<span style={{background:"#e2e8f0",color:"#475569",borderRadius:20,padding:"0 6px",fontSize:11,marginLeft:4}}>{cnt}</span>}
+          <button key={k} onClick={()=>setTab(k)} style={{padding:"8px 18px",borderRadius:"var(--r-md) var(--r-md) 0 0",border:"1px solid",borderBottom:"none",cursor:"pointer",fontWeight:600,fontSize:"var(--text-base)",background:tab===k?"var(--c-surface)":"var(--c-surface-2)",borderColor:tab===k?"var(--c-border)":"transparent",color:tab===k?"var(--c-text)":"var(--c-text-3)",marginBottom:tab===k?-1:0}}>
+            {label} {cnt>0&&<span style={{background:"var(--c-border)",color:"var(--c-text-2)",borderRadius:"var(--r-pill)",padding:"0 6px",fontSize:"var(--text-xs)",marginLeft:4}}>{cnt}</span>}
           </button>
         ))}
       </div>
@@ -563,15 +563,14 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
         <div style={{display:"flex",flex:1,minHeight:0,overflow:"hidden"}}>
 
           {/* Left panel — search + list — thu nhỏ khi có NCC được chọn */}
-          <div style={{width:selected||showAdd?"340px":"100%",minWidth:selected||showAdd?"280px":"100%",flexShrink:0,borderRight:selected||showAdd?"1px solid #e2e8f0":"none",display:"flex",flexDirection:"column",background:"#fafafa",transition:"width .3s ease"}}>
+          <div style={{width:selected||showAdd?"340px":"100%",minWidth:selected||showAdd?"280px":"100%",flexShrink:0,borderRight:selected||showAdd?"1px solid var(--c-border)":"none",display:"flex",flexDirection:"column",background:"var(--c-bg)",transition:"width .3s ease"}}>
             {/* Search */}
             <div style={{padding:"12px 12px 0"}}>
-              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍  Tìm tên, mã, SĐT, người LH..."
-                style={{width:"100%",border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 12px",fontSize:13,fontFamily:"inherit",boxSizing:"border-box",background:"#fff"}}/>
+              <SearchInp value={search} onChange={e=>setSearch(e.target.value)} placeholder="Tìm tên, mã, SĐT, người LH..." style={{borderRadius:"var(--r-sm)"}}/>
             </div>
 
             {/* Filters */}
-            <div style={{padding:"10px 12px",borderBottom:"1px solid #f1f5f9",display:"flex",flexDirection:"column",gap:6}}>
+            <div style={{padding:"10px 12px",borderBottom:"1px solid var(--c-border)",display:"flex",flexDirection:"column",gap:6}}>
               {/* Tab lĩnh vực — mỗi loai_hinh = 1 tab riêng, không nhóm */}
               {(()=>{
                 // Lấy tất cả loai_hinh unique theo đúng thứ tự trong NCC_SERVICE_TYPES
@@ -579,7 +578,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                 const allLoaiHinh = orderedTypes.filter(t=>
                   (suppliers||[]).some(s=>(s.loai_hinh||[]).includes(t))
                 );
-                // Màu theo loại
+                // Màu theo loại — cố ý dùng nhiều hue riêng biệt để phân biệt ~25 loại dịch vụ, không map vào token chung
                 const TAG_COLOR = {
                   "Hàng không":"#1d4ed8","Đường bộ":"#9a3412","Đường sắt":"#374151","Đường thủy":"#075985","Tàu cao tốc / Speedboat":"#0369a1",
                   "Khách sạn":"#9d174d","Resort":"#be185d","Villa":"#be185d","Homestay":"#15803d","Farmstay":"#166534","Bungalow":"#14532d","Nhà nghỉ":"#14532d","Khu sinh thái":"#15803d",
@@ -590,10 +589,10 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                 return(
                   <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                     <button onClick={()=>setFilterGroup("all")}
-                      style={{padding:"5px 14px",borderRadius:99,border:"1.5px solid",fontSize:12,cursor:"pointer",fontWeight:700,
-                        background:filterGroup==="all"?"#0f172a":"transparent",
-                        color:filterGroup==="all"?"#fff":"#64748b",
-                        borderColor:filterGroup==="all"?"#0f172a":"#e2e8f0"}}>
+                      style={{padding:"5px 14px",borderRadius:"var(--r-pill)",border:"1.5px solid",fontSize:"var(--text-sm)",cursor:"pointer",fontWeight:700,
+                        background:filterGroup==="all"?"var(--c-text)":"transparent",
+                        color:filterGroup==="all"?"#fff":"var(--c-text-3)",
+                        borderColor:filterGroup==="all"?"var(--c-text)":"var(--c-border)"}}>
                       Tất cả · {(suppliers||[]).length}
                     </button>
                     {allLoaiHinh.map(lh=>{
@@ -602,12 +601,12 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                       const c=TAG_COLOR[lh]||"#475569";
                       return(
                         <button key={lh} onClick={()=>setFilterGroup(isActive?"all":lh)}
-                          style={{padding:"5px 12px",borderRadius:99,border:`1.5px solid ${isActive?c:c+"55"}`,fontSize:12,cursor:"pointer",fontWeight:600,
+                          style={{padding:"5px 12px",borderRadius:"var(--r-pill)",border:`1.5px solid ${isActive?c:c+"55"}`,fontSize:"var(--text-sm)",cursor:"pointer",fontWeight:600,
                             background:isActive?c:"transparent",
                             color:isActive?"#fff":c,
                             display:"flex",alignItems:"center",gap:5,transition:"all .15s"}}>
                           <span>{lh}</span>
-                          <span style={{background:isActive?"rgba(255,255,255,.3)":"rgba(0,0,0,.1)",borderRadius:99,padding:"1px 6px",fontSize:10,fontWeight:700}}>{count}</span>
+                          <span style={{background:isActive?"rgba(255,255,255,.3)":"rgba(0,0,0,.1)",borderRadius:"var(--r-pill)",padding:"1px 6px",fontSize:"var(--text-2xs)",fontWeight:700}}>{count}</span>
                         </button>
                       );
                     })}
@@ -616,33 +615,33 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
               })()}
               {/* Row 2 */}
               <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
-                <select value={filterProv} onChange={e=>setFilterProv(e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:6,padding:"4px 8px",fontSize:12,fontFamily:"inherit",background:"#fff",color:"#475569"}}>
+                <select value={filterProv} onChange={e=>setFilterProv(e.target.value)} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-xs)",padding:"4px 8px",fontSize:"var(--text-sm)",fontFamily:"inherit",background:"var(--c-surface)",color:"var(--c-text-2)"}}>
                   <option value="">Khu vực (tất cả)</option>
                   {PROVINCES.map(p=><option key={p}>{p}</option>)}
                 </select>
-                <select value={filterPhanKhuc} onChange={e=>setFilterPhanKhuc(e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:6,padding:"4px 8px",fontSize:12,fontFamily:"inherit",background:"#fff",color:"#475569"}}>
+                <select value={filterPhanKhuc} onChange={e=>setFilterPhanKhuc(e.target.value)} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-xs)",padding:"4px 8px",fontSize:"var(--text-sm)",fontFamily:"inherit",background:"var(--c-surface)",color:"var(--c-text-2)"}}>
                   <option value="all">Phân khúc</option>
                   {["Budget","Mid-range","Cao cấp"].map(v=><option key={v}>{v}</option>)}
                 </select>
-                <select value={filterHD} onChange={e=>setFilterHD(e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:6,padding:"4px 8px",fontSize:12,fontFamily:"inherit",background:"#fff",color:"#475569"}}>
+                <select value={filterHD} onChange={e=>setFilterHD(e.target.value)} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-xs)",padding:"4px 8px",fontSize:"var(--text-sm)",fontFamily:"inherit",background:"var(--c-surface)",color:"var(--c-text-2)"}}>
                   <option value="all">Hợp đồng</option>
                   <option value="co">Có HĐ</option>
                   <option value="chua">Thiếu HĐ</option>
                   <option value="het_han">Hết hạn</option>
                 </select>
                 {showLuuTruFilter&&(
-                  <select value={filterSao} onChange={e=>setFilterSao(e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:6,padding:"4px 8px",fontSize:12,fontFamily:"inherit",background:"#fff",color:"#475569"}}>
+                  <select value={filterSao} onChange={e=>setFilterSao(e.target.value)} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-xs)",padding:"4px 8px",fontSize:"var(--text-sm)",fontFamily:"inherit",background:"var(--c-surface)",color:"var(--c-text-2)"}}>
                     <option value="all">Hạng sao</option>
                     {[1,2,3,4,5].map(n=><option key={n} value={n}>{n}★</option>)}
                   </select>
                 )}
               </div>
-              <div style={{fontSize:11,color:"#94a3b8"}}>{filteredSuppliers.length} kết quả</div>
+              <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)"}}>{filteredSuppliers.length} kết quả</div>
             </div>
 
             {/* List — dạng card grid khi chưa chọn NCC, dạng list khi đã chọn */}
             <div style={{flex:1,overflowY:"auto",padding:selected||showAdd?"0":"16px"}}>
-              {filteredSuppliers.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:48,fontSize:14}}>🏢<br/>Không tìm thấy NCC nào</div>}
+              {filteredSuppliers.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:48,fontSize:"var(--text-md)"}}>🏢<br/>Không tìm thấy NCC nào</div>}
 
               {/* Card grid — full width khi chưa chọn */}
               {!(selected||showAdd)&&(
@@ -650,35 +649,35 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                   {filteredSuppliers.map(s=>{
                     const activeDv=(s.dich_vu||[]).filter(d=>d.active);
                     const maxSao=Math.max(0,...activeDv.map(d=>d.meta?.hang_sao||0));
-                    const hdColor={co:"#059669",chua:"#dc2626",het_han:"#d97706"}[s.trang_thai_hop_dong]||"#94a3b8";
-                    const hdBg={co:"#ecfdf5",chua:"#fef2f2",het_han:"#fffbeb"}[s.trang_thai_hop_dong]||"#f8fafc";
+                    const hdColor={co:"var(--c-success-mid)",chua:"var(--c-danger-mid)",het_han:"var(--c-warning-mid)"}[s.trang_thai_hop_dong]||"var(--c-text-muted)";
+                    const hdBg={co:"var(--c-success-bg)",chua:"var(--c-danger-bg)",het_han:"var(--c-warning-bg)"}[s.trang_thai_hop_dong]||"var(--c-surface-2)";
                     return(
                       <div key={s.id} onClick={()=>{setSelected(s);setEditMode(false);setShowAdd(false);setEditingSv(null);}}
-                        style={{background:"#fff",borderRadius:14,padding:18,cursor:"pointer",boxShadow:"0 2px 10px rgba(0,0,0,.07)",border:"1.5px solid #f1f5f9",transition:"all .15s"}}
-                        onMouseEnter={e=>{e.currentTarget.style.boxShadow="0 6px 24px rgba(37,99,235,.15)";e.currentTarget.style.borderColor="#bfdbfe";}}
-                        onMouseLeave={e=>{e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,.07)";e.currentTarget.style.borderColor="#f1f5f9";}}>
+                        style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:18,cursor:"pointer",boxShadow:"var(--sh-sm)",border:"1.5px solid var(--c-border)",transition:"all .15s"}}
+                        onMouseEnter={e=>{e.currentTarget.style.boxShadow="var(--sh-md)";e.currentTarget.style.borderColor="var(--c-primary-pale)";}}
+                        onMouseLeave={e=>{e.currentTarget.style.boxShadow="var(--sh-sm)";e.currentTarget.style.borderColor="var(--c-border)";}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
-                          <div style={{fontWeight:800,fontSize:15,color:"#0f172a",flex:1,paddingRight:8}}>{s.ten}</div>
-                          <span style={{background:hdBg,color:hdColor,borderRadius:99,fontSize:11,fontWeight:700,padding:"3px 10px",flexShrink:0}}>
+                          <div style={{fontWeight:800,fontSize:"var(--text-lg)",color:"var(--c-text)",flex:1,paddingRight:8}}>{s.ten}</div>
+                          <span style={{background:hdBg,color:hdColor,borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"3px 10px",flexShrink:0}}>
                             {s.trang_thai_hop_dong==="co"?"✓ Có HĐ":s.trang_thai_hop_dong==="het_han"?"⚠ Hết hạn":"Thiếu HĐ"}
                           </span>
                         </div>
                         <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:10}}>
                           {(s.loai_hinh||[]).map(l=><ServiceTypeBadge key={l} loai={l}/>)}
                         </div>
-                        <div style={{fontSize:13,color:"#64748b",lineHeight:1.8}}>
+                        <div style={{fontSize:"var(--text-base)",color:"var(--c-text-3)",lineHeight:1.8}}>
                           {s.sdt&&<div>📞 {s.sdt}</div>}
                           {s.nguoi_lien_he&&<div>👤 {s.nguoi_lien_he}</div>}
                           {(s.khu_vuc_hoat_dong||[]).length>0&&<div>📍 {s.khu_vuc_hoat_dong.slice(0,3).join(" · ")}</div>}
                         </div>
                         {maxSao>0&&<div style={{marginTop:8}}><StarRating value={maxSao} size={14}/></div>}
                         {s.cong_no>0&&(
-                          <div style={{marginTop:10,padding:"6px 10px",background:"#fee2e2",borderRadius:8,fontSize:12,color:"#dc2626",fontWeight:700}}>
+                          <div style={{marginTop:10,padding:"6px 10px",background:"var(--c-danger-bg)",borderRadius:"var(--r-sm)",fontSize:"var(--text-sm)",color:"var(--c-danger-mid)",fontWeight:700}}>
                             💳 Công nợ: {fmtMoney(s.cong_no)}
                           </div>
                         )}
                         {activeDv.length>0&&(
-                          <div style={{marginTop:8,fontSize:11,color:"#94a3b8"}}>{activeDv.length} dịch vụ đang cung cấp</div>
+                          <div style={{marginTop:8,fontSize:"var(--text-xs)",color:"var(--c-text-muted)"}}>{activeDv.length} dịch vụ đang cung cấp</div>
                         )}
                       </div>
                     );
@@ -691,13 +690,13 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                 const isActive=selected?.id===s.id;
                 return(
                   <div key={s.id} onClick={()=>{setSelected(s);setEditMode(false);setShowAdd(false);setEditingSv(null);}}
-                    style={{padding:"11px 14px",borderBottom:"1px solid #f1f5f9",cursor:"pointer",background:isActive?"#eff6ff":"#fff",borderLeft:isActive?"3px solid #2563eb":"3px solid transparent",transition:"all .1s"}}>
-                    <div style={{fontWeight:700,fontSize:13,color:"#0f172a",marginBottom:3}}>{s.ten}</div>
+                    style={{padding:"11px 14px",borderBottom:"1px solid var(--c-border)",cursor:"pointer",background:isActive?"var(--c-primary-light)":"var(--c-surface)",borderLeft:isActive?"3px solid var(--c-primary-mid)":"3px solid transparent",transition:"all .1s"}}>
+                    <div style={{fontWeight:700,fontSize:"var(--text-base)",color:"var(--c-text)",marginBottom:3}}>{s.ten}</div>
                     <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:4}}>
                       {(s.loai_hinh||[]).slice(0,2).map(l=><ServiceTypeBadge key={l} loai={l}/>)}
                     </div>
-                    <div style={{fontSize:11,color:"#64748b"}}>{s.sdt||"—"}</div>
-                    {s.cong_no>0&&<div style={{fontSize:11,color:"#dc2626",fontWeight:600,marginTop:2}}>Nợ: {fmtMoney(s.cong_no)}</div>}
+                    <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{s.sdt||"—"}</div>
+                    {s.cong_no>0&&<div style={{fontSize:"var(--text-xs)",color:"var(--c-danger-mid)",fontWeight:600,marginTop:2}}>Nợ: {fmtMoney(s.cong_no)}</div>}
                   </div>
                 );
               })}
@@ -720,10 +719,10 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
 
             {/* Empty state */}
             {!selected&&!showAdd&&(
-              <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"100%",color:"#94a3b8",gap:12}}>
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"100%",color:"var(--c-text-muted)",gap:12}}>
                 <div style={{fontSize:48}}>🏢</div>
-                <div style={{fontSize:16,fontWeight:600}}>Chọn NCC từ danh sách bên trái</div>
-                <div style={{fontSize:13}}>hoặc nhấn <strong>+ Thêm NCC</strong> để tạo mới</div>
+                <div style={{fontSize:"var(--text-xl)",fontWeight:600}}>Chọn NCC từ danh sách bên trái</div>
+                <div style={{fontSize:"var(--text-base)"}}>hoặc nhấn <strong>+ Thêm NCC</strong> để tạo mới</div>
               </div>
             )}
           </div>
@@ -734,20 +733,20 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
       {tab==="bookings"&&(
         <div style={{flex:1,overflowY:"auto",padding:24}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-            <h3 style={{margin:0,fontSize:16,fontWeight:800}}>Booking NCC</h3>
-            <button onClick={()=>setShowBkForm(v=>!v)} style={{background:"#7c3aed",color:"#fff",border:"none",borderRadius:8,padding:"8px 18px",cursor:"pointer",fontWeight:700,fontSize:13}}>+ Tạo booking</button>
+            <h3 style={{margin:0,fontSize:"var(--text-md)",fontWeight:800,color:"var(--c-text)"}}>Booking NCC</h3>
+            <Btn style={{background:"var(--c-purple)"}} onClick={()=>setShowBkForm(v=>!v)}>+ Tạo booking</Btn>
           </div>
           {showBkForm&&(()=>{
             const selectedOrder=orders.find(o=>o.id===bkForm.orderId);
             const selectedNCC=(suppliers||[]).find(s=>s.id===bkForm.supplierId||s.id===bkForm.nccId);
             return (
-              <div style={{background:"#fff",borderRadius:14,padding:24,marginBottom:20,border:"0.5px solid #e2e8f0",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
-                <div style={{fontWeight:600,fontSize:15,marginBottom:20,color:"#1e293b"}}>Tạo booking NCC mới</div>
+              <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:24,marginBottom:20,border:"1px solid var(--c-border)",boxShadow:"var(--sh-sm)"}}>
+                <div style={{fontWeight:600,fontSize:"var(--text-lg)",marginBottom:20,color:"var(--c-text-2)"}}>Tạo booking NCC mới</div>
 
                 {/* Bước 1: Chọn đơn hàng */}
                 <div style={{marginBottom:16}}>
-                  <label style={lbl}>Chọn đơn hàng *<span style={{fontSize:11,fontWeight:400,color:"#64748b",marginLeft:6}}>(chọn đơn để xem thông tin và gắn booking)</span></label>
-                  <select value={bkForm.orderId||""} onChange={e=>{const o=orders.find(x=>x.id===e.target.value);setBkForm(f=>({...f,orderId:e.target.value,service:o?.tourName||o?.serviceName||o?.service||"",amount:o?.costPrice||o?.pricing?.costPrice||""}));}} style={{...inp,fontSize:13}}>
+                  <label style={lbl}>Chọn đơn hàng *<span style={{fontSize:"var(--text-xs)",fontWeight:400,color:"var(--c-text-3)",marginLeft:6}}>(chọn đơn để xem thông tin và gắn booking)</span></label>
+                  <select value={bkForm.orderId||""} onChange={e=>{const o=orders.find(x=>x.id===e.target.value);setBkForm(f=>({...f,orderId:e.target.value,service:o?.tourName||o?.serviceName||o?.service||"",amount:o?.costPrice||o?.pricing?.costPrice||""}));}} style={{...inp,fontSize:"var(--text-base)"}}>
                     <option value="">— Chọn đơn hàng —</option>
                     {orders.filter(o=>!["closed","cancelled"].includes(o.status)).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).map(o=>(
                       <option key={o.id} value={o.id}>{o.id} · {o.customerName} · {o.tourName||o.service} · {o.departDate?new Date(o.departDate).toLocaleDateString("vi-VN"):"Chưa có ngày"}</option>
@@ -757,8 +756,8 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
 
                 {/* Panel thông tin đơn */}
                 {selectedOrder&&(
-                  <div style={{padding:"14px 16px",borderRadius:10,marginBottom:16,background:"#f0fdf4",border:"0.5px solid #bbf7d0"}}>
-                    <div style={{fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:".6px",color:"#0F6E56",marginBottom:10}}>Thông tin đơn hàng</div>
+                  <div style={{padding:"14px 16px",borderRadius:"var(--r-md)",marginBottom:16,background:"var(--c-success-bg)",border:"1px solid var(--c-success-border)"}}>
+                    <div style={{fontSize:"var(--text-xs)",fontWeight:600,textTransform:"uppercase",letterSpacing:".6px",color:"var(--c-success)",marginBottom:10}}>Thông tin đơn hàng</div>
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
                       {[
                         {label:"Khách hàng",val:selectedOrder.customerName},
@@ -767,24 +766,24 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                         {label:"Ngày khởi hành",val:selectedOrder.departDate?new Date(selectedOrder.departDate).toLocaleDateString("vi-VN"):"—"},
                         {label:"Ngày về",val:selectedOrder.returnDate?new Date(selectedOrder.returnDate).toLocaleDateString("vi-VN"):"—"},
                         {label:"Số khách",val:`${selectedOrder.paxAdults||selectedOrder.pax?.adults||0} NL`+(selectedOrder.paxChildren||selectedOrder.pax?.children?` · ${selectedOrder.paxChildren||selectedOrder.pax?.children} TE`:"")},
-                        {label:"Doanh thu",val:(selectedOrder.totalPrice||0).toLocaleString("vi-VN")+"đ",color:"#0F6E56"},
-                        {label:"Giá vốn",val:(selectedOrder.costPrice||selectedOrder.pricing?.costPrice||0).toLocaleString("vi-VN")+"đ",color:"#A32D2D"},
+                        {label:"Doanh thu",val:(selectedOrder.totalPrice||0).toLocaleString("vi-VN")+"đ",color:"var(--c-success)"},
+                        {label:"Giá vốn",val:(selectedOrder.costPrice||selectedOrder.pricing?.costPrice||0).toLocaleString("vi-VN")+"đ",color:"var(--c-danger)"},
                         {label:"Sale phụ trách",val:selectedOrder.sale||"—"},
                       ].map(item=>(
                         <div key={item.label}>
-                          <div style={{fontSize:11,color:"#64748b",marginBottom:2}}>{item.label}</div>
-                          <div style={{fontSize:13,fontWeight:500,color:item.color||"#1e293b"}}>{item.val}</div>
+                          <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginBottom:2}}>{item.label}</div>
+                          <div style={{fontSize:"var(--text-base)",fontWeight:500,color:item.color||"var(--c-text-2)"}}>{item.val}</div>
                         </div>
                       ))}
                     </div>
-                    {selectedOrder.note&&<div style={{marginTop:8,fontSize:12,color:"#633806",padding:"6px 10px",background:"#fef9e7",borderRadius:6,borderLeft:"2px solid #e8c53a"}}>Ghi chú: {selectedOrder.note}</div>}
+                    {selectedOrder.note&&<div style={{marginTop:8,fontSize:"var(--text-sm)",color:"var(--c-warning)",padding:"6px 10px",background:"var(--c-warning-bg)",borderRadius:"var(--r-sm)",borderLeft:"2px solid var(--c-warning-border)"}}>Ghi chú: {selectedOrder.note}</div>}
                   </div>
                 )}
 
                 {/* Bước 2: Chọn NCC */}
                 <div style={{marginBottom:16}}>
-                  <label style={lbl}>Nhà cung cấp (NCC) *<span style={{fontSize:11,fontWeight:400,color:"#64748b",marginLeft:6}}>(NCC sẽ cung cấp dịch vụ cho đơn này)</span></label>
-                  <select value={bkForm.supplierId||bkForm.nccId||""} onChange={e=>{const s=(suppliers||[]).find(x=>x.id===e.target.value);setBkForm(f=>({...f,supplierId:e.target.value,nccId:e.target.value,nccName:s?.name||s?.ten||""}));}} style={{...inp,fontSize:13}}>
+                  <label style={lbl}>Nhà cung cấp (NCC) *<span style={{fontSize:"var(--text-xs)",fontWeight:400,color:"var(--c-text-3)",marginLeft:6}}>(NCC sẽ cung cấp dịch vụ cho đơn này)</span></label>
+                  <select value={bkForm.supplierId||bkForm.nccId||""} onChange={e=>{const s=(suppliers||[]).find(x=>x.id===e.target.value);setBkForm(f=>({...f,supplierId:e.target.value,nccId:e.target.value,nccName:s?.name||s?.ten||""}));}} style={{...inp,fontSize:"var(--text-base)"}}>
                     <option value="">— Chọn NCC —</option>
                     {(suppliers||[]).map(s=><option key={s.id} value={s.id}>{s.name||s.ten}{s.phone||s.sdt?` · ${s.phone||s.sdt}`:""}</option>)}
                   </select>
@@ -792,15 +791,15 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
 
                 {/* Panel thông tin NCC */}
                 {selectedNCC&&(
-                  <div style={{padding:"12px 16px",borderRadius:10,marginBottom:16,background:"#faf9f6",border:"0.5px solid #e8e6df"}}>
-                    <div style={{fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:".6px",color:"#854F0B",marginBottom:8}}>Thông tin NCC</div>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,fontSize:13}}>
-                      <div><span style={{color:"#64748b",fontSize:11}}>Tên: </span><strong>{selectedNCC.name||selectedNCC.ten}</strong></div>
-                      <div><span style={{color:"#64748b",fontSize:11}}>SĐT: </span><a href={`tel:${selectedNCC.phone||selectedNCC.sdt}`} style={{color:"#185FA5",textDecoration:"none",fontWeight:500}}>{selectedNCC.phone||selectedNCC.sdt||"—"}</a></div>
+                  <div style={{padding:"12px 16px",borderRadius:"var(--r-md)",marginBottom:16,background:"var(--c-surface-2)",border:"1px solid var(--c-border)"}}>
+                    <div style={{fontSize:"var(--text-xs)",fontWeight:600,textTransform:"uppercase",letterSpacing:".6px",color:"var(--c-warning)",marginBottom:8}}>Thông tin NCC</div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,fontSize:"var(--text-base)"}}>
+                      <div><span style={{color:"var(--c-text-3)",fontSize:"var(--text-xs)"}}>Tên: </span><strong>{selectedNCC.name||selectedNCC.ten}</strong></div>
+                      <div><span style={{color:"var(--c-text-3)",fontSize:"var(--text-xs)"}}>SĐT: </span><a href={`tel:${selectedNCC.phone||selectedNCC.sdt}`} style={{color:"var(--c-primary-mid)",textDecoration:"none",fontWeight:500}}>{selectedNCC.phone||selectedNCC.sdt||"—"}</a></div>
                       {(selectedNCC.bank||selectedNCC.taiKhoanNganHang)&&(
-                        <div style={{gridColumn:"1/-1"}}><span style={{color:"#64748b",fontSize:11}}>TK Ngân hàng: </span><span style={{fontFamily:"monospace",fontWeight:500,fontSize:12}}>{selectedNCC.bank||(selectedNCC.taiKhoanNganHang?`${selectedNCC.taiKhoanNganHang.nganHang} - ${selectedNCC.taiKhoanNganHang.soTk} - ${selectedNCC.taiKhoanNganHang.chuTk}`:"—")}</span></div>
+                        <div style={{gridColumn:"1/-1"}}><span style={{color:"var(--c-text-3)",fontSize:"var(--text-xs)"}}>TK Ngân hàng: </span><span style={{fontFamily:"var(--font-mono)",fontWeight:500,fontSize:"var(--text-sm)"}}>{selectedNCC.bank||(selectedNCC.taiKhoanNganHang?`${selectedNCC.taiKhoanNganHang.nganHang} - ${selectedNCC.taiKhoanNganHang.soTk} - ${selectedNCC.taiKhoanNganHang.chuTk}`:"—")}</span></div>
                       )}
-                      {(selectedNCC.nguoiLienHe||selectedNCC.contact)&&<div><span style={{color:"#64748b",fontSize:11}}>Người LH: </span><span>{selectedNCC.nguoiLienHe||selectedNCC.contact}</span></div>}
+                      {(selectedNCC.nguoiLienHe||selectedNCC.contact)&&<div><span style={{color:"var(--c-text-3)",fontSize:"var(--text-xs)"}}>Người LH: </span><span>{selectedNCC.nguoiLienHe||selectedNCC.contact}</span></div>}
                     </div>
                   </div>
                 )}
@@ -811,11 +810,11 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                     <label style={lbl}>Dịch vụ booking</label>
                     <input value={bkForm.service||""} onChange={e=>setBkForm(f=>({...f,service:e.target.value}))} placeholder="VD: Vé MB HAN-DAD, Phòng Superior 3 đêm..." style={inp}/>
                     {selectedOrder&&bkForm.service!==(selectedOrder.tourName||selectedOrder.service)&&(
-                      <div style={{fontSize:11,color:"#64748b",marginTop:3}}>Từ đơn: {selectedOrder.tourName||selectedOrder.service}<button type="button" onClick={()=>setBkForm(f=>({...f,service:selectedOrder.tourName||selectedOrder.service||""}))} style={{marginLeft:6,fontSize:11,color:"#185FA5",background:"none",border:"none",cursor:"pointer",padding:0}}>← Dùng lại</button></div>
+                      <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginTop:3}}>Từ đơn: {selectedOrder.tourName||selectedOrder.service}<button type="button" onClick={()=>setBkForm(f=>({...f,service:selectedOrder.tourName||selectedOrder.service||""}))} style={{marginLeft:6,fontSize:"var(--text-xs)",color:"var(--c-primary-mid)",background:"none",border:"none",cursor:"pointer",padding:0}}>← Dùng lại</button></div>
                     )}
                   </div>
                   <div>
-                    <label style={lbl}>Số tiền *{selectedOrder&&(selectedOrder.costPrice||selectedOrder.pricing?.costPrice)&&(<button type="button" onClick={()=>setBkForm(f=>({...f,amount:selectedOrder.costPrice||selectedOrder.pricing?.costPrice||0}))} style={{marginLeft:8,fontSize:11,color:"#185FA5",background:"none",border:"none",cursor:"pointer",fontWeight:400,textDecoration:"underline"}}>Gợi ý: {(selectedOrder.costPrice||selectedOrder.pricing?.costPrice||0).toLocaleString("vi-VN")}đ</button>)}</label>
+                    <label style={lbl}>Số tiền *{selectedOrder&&(selectedOrder.costPrice||selectedOrder.pricing?.costPrice)&&(<button type="button" onClick={()=>setBkForm(f=>({...f,amount:selectedOrder.costPrice||selectedOrder.pricing?.costPrice||0}))} style={{marginLeft:8,fontSize:"var(--text-xs)",color:"var(--c-primary-mid)",background:"none",border:"none",cursor:"pointer",fontWeight:400,textDecoration:"underline"}}>Gợi ý: {(selectedOrder.costPrice||selectedOrder.pricing?.costPrice||0).toLocaleString("vi-VN")}đ</button>)}</label>
                     <NumberInput value={bkForm.amount||0} onChange={v=>setBkForm(f=>({...f,amount:v}))} placeholder="VD: 2.500.000" style={{...inp,textAlign:"right"}}/>
                   </div>
                   <div>
@@ -823,7 +822,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                     <input value={bkForm.pnrCode||""} onChange={e=>setBkForm(f=>({...f,pnrCode:e.target.value}))} placeholder="VD: VN-ABC123, VPQ-2025-001" style={inp}/>
                   </div>
                   <div>
-                    <label style={lbl}>Time Limit<span style={{fontSize:11,fontWeight:400,color:"#64748b",marginLeft:4}}>(hạn giữ chỗ với NCC)</span></label>
+                    <label style={lbl}>Time Limit<span style={{fontSize:"var(--text-xs)",fontWeight:400,color:"var(--c-text-3)",marginLeft:4}}>(hạn giữ chỗ với NCC)</span></label>
                     <input type="datetime-local" value={bkForm.timeLimit||""} onChange={e=>setBkForm(f=>({...f,timeLimit:e.target.value}))} style={inp}/>
                   </div>
                   <div style={{gridColumn:"1/-1"}}>
@@ -833,32 +832,32 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                 </div>
 
                 <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
-                  <button type="button" onClick={()=>{setShowBkForm(false);setBkForm({orderId:"",supplierId:"",nccId:"",nccName:"",service:"",amount:"",pnrCode:"",timeLimit:"",note:"",});}} style={{padding:"9px 20px",borderRadius:8,border:"0.5px solid #e2e8f0",background:"#fff",cursor:"pointer",fontSize:13}}>Hủy</button>
-                  <button type="button" onClick={()=>{if(!bkForm.orderId)return pushNotif?.("Chọn đơn hàng","error");if(!bkForm.supplierId&&!bkForm.nccId)return pushNotif?.("Chọn NCC","error");if(!(bkForm.amount>0))return pushNotif?.("Nhập số tiền","error");saveBooking();}} style={{padding:"9px 24px",borderRadius:8,border:"none",background:"#7c3aed",color:"#fff",cursor:"pointer",fontWeight:600,fontSize:13}}>Lưu booking</button>
+                  <Btn variant="secondary" onClick={()=>{setShowBkForm(false);setBkForm({orderId:"",supplierId:"",nccId:"",nccName:"",service:"",amount:"",pnrCode:"",timeLimit:"",note:"",});}}>Hủy</Btn>
+                  <Btn style={{background:"var(--c-purple)"}} onClick={()=>{if(!bkForm.orderId)return pushNotif?.("Chọn đơn hàng","error");if(!bkForm.supplierId&&!bkForm.nccId)return pushNotif?.("Chọn NCC","error");if(!(bkForm.amount>0))return pushNotif?.("Nhập số tiền","error");saveBooking();}}>Lưu booking</Btn>
                 </div>
               </div>
             );
           })()}
-          <div style={{background:"#fff",borderRadius:12,boxShadow:"0 1px 4px rgba(0,0,0,.07)",overflow:"hidden"}}>
-            {bookings.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:48}}>Chưa có booking nào</div>}
-            <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
-              {bookings.length>0&&<thead><tr style={{background:"#f8fafc"}}>{["Mã","NCC / Dịch vụ","Đơn hàng","Số tiền","PNR","Time Limit","Trạng thái",""].map(h=><th key={h} style={{padding:"10px 12px",textAlign:"left",fontWeight:700,color:"#475569",fontSize:12,whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>}
+          <div style={{background:"var(--c-surface)",borderRadius:"var(--r-md)",boxShadow:"var(--sh-xs)",border:"1px solid var(--c-border)",overflow:"hidden"}}>
+            {bookings.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:48}}>Chưa có booking nào</div>}
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:"var(--text-base)"}}>
+              {bookings.length>0&&<thead><tr style={{background:"var(--c-surface-2)"}}>{["Mã","NCC / Dịch vụ","Đơn hàng","Số tiền","PNR","Time Limit","Trạng thái",""].map(h=><th key={h} style={{padding:"10px 12px",textAlign:"left",fontWeight:700,color:"var(--c-text-2)",fontSize:"var(--text-sm)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>}
               <tbody>
                 {bookings.map(b=>{
                   const bs=BK_STATUS[b.status]||BK_STATUS.pending;
                   const tl=b.timeLimit?new Date(b.timeLimit):null;
                   const tlExpired=tl&&tl<new Date();
                   return(
-                    <tr key={b.id} style={{borderTop:"1px solid #f8fafc"}}>
+                    <tr key={b.id} style={{borderTop:"1px solid var(--c-border)"}}>
                       <td style={{padding:"10px 12px",fontWeight:700}}>{b.id}</td>
-                      <td style={{padding:"10px 12px"}}><div style={{fontWeight:600}}>{b.nccName||"—"}</div><div style={{fontSize:11,color:"#64748b"}}>{b.service||""}</div></td>
+                      <td style={{padding:"10px 12px"}}><div style={{fontWeight:600}}>{b.nccName||"—"}</div><div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{b.service||""}</div></td>
                       <td style={{padding:"10px 12px"}}>{b.orderId||"—"}</td>
-                      <td style={{padding:"10px 12px",fontWeight:700,color:"#dc2626"}}>{(b.amount||0).toLocaleString("vi-VN")}₫</td>
-                      <td style={{padding:"10px 12px",fontSize:12}}>{b.pnrCode||"—"}</td>
-                      <td style={{padding:"10px 12px",fontSize:12,color:tlExpired?"#dc2626":"#16a34a"}}>{tl?tl.toLocaleDateString("vi-VN"):"—"}</td>
-                      <td style={{padding:"10px 12px"}}><span style={{background:bs.bg,color:bs.c,borderRadius:20,padding:"2px 8px",fontSize:11,fontWeight:700}}>{bs.label}</span></td>
+                      <td style={{padding:"10px 12px",fontWeight:700,color:"var(--c-danger-mid)"}}>{(b.amount||0).toLocaleString("vi-VN")}₫</td>
+                      <td style={{padding:"10px 12px",fontSize:"var(--text-sm)"}}>{b.pnrCode||"—"}</td>
+                      <td style={{padding:"10px 12px",fontSize:"var(--text-sm)",color:tlExpired?"var(--c-danger-mid)":"var(--c-success-mid)"}}>{tl?tl.toLocaleDateString("vi-VN"):"—"}</td>
+                      <td style={{padding:"10px 12px"}}><span style={{background:bs.bg,color:bs.c,borderRadius:"var(--r-pill)",padding:"2px 8px",fontSize:"var(--text-xs)",fontWeight:700}}>{bs.label}</span></td>
                       <td style={{padding:"10px 12px"}}>
-                        {b.status==="pending"&&<select value={b.status} onChange={e=>updateBkStatus(b.id,e.target.value)} style={{border:"1px solid #e2e8f0",borderRadius:6,padding:"3px 6px",fontSize:11,fontFamily:"inherit"}}>
+                        {b.status==="pending"&&<select value={b.status} onChange={e=>updateBkStatus(b.id,e.target.value)} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-xs)",padding:"3px 6px",fontSize:"var(--text-xs)",fontFamily:"inherit"}}>
                           <option value="pending">Cập nhật</option>
                           <option value="confirmed">Xác nhận</option>
                           <option value="paid">Đã thanh toán</option>
@@ -887,67 +886,67 @@ function SupplierDetail({ supplier:s, onEdit, onDelete, fmtMoney, expenses=[] })
       {/* Header */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
         <div>
-          <div style={{fontSize:11,color:"#94a3b8",fontWeight:700,letterSpacing:1}}>{s.ma_ncc}</div>
-          <h2 style={{margin:"2px 0 4px",fontSize:22,fontWeight:900}}>{s.ten}</h2>
+          <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)",fontWeight:700,letterSpacing:1}}>{s.ma_ncc}</div>
+          <h2 style={{margin:"2px 0 4px",fontSize:"var(--text-3xl)",fontWeight:"var(--fw-black)",color:"var(--c-text)"}}>{s.ten}</h2>
           <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
             <ContractBadge status={s.trang_thai_hop_dong}/>
             {(s.loai_hinh||[]).map(l=><ServiceTypeBadge key={l} loai={l}/>)}
           </div>
         </div>
         <div style={{display:"flex",gap:8}}>
-          <button onClick={onEdit} style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"8px 18px",cursor:"pointer",fontWeight:700,fontSize:13}}>✏ Sửa</button>
-          <button onClick={onDelete} style={{background:"#fff",color:"#dc2626",border:"1px solid #dc2626",borderRadius:8,padding:"8px 14px",cursor:"pointer",fontWeight:700,fontSize:13}}>🗑</button>
+          <Btn onClick={onEdit}>✏ Sửa</Btn>
+          <Btn variant="danger" onClick={onDelete}>🗑</Btn>
         </div>
       </div>
 
       {/* Star rating */}
       <div style={{marginBottom:16,display:"flex",alignItems:"center",gap:8}}>
         <StarRating value={s.danh_gia_noi_bo||0} size={20}/>
-        <span style={{fontSize:13,color:"#64748b"}}>Đánh giá nội bộ</span>
+        <span style={{fontSize:"var(--text-base)",color:"var(--c-text-3)"}}>Đánh giá nội bộ</span>
       </div>
 
-      {s.ghi_chu_uu_tien&&<div style={{background:"#fef9c3",borderRadius:10,padding:"10px 14px",fontSize:13,color:"#92400e",marginBottom:16}}>⭐ {s.ghi_chu_uu_tien}</div>}
+      {s.ghi_chu_uu_tien&&<div style={{background:"var(--c-warning-bg)",borderRadius:"var(--r-md)",padding:"10px 14px",fontSize:"var(--text-base)",color:"var(--c-warning)",marginBottom:16}}>⭐ {s.ghi_chu_uu_tien}</div>}
 
       {/* Info grid */}
-      <div style={{background:"#f8fafc",borderRadius:12,overflow:"hidden",marginBottom:16}}>
+      <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-lg)",overflow:"hidden",marginBottom:16}}>
         {[["Người liên hệ",s.nguoi_lien_he||"—"],["SĐT",s.sdt||"—"],["Email",s.email||"—"],["Khu vực",(s.khu_vuc_hoat_dong||[]).join(", ")||"—"],["Phụ trách",s.nguoi_phu_trach||"—"]].map(([k,v])=>(
-          <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"10px 14px",borderBottom:"1px solid #f1f5f9",fontSize:13}}>
-            <span style={{color:"#64748b"}}>{k}</span><span style={{fontWeight:600}}>{v}</span>
+          <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"10px 14px",borderBottom:"1px solid var(--c-border)",fontSize:"var(--text-base)"}}>
+            <span style={{color:"var(--c-text-3)"}}>{k}</span><span style={{fontWeight:600}}>{v}</span>
           </div>
         ))}
       </div>
 
       {/* Bank */}
-      <div style={{background:"#f0f9ff",borderRadius:10,padding:"12px 14px",marginBottom:16,fontSize:13}}>
-        <div style={{fontWeight:700,color:"#1e3a5f",marginBottom:6}}>🏦 Tài khoản ngân hàng</div>
-        <div style={{color:"#334155"}}>{s.tai_khoan_ngan_hang?.ngan_hang||"—"} · {s.tai_khoan_ngan_hang?.so_tk||"—"} · {s.tai_khoan_ngan_hang?.chu_tk||"—"}</div>
+      <div style={{background:"var(--c-primary-light)",borderRadius:"var(--r-md)",padding:"12px 14px",marginBottom:16,fontSize:"var(--text-base)"}}>
+        <div style={{fontWeight:700,color:"var(--c-primary)",marginBottom:6}}>🏦 Tài khoản ngân hàng</div>
+        <div style={{color:"var(--c-text-2)"}}>{s.tai_khoan_ngan_hang?.ngan_hang||"—"} · {s.tai_khoan_ngan_hang?.so_tk||"—"} · {s.tai_khoan_ngan_hang?.chu_tk||"—"}</div>
       </div>
 
       {/* Debt */}
-      <div style={{background:totalChi>0?"#fef2f2":"#f0fdf4",borderRadius:10,padding:"12px 14px",marginBottom:20,fontSize:13}}>
-        <div style={{fontWeight:700,color:totalChi>0?"#991b1b":"#14532d",marginBottom:4}}>💳 Công nợ</div>
-        <div style={{fontSize:18,fontWeight:900,color:totalChi>0?"#dc2626":"#16a34a"}}>{fmtMoney(s.cong_no||0)}</div>
-        <div style={{fontSize:11,color:"#6b7280",marginTop:2}}>Tổng đã chi (paid): {fmtMoney(totalChi)}</div>
+      <div style={{background:totalChi>0?"var(--c-danger-bg)":"var(--c-success-bg)",borderRadius:"var(--r-md)",padding:"12px 14px",marginBottom:20,fontSize:"var(--text-base)"}}>
+        <div style={{fontWeight:700,color:totalChi>0?"var(--c-danger)":"var(--c-success)",marginBottom:4}}>💳 Công nợ</div>
+        <div style={{fontSize:"var(--text-xl)",fontWeight:900,color:totalChi>0?"var(--c-danger-mid)":"var(--c-success-mid)"}}>{fmtMoney(s.cong_no||0)}</div>
+        <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginTop:2}}>Tổng đã chi (paid): {fmtMoney(totalChi)}</div>
       </div>
 
       {/* Services */}
       <div>
-        <div style={{fontSize:13,fontWeight:800,color:"#1e293b",marginBottom:10}}>Danh mục dịch vụ ({s.dich_vu.length})</div>
-        {s.dich_vu.length===0&&<div style={{color:"#94a3b8",fontSize:13}}>Chưa có dịch vụ nào</div>}
+        <div style={{fontSize:"var(--text-base)",fontWeight:800,color:"var(--c-text-2)",marginBottom:10}}>Danh mục dịch vụ ({s.dich_vu.length})</div>
+        {s.dich_vu.length===0&&<div style={{color:"var(--c-text-muted)",fontSize:"var(--text-base)"}}>Chưa có dịch vụ nào</div>}
         {s.dich_vu.map(d=>{
           const gia=d.gia_tham_khao;
           return(
-            <div key={d.id} style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:10,marginBottom:10,overflow:"hidden",opacity:d.active?1:.55}}>
+            <div key={d.id} style={{background:"var(--c-surface)",border:"1px solid var(--c-border)",borderRadius:"var(--r-md)",marginBottom:10,overflow:"hidden",opacity:d.active?1:.55}}>
               <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"center"}}>
                 <ServiceTypeBadge loai={d.loai}/>
                 {d.meta?.hang_sao>0&&<StarRating value={d.meta.hang_sao} size={14}/>}
-                <span style={{flex:1,fontWeight:700,fontSize:13}}>{d.ten_dich_vu}</span>
-                <span style={{fontSize:12,color:"#64748b"}}>{d.phan_khuc}</span>
-                {gia.tu>0&&<span style={{fontSize:12,color:"#16a34a",fontWeight:700}}>{fmtMoneyK(gia.tu)}–{fmtMoneyK(gia.den)}/{gia.don_vi}</span>}
-                {!d.active&&<span style={{fontSize:11,color:"#94a3b8",background:"#f1f5f9",borderRadius:4,padding:"1px 6px"}}>Ẩn</span>}
+                <span style={{flex:1,fontWeight:700,fontSize:"var(--text-base)"}}>{d.ten_dich_vu}</span>
+                <span style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)"}}>{d.phan_khuc}</span>
+                {gia.tu>0&&<span style={{fontSize:"var(--text-sm)",color:"var(--c-success-mid)",fontWeight:700}}>{fmtMoneyK(gia.tu)}–{fmtMoneyK(gia.den)}/{gia.don_vi}</span>}
+                {!d.active&&<span style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)",background:"var(--c-surface-2)",borderRadius:"var(--r-xs)",padding:"1px 6px"}}>Ẩn</span>}
               </div>
               {(d.chinh_sach_huy||d.dieu_kien_booking||d.ghi_chu_uu_tien)&&(
-                <div style={{borderTop:"1px solid #f1f5f9",padding:"8px 14px",fontSize:12,color:"#64748b",display:"grid",gap:4}}>
+                <div style={{borderTop:"1px solid var(--c-border)",padding:"8px 14px",fontSize:"var(--text-sm)",color:"var(--c-text-3)",display:"grid",gap:4}}>
                   {d.chinh_sach_huy&&<div>📋 Hủy: {d.chinh_sach_huy}</div>}
                   {d.dieu_kien_booking&&<div>🔖 Booking: {d.dieu_kien_booking}</div>}
                   {d.mua_cao_diem&&<div>📅 Cao điểm: {d.mua_cao_diem}</div>}
@@ -967,10 +966,10 @@ function SupplierForm({ form, updF, updBank, editingSv, setEditingSv, expandedSv
   return(
     <div style={{maxWidth:680}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-        <h3 style={{margin:0,fontSize:18,fontWeight:900}}>{isNew?"Thêm NCC mới":"Chỉnh sửa NCC"}</h3>
+        <h3 style={{margin:0,fontSize:"var(--text-xl)",fontWeight:"var(--fw-black)",color:"var(--c-text)"}}>{isNew?"Thêm NCC mới":"Chỉnh sửa NCC"}</h3>
         <div style={{display:"flex",gap:8}}>
-          <button onClick={onCancel} style={{padding:"8px 18px",borderRadius:8,border:"1px solid #e2e8f0",background:"#fff",cursor:"pointer",fontWeight:600,fontSize:13}}>Hủy</button>
-          <button onClick={onSave} style={{padding:"8px 22px",borderRadius:8,border:"none",background:"#16a34a",color:"#fff",cursor:"pointer",fontWeight:700,fontSize:13}}>💾 Lưu NCC</button>
+          <Btn variant="secondary" onClick={onCancel}>Hủy</Btn>
+          <Btn variant="success" style={{background:"var(--c-success-mid)",color:"#fff",border:"none"}} onClick={onSave}>💾 Lưu NCC</Btn>
         </div>
       </div>
 
@@ -1001,16 +1000,16 @@ function SupplierForm({ form, updF, updBank, editingSv, setEditingSv, expandedSv
           <div style={{gridColumn:"1/-1"}}>
             <div style={lbl}>Hợp đồng ký kết (PDF/ảnh)</div>
             {form.hop_dong_file?(
-              <div style={{display:"flex",alignItems:"center",gap:10,background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:10,padding:"10px 14px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,background:"var(--c-success-bg)",border:"1px solid var(--c-success-border)",borderRadius:"var(--r-md)",padding:"10px 14px"}}>
                 <span style={{fontSize:22}}>📄</span>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:13,fontWeight:600,color:"#15803d",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{form.hop_dong_ten||"Hợp đồng đã tải"}</div>
-                  <a href={form.hop_dong_file} target="_blank" rel="noreferrer" style={{fontSize:11,color:"#2563eb"}}>Xem / Tải về</a>
+                  <div style={{fontSize:"var(--text-base)",fontWeight:600,color:"var(--c-success)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{form.hop_dong_ten||"Hợp đồng đã tải"}</div>
+                  <a href={form.hop_dong_file} target="_blank" rel="noreferrer" style={{fontSize:"var(--text-xs)",color:"var(--c-primary-mid)"}}>Xem / Tải về</a>
                 </div>
-                <button type="button" onClick={()=>{updF("hop_dong_file","");updF("hop_dong_ten","");}} style={{background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:12,fontWeight:600}}>✕ Xóa</button>
+                <button type="button" onClick={()=>{updF("hop_dong_file","");updF("hop_dong_ten","");}} style={{background:"var(--c-danger-bg)",color:"var(--c-danger-mid)",border:"none",borderRadius:"var(--r-sm)",padding:"6px 12px",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:600}}>✕ Xóa</button>
               </div>
             ):(
-              <label style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,border:"2px dashed #cbd5e1",borderRadius:10,padding:"14px",cursor:"pointer",background:"#f8fafc",color:"#64748b",fontSize:13,fontWeight:600}}>
+              <label style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,border:"2px dashed var(--c-border-mid)",borderRadius:"var(--r-md)",padding:"14px",cursor:"pointer",background:"var(--c-surface-2)",color:"var(--c-text-3)",fontSize:"var(--text-base)",fontWeight:600}}>
                 📎 Tải lên hợp đồng (PDF hoặc ảnh, tối đa 8MB)
                 <input type="file" accept="image/*,.pdf" style={{display:"none"}} onChange={e=>{
                   const file=e.target.files?.[0];
@@ -1040,15 +1039,15 @@ function SupplierForm({ form, updF, updBank, editingSv, setEditingSv, expandedSv
         {(form.dich_vu||[]).map(d=>{
           const isEditing=editingSv===d.id;
           return(
-            <div key={d.id} style={{border:"1px solid #e2e8f0",borderRadius:10,marginBottom:8,overflow:"hidden"}}>
-              <div style={{display:"flex",gap:8,alignItems:"center",padding:"10px 12px",background:"#f8fafc",cursor:"pointer",opacity:d.active?1:.6}} onClick={()=>togSvExpand(d.id)}>
-                <span style={{fontSize:13}}>{expandedSv[d.id]?"▼":"▶"}</span>
+            <div key={d.id} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-md)",marginBottom:8,overflow:"hidden"}}>
+              <div style={{display:"flex",gap:8,alignItems:"center",padding:"10px 12px",background:"var(--c-surface-2)",cursor:"pointer",opacity:d.active?1:.6}} onClick={()=>togSvExpand(d.id)}>
+                <span style={{fontSize:"var(--text-base)"}}>{expandedSv[d.id]?"▼":"▶"}</span>
                 <ServiceTypeBadge loai={d.loai}/>
-                <span style={{flex:1,fontWeight:700,fontSize:13}}>{d.ten_dich_vu||"(chưa đặt tên)"}</span>
-                <span style={{fontSize:12,color:"#64748b"}}>{d.phan_khuc} · {d.khu_vuc?.loai}</span>
-                {d.gia_tham_khao?.tu>0&&<span style={{fontSize:12,color:"#16a34a",fontWeight:700}}>{fmtMoneyK(d.gia_tham_khao.tu)}/{d.gia_tham_khao.don_vi}</span>}
-                <button onClick={e=>{e.stopPropagation();setEditingSv(isEditing?null:d.id);}} style={{background:"#eff6ff",color:"#2563eb",border:"none",borderRadius:6,padding:"3px 10px",cursor:"pointer",fontSize:12,fontWeight:700}}>Sửa</button>
-                <button onClick={e=>{e.stopPropagation();deleteSv(d.id);}} style={{background:"#fff",color:"#dc2626",border:"1px solid #fca5a5",borderRadius:6,padding:"3px 8px",cursor:"pointer",fontSize:12}}>🗑</button>
+                <span style={{flex:1,fontWeight:700,fontSize:"var(--text-base)"}}>{d.ten_dich_vu||"(chưa đặt tên)"}</span>
+                <span style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)"}}>{d.phan_khuc} · {d.khu_vuc?.loai}</span>
+                {d.gia_tham_khao?.tu>0&&<span style={{fontSize:"var(--text-sm)",color:"var(--c-success-mid)",fontWeight:700}}>{fmtMoneyK(d.gia_tham_khao.tu)}/{d.gia_tham_khao.don_vi}</span>}
+                <button onClick={e=>{e.stopPropagation();setEditingSv(isEditing?null:d.id);}} style={{background:"var(--c-primary-light)",color:"var(--c-primary-mid)",border:"none",borderRadius:"var(--r-xs)",padding:"3px 10px",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:700}}>Sửa</button>
+                <button onClick={e=>{e.stopPropagation();deleteSv(d.id);}} style={{background:"var(--c-surface)",color:"var(--c-danger-mid)",border:"1px solid var(--c-danger-border)",borderRadius:"var(--r-xs)",padding:"3px 8px",cursor:"pointer",fontSize:"var(--text-sm)"}}>🗑</button>
               </div>
               {(isEditing)&&<ServiceEntryForm entry={d} onSave={saveSv} onCancel={()=>setEditingSv(null)}/>}
             </div>
@@ -1056,7 +1055,7 @@ function SupplierForm({ form, updF, updBank, editingSv, setEditingSv, expandedSv
         })}
         {editingSv==="new"&&<ServiceEntryForm entry={null} onSave={sv=>{saveSv(sv);setEditingSv(null);}} onCancel={()=>setEditingSv(null)}/>}
         {editingSv!=="new"&&(
-          <button onClick={()=>setEditingSv("new")} style={{marginTop:8,background:"#eff6ff",color:"#2563eb",border:"1px dashed #93c5fd",borderRadius:8,padding:"9px 16px",cursor:"pointer",fontSize:13,fontWeight:700,width:"100%"}}>+ Thêm dịch vụ</button>
+          <button onClick={()=>setEditingSv("new")} style={{marginTop:8,background:"var(--c-primary-light)",color:"var(--c-primary-mid)",border:"1px dashed var(--c-primary-pale)",borderRadius:"var(--r-sm)",padding:"9px 16px",cursor:"pointer",fontSize:"var(--text-base)",fontWeight:700,width:"100%"}}>+ Thêm dịch vụ</button>
         )}
       </SectionCard>
     </div>
@@ -1066,10 +1065,10 @@ function SupplierForm({ form, updF, updBank, editingSv, setEditingSv, expandedSv
 function SectionCard({ title, children }){
   const [open,setOpen]=React.useState(true);
   return(
-    <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:12,marginBottom:14,overflow:"hidden"}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 16px",background:"#f8fafc",cursor:"pointer",borderBottom:open?"1px solid #e2e8f0":"none"}} onClick={()=>setOpen(v=>!v)}>
-        <span style={{fontWeight:700,fontSize:14,color:"#1e293b"}}>{title}</span>
-        <span style={{color:"#94a3b8",fontSize:13}}>{open?"▲":"▼"}</span>
+    <div style={{background:"var(--c-surface)",border:"1px solid var(--c-border)",borderRadius:"var(--r-lg)",marginBottom:14,overflow:"hidden"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 16px",background:"var(--c-surface-2)",cursor:"pointer",borderBottom:open?"1px solid var(--c-border)":"none"}} onClick={()=>setOpen(v=>!v)}>
+        <span style={{fontWeight:700,fontSize:"var(--text-md)",color:"var(--c-text-2)"}}>{title}</span>
+        <span style={{color:"var(--c-text-muted)",fontSize:"var(--text-base)"}}>{open?"▲":"▼"}</span>
       </div>
       {open&&<div style={{padding:16}}>{children}</div>}
     </div>
