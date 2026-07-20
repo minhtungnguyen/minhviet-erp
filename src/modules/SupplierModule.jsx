@@ -62,6 +62,8 @@ const NCC_SERVICE_GROUPS = {
 
 const ALL_NCC_SERVICE_TYPES = Object.values(NCC_SERVICE_TYPES);
 
+const BK_STATUS={pending:{bg:"var(--c-warning-bg)",c:"var(--c-warning)",label:"Chờ xác nhận"},confirmed:{bg:"var(--c-primary-light)",c:"var(--c-primary-mid)",label:"Đã xác nhận"},paid:{bg:"var(--c-success-bg)",c:"var(--c-success)",label:"Đã thanh toán"},cancelled:{bg:"var(--c-danger-bg)",c:"var(--c-danger-mid)",label:"Đã hủy"}};
+
 function StarRating({ value=0, onChange, size=18 }){
   const [hover,setHover]=React.useState(0);
   return(
@@ -187,7 +189,7 @@ const lbl={fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginBottom:3,font
 const inp={width:"100%",border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-sm)",padding:"8px 10px",fontSize:"var(--text-base)",fontFamily:"inherit",boxSizing:"border-box",outline:"none",background:"var(--c-surface)",color:"var(--c-text)"};
 
 function ServiceEntryForm({ entry, onSave, onCancel }){
-  const blank={id:"sv-"+Date.now(),loai:"Hàng không",ten_dich_vu:"",khu_vuc:{tinh_thanh:[],vung_mien:"Bắc",loai:"Nội địa"},phan_khuc:"Mid-range",gia_tham_khao:{tu:0,den:0,don_vi:"người",ghi_chu:""},mua_cao_diem:"",chinh_sach_huy:"",dieu_kien_booking:"",active:true,meta:{}};
+  const blank={id:"sv-"+Date.now(),loai:"Hàng không",ten_dich_vu:"",khu_vuc:{tinh_thanh:[],vung_mien:"Bắc",loai:"Nội địa"},phan_khuc:"Mid-range",gia_tham_khao:{tu:0,den:0,don_vi:"người",ghi_chu:""},bang_gia_theo_mua:[],mua_cao_diem:"",chinh_sach_huy:"",dieu_kien_booking:"",active:true,meta:{}};
   const [form,setForm]=React.useState(entry||blank);
   const [provinceSearch,setProvinceSearch]=React.useState("");
 
@@ -198,6 +200,10 @@ function ServiceEntryForm({ entry, onSave, onCancel }){
     const cur=form.khu_vuc.tinh_thanh||[];
     updKv("khu_vuc","tinh_thanh",cur.includes(p)?cur.filter(x=>x!==p):[...cur,p]);
   };
+
+  const addGiaMua=()=>upd("bang_gia_theo_mua",[...(form.bang_gia_theo_mua||[]),{id:"gm-"+Date.now(),ten_giai_doan:"",tu_ngay:"",den_ngay:"",tu:0,den:0,ghi_chu:""}]);
+  const updGiaMua=(id,k,v)=>upd("bang_gia_theo_mua",(form.bang_gia_theo_mua||[]).map(g=>g.id===id?{...g,[k]:(k==="tu"||k==="den")?Number(v):v}:g));
+  const delGiaMua=(id)=>upd("bang_gia_theo_mua",(form.bang_gia_theo_mua||[]).filter(g=>g.id!==id));
 
   const filtProv=PROVINCES.filter(p=>!provinceSearch||p.toLowerCase().includes(provinceSearch.toLowerCase()));
 
@@ -267,6 +273,30 @@ function ServiceEntryForm({ entry, onSave, onCancel }){
           <div style={lbl}>Ghi chú giá</div>
           <input value={form.gia_tham_khao.ghi_chu||""} onChange={e=>updGia("ghi_chu",e.target.value)} style={inp}/>
         </label>
+      </div>
+
+      {/* Bảng giá theo mùa (ngày thường / lễ Tết / cao điểm...) */}
+      <div style={{marginTop:12,padding:12,background:"var(--c-surface)",borderRadius:"var(--r-md)",border:"1px solid var(--c-border)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+          <div style={{fontSize:"var(--text-sm)",color:"var(--c-primary-mid)",fontWeight:700}}>Bảng giá theo mùa (tùy chọn)</div>
+          <button type="button" onClick={addGiaMua} style={{background:"var(--c-primary-light)",color:"var(--c-primary-mid)",border:"1px dashed var(--c-primary-pale)",borderRadius:"var(--r-sm)",padding:"4px 12px",cursor:"pointer",fontSize:"var(--text-xs)",fontWeight:700}}>+ Thêm giai đoạn</button>
+        </div>
+        <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)",marginBottom:(form.bang_gia_theo_mua||[]).length?8:0}}>
+          Giá gốc phía trên áp dụng ngày thường. Thêm giai đoạn riêng nếu có giá khác cho lễ Tết / mùa cao điểm.
+        </div>
+        {(form.bang_gia_theo_mua||[]).map(g=>(
+          <div key={g.id} style={{display:"grid",gridTemplateColumns:"1.2fr 1fr 1fr 1fr 1fr auto",gap:8,alignItems:"end",marginBottom:8,padding:"8px",background:"var(--c-surface-2)",borderRadius:"var(--r-sm)"}}>
+            <label><div style={lbl}>Tên giai đoạn</div><input value={g.ten_giai_doan} onChange={e=>updGiaMua(g.id,"ten_giai_doan",e.target.value)} placeholder="VD: Tết Nguyên Đán" style={inp}/></label>
+            <label><div style={lbl}>Từ ngày</div><input type="date" value={g.tu_ngay} onChange={e=>updGiaMua(g.id,"tu_ngay",e.target.value)} style={inp}/></label>
+            <label><div style={lbl}>Đến ngày</div><input type="date" value={g.den_ngay} onChange={e=>updGiaMua(g.id,"den_ngay",e.target.value)} style={inp}/></label>
+            <label><div style={lbl}>Giá từ</div><input type="number" value={g.tu||""} onChange={e=>updGiaMua(g.id,"tu",e.target.value)} style={inp}/></label>
+            <label><div style={lbl}>Giá đến</div><input type="number" value={g.den||""} onChange={e=>updGiaMua(g.id,"den",e.target.value)} style={inp}/></label>
+            <button type="button" onClick={()=>delGiaMua(g.id)} style={{background:"var(--c-surface)",color:"var(--c-danger-mid)",border:"1px solid var(--c-danger-border)",borderRadius:"var(--r-xs)",padding:"8px 10px",cursor:"pointer",fontSize:"var(--text-sm)"}}>🗑</button>
+          </div>
+        ))}
+      </div>
+
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:10}}>
         <label>
           <div style={lbl}>Mùa cao điểm</div>
           <input value={form.mua_cao_diem||""} onChange={e=>upd("mua_cao_diem",e.target.value)} style={inp}/>
@@ -396,14 +426,13 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
   const [editingSv,setEditingSv]=React.useState(null); // null | "new" | serviceEntry id
   const [expandedSv,setExpandedSv]=React.useState({});
   const [showQuickFind,setShowQuickFind]=React.useState(false);
-  const [bookings,setBookings]=React.useState(bookingsProp||[]);
+  const bookings=bookingsProp||[];
 
   // Booking state (preserved from old NCCDashboard)
   const [showBkForm,setShowBkForm]=React.useState(false);
   const [bkForm,setBkForm]=React.useState({orderId:"",supplierId:"",nccId:"",nccName:"",service:"",amount:"",pnrCode:"",timeLimit:"",note:""});
-  const BK_STATUS={pending:{bg:"var(--c-warning-bg)",c:"var(--c-warning)",label:"Chờ xác nhận"},confirmed:{bg:"var(--c-primary-light)",c:"var(--c-primary-mid)",label:"Đã xác nhận"},paid:{bg:"var(--c-success-bg)",c:"var(--c-success)",label:"Đã thanh toán"},cancelled:{bg:"var(--c-danger-bg)",c:"var(--c-danger-mid)",label:"Đã hủy"}};
 
-  const syncBookings=(list)=>{setBookings(list);onUpdateBookings&&onUpdateBookings(list);};
+  const syncBookings=(list)=>{onUpdateBookings&&onUpdateBookings(list);};
 
   React.useEffect(()=>{
     const handler=(e)=>{if((e.ctrlKey||e.metaKey)&&e.key==="k"){e.preventDefault();setShowQuickFind(v=>!v);}if(e.key==="Escape")setShowQuickFind(false);};
@@ -516,7 +545,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
     };
     syncBookings([bk,...bookings]);
     if(onCreateExpense){
-      onCreateExpense({id:"EXP"+Date.now(),orderId:bkForm.orderId,type:"chi",amount:bk.amount,note:"NCC: "+(bk.nccName)+" - "+bk.service,status:"pending_kt",method:"transfer",createdBy:currentUser?.name,createdAt:new Date().toISOString(),nccName:bk.nccName});
+      onCreateExpense({id:"EXP"+Date.now(),orderId:bkForm.orderId,type:"chi",amount:bk.amount,note:"NCC: "+(bk.nccName)+" - "+bk.service,status:"pending_kt",method:"transfer",createdBy:currentUser?.name,createdAt:new Date().toISOString(),nccName:bk.nccName,nccId,bookingId:bk.id});
     }
     setBkForm({orderId:"",supplierId:"",nccId:"",nccName:"",service:"",amount:"",pnrCode:"",timeLimit:"",note:""});
     setShowBkForm(false);
@@ -714,7 +743,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
             {selected&&!showAdd&&(
               editMode
               ? <SupplierForm form={form} updF={updF} updBank={updBank} editingSv={editingSv} setEditingSv={setEditingSv} expandedSv={expandedSv} togSvExpand={togSvExpand} saveSv={saveSv} deleteSv={deleteSv} onSave={saveNcc} onCancel={()=>setEditMode(false)} isNew={false}/>
-              : <SupplierDetail supplier={selected} onEdit={()=>setEditMode(true)} onDelete={()=>deleteNcc(selected)} fmtMoney={fmtMoney} expenses={expenses}/>
+              : <SupplierDetail supplier={selected} onEdit={()=>setEditMode(true)} onDelete={()=>deleteNcc(selected)} fmtMoney={fmtMoney} expenses={expenses} bookings={bookings} orders={orders}/>
             )}
 
             {/* Empty state */}
@@ -877,9 +906,10 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
 }
 
 // ─── SupplierDetail — view-only panel ───────────────────────
-function SupplierDetail({ supplier:s, onEdit, onDelete, fmtMoney, expenses=[] }){
+function SupplierDetail({ supplier:s, onEdit, onDelete, fmtMoney, expenses=[], bookings=[], orders=[] }){
   const nccExpenses=expenses.filter(e=>e.nccName===s.ten||e.nha_cung_cap_id===s.id);
   const totalChi=nccExpenses.filter(e=>e.type==="chi"&&e.status==="paid").reduce((sum,e)=>sum+(e.amount||0),0);
+  const nccBookings=bookings.filter(b=>b.supplierId===s.id||b.nccId===s.id).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
 
   return(
     <div style={{maxWidth:680}}>
@@ -929,6 +959,34 @@ function SupplierDetail({ supplier:s, onEdit, onDelete, fmtMoney, expenses=[] })
         <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginTop:2}}>Tổng đã chi (paid): {fmtMoney(totalChi)}</div>
       </div>
 
+      {/* Lịch sử booking */}
+      <div style={{marginBottom:20}}>
+        <div style={{fontSize:"var(--text-base)",fontWeight:800,color:"var(--c-text-2)",marginBottom:10}}>Lịch sử booking ({nccBookings.length})</div>
+        {nccBookings.length===0&&<div style={{color:"var(--c-text-muted)",fontSize:"var(--text-base)"}}>Chưa từng booking với NCC này</div>}
+        {nccBookings.length>0&&(
+          <div style={{background:"var(--c-surface)",border:"1px solid var(--c-border)",borderRadius:"var(--r-md)",overflow:"hidden"}}>
+            {nccBookings.map((b,i)=>{
+              const bs=BK_STATUS[b.status]||BK_STATUS.pending;
+              const o=orders.find(x=>x.id===b.orderId);
+              return(
+                <div key={b.id} style={{padding:"10px 14px",borderTop:i>0?"1px solid var(--c-border)":"none",display:"flex",justifyContent:"space-between",alignItems:"center",gap:10}}>
+                  <div style={{minWidth:0,flex:1}}>
+                    <div style={{fontWeight:700,fontSize:"var(--text-base)"}}>{b.service||"—"}</div>
+                    <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginTop:2}}>
+                      {b.id} · {b.orderId||"—"}{o?.customerName?" · "+o.customerName:""}{b.pnrCode?" · PNR "+b.pnrCode:""} · {b.createdAt?new Date(b.createdAt).toLocaleDateString("vi-VN"):"—"}
+                    </div>
+                  </div>
+                  <div style={{textAlign:"right",flexShrink:0}}>
+                    <div style={{fontWeight:700,color:"var(--c-danger-mid)"}}>{fmtMoney(b.amount)}</div>
+                    <span style={{background:bs.bg,color:bs.c,borderRadius:"var(--r-pill)",padding:"2px 8px",fontSize:"var(--text-xs)",fontWeight:700}}>{bs.label}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Services */}
       <div>
         <div style={{fontSize:"var(--text-base)",fontWeight:800,color:"var(--c-text-2)",marginBottom:10}}>Danh mục dịch vụ ({s.dich_vu.length})</div>
@@ -945,6 +1003,17 @@ function SupplierDetail({ supplier:s, onEdit, onDelete, fmtMoney, expenses=[] })
                 {gia.tu>0&&<span style={{fontSize:"var(--text-sm)",color:"var(--c-success-mid)",fontWeight:700}}>{fmtMoneyK(gia.tu)}–{fmtMoneyK(gia.den)}/{gia.don_vi}</span>}
                 {!d.active&&<span style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)",background:"var(--c-surface-2)",borderRadius:"var(--r-xs)",padding:"1px 6px"}}>Ẩn</span>}
               </div>
+              {(d.bang_gia_theo_mua||[]).length>0&&(
+                <div style={{borderTop:"1px solid var(--c-border)",padding:"8px 14px",fontSize:"var(--text-sm)"}}>
+                  <div style={{fontWeight:700,color:"var(--c-text-3)",marginBottom:4}}>📆 Giá theo mùa</div>
+                  {d.bang_gia_theo_mua.map(g=>(
+                    <div key={g.id} style={{display:"flex",justifyContent:"space-between",padding:"2px 0"}}>
+                      <span>{g.ten_giai_doan||"(chưa đặt tên)"}{(g.tu_ngay||g.den_ngay)&&<span style={{color:"var(--c-text-muted)"}}> ({g.tu_ngay?new Date(g.tu_ngay).toLocaleDateString("vi-VN"):"?"} – {g.den_ngay?new Date(g.den_ngay).toLocaleDateString("vi-VN"):"?"})</span>}</span>
+                      <span style={{color:"var(--c-success-mid)",fontWeight:700}}>{fmtMoneyK(g.tu)}–{fmtMoneyK(g.den)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
               {(d.chinh_sach_huy||d.dieu_kien_booking||d.ghi_chu_uu_tien)&&(
                 <div style={{borderTop:"1px solid var(--c-border)",padding:"8px 14px",fontSize:"var(--text-sm)",color:"var(--c-text-3)",display:"grid",gap:4}}>
                   {d.chinh_sach_huy&&<div>📋 Hủy: {d.chinh_sach_huy}</div>}
@@ -1046,6 +1115,7 @@ function SupplierForm({ form, updF, updBank, editingSv, setEditingSv, expandedSv
                 <span style={{flex:1,fontWeight:700,fontSize:"var(--text-base)"}}>{d.ten_dich_vu||"(chưa đặt tên)"}</span>
                 <span style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)"}}>{d.phan_khuc} · {d.khu_vuc?.loai}</span>
                 {d.gia_tham_khao?.tu>0&&<span style={{fontSize:"var(--text-sm)",color:"var(--c-success-mid)",fontWeight:700}}>{fmtMoneyK(d.gia_tham_khao.tu)}/{d.gia_tham_khao.don_vi}</span>}
+                {(d.bang_gia_theo_mua||[]).length>0&&<span title="Có giá theo mùa" style={{fontSize:"var(--text-xs)",color:"var(--c-purple)",background:"var(--c-purple-bg)",borderRadius:"var(--r-xs)",padding:"1px 6px"}}>📆 {d.bang_gia_theo_mua.length} mùa</span>}
                 <button onClick={e=>{e.stopPropagation();setEditingSv(isEditing?null:d.id);}} style={{background:"var(--c-primary-light)",color:"var(--c-primary-mid)",border:"none",borderRadius:"var(--r-xs)",padding:"3px 10px",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:700}}>Sửa</button>
                 <button onClick={e=>{e.stopPropagation();deleteSv(d.id);}} style={{background:"var(--c-surface)",color:"var(--c-danger-mid)",border:"1px solid var(--c-danger-border)",borderRadius:"var(--r-xs)",padding:"3px 8px",cursor:"pointer",fontSize:"var(--text-sm)"}}>🗑</button>
               </div>
