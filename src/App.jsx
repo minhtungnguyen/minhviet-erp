@@ -518,19 +518,7 @@ const SEED_INPUT_INVOICES = [
     note:"Không có chứng từ — thanh toán qua cổng online", createdBy:"lien.kt" },
 
 ];
-const HDV_LIST = [
-
-  {id:"HDV001",name:"Nguyễn Hữu Thắng", phone:"0901111111", lang:["vi","en"],    speciality:"Miền Nam, Phú Quốc",    available:true},
-
-  {id:"HDV002",name:"Trần Thị Ngọc",    phone:"0902222222", lang:["vi","fr"],    speciality:"Châu Âu, Du thuyền",    available:true},
-
-  {id:"HDV003",name:"Lê Văn Sơn",       phone:"0903333333", lang:["vi","zh"],    speciality:"Trung Quốc, Nhật Bản",  available:false},
-
-  {id:"HDV004",name:"Phạm Minh Khoa",   phone:"0904444444", lang:["vi","en","ko"],speciality:"Hàn Quốc, Thái Lan",  available:true},
-
-  {id:"HDV005",name:"Đỗ Thị Hương",     phone:"0905555555", lang:["vi","en"],    speciality:"Miền Bắc, Hạ Long",    available:true},
-
-];
+const HDV_LIST = [];
 
 const SEED_NCC_BOOKINGS = [
 

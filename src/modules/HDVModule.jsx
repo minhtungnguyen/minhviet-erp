@@ -87,6 +87,14 @@ export default function HDVModule({ hdvList=[], onUpdate, orders=[], pushNotif, 
     pushNotif&&pushNotif(h.available?"Đã chuyển "+h.name+" sang Bận":"Đã chuyển "+h.name+" sang Rảnh");
   };
 
+  const deleteHdv=(h)=>{
+    const assignments=activeAssignments[h.id]||[];
+    if(assignments.length>0) return pushNotif&&pushNotif("Không thể xóa — "+h.name+" đang phụ trách "+assignments.length+" tour. Hãy phân công lại trước.","error");
+    if(!window.confirm("Xóa HDV "+h.name+"? Hành động này không thể hoàn tác.")) return;
+    onUpdate(hdvList.filter(x=>x.id!==h.id));
+    pushNotif&&pushNotif("Đã xóa HDV "+h.name);
+  };
+
   const openEdit=(h)=>{setEditHdv(h);setForm({...EMPTY,...h});setShowForm(true);};
   const openContract=(h)=>{
     setCf({tourName:'',groupName:'',route:'',startDate:'',endDate:'',paxCount:0,vehicle:'Ô tô',totalFee:h.dailyRate||0,paymentMethod:'chuyển khoản / tiền mặt',notes:''});
@@ -543,6 +551,7 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
                   <button onClick={()=>openEdit(h)} style={{flex:1,background:'var(--c-surface-2)',border:'1px solid var(--c-border)',borderRadius:7,padding:'7px 0',cursor:'pointer',fontSize:12,fontWeight:600}}>✏ Sửa</button>
                   <button onClick={()=>openContract(h)} style={{flex:1,background:'var(--c-primary-light)',color:'var(--c-primary-mid)',border:'1px solid var(--c-primary-pale)',borderRadius:7,padding:'7px 0',cursor:'pointer',fontSize:12,fontWeight:700}}>📄 Tạo HĐ</button>
                   <button onClick={()=>{setAddRatingHdv(h);setRatingForm({score:5,note:'',tourName:''});}} style={{flex:1,background:'var(--c-warning-bg)',color:'var(--c-warning)',border:'1px solid var(--c-warning-border)',borderRadius:7,padding:'7px 0',cursor:'pointer',fontSize:12,fontWeight:700}}>⭐ Chấm</button>
+                  {currentRole==='manager'&&<button onClick={()=>deleteHdv(h)} title="Xóa HDV" style={{flexShrink:0,background:'var(--c-danger-bg)',color:'var(--c-danger-mid)',border:'1px solid var(--c-danger-border)',borderRadius:7,padding:'7px 10px',cursor:'pointer',fontSize:12,fontWeight:700}}>🗑</button>}
                 </div>
               )}
             </div>
