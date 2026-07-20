@@ -1,5 +1,6 @@
 import React from "react";
 import { Btn, SearchInp } from "../components/ui.jsx";
+import { canManageTask, isTaskAssignee, isSelfAssignedTask } from "../utils/taskPermissions.js";
 
 export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], customers=[], currentUser, currentRole, userAccounts=[], pushNotif, prefill=null, onPrefillConsumed }) {
   const [view, setView] = React.useState("kanban"); // kanban | list | mine
@@ -21,7 +22,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
   const STATUS = {
     new:            { label:"Mới",            color:"var(--c-text-3)", bg:"var(--c-surface-2)",  border:"var(--c-border)" },
     in_progress:    { label:"Đang làm",       color:"var(--c-primary-mid)", bg:"var(--c-primary-light)",  border:"var(--c-primary-pale)" },
-    pending_review: { label:"Chờ xác nhận",  color:"var(--c-warning-mid)", bg:"var(--c-warning-bg)",  border:"var(--c-warning-border)" },
+    pending_review: { label:"Chờ duyệt hoàn thành",  color:"var(--c-warning-mid)", bg:"var(--c-warning-bg)",  border:"var(--c-warning-border)" },
     done:           { label:"Hoàn thành",     color:"var(--c-success-mid)", bg:"var(--c-success-bg)",  border:"var(--c-success-border)" },
   };
   const COLUMNS = ["new","in_progress","pending_review","done"];
@@ -56,11 +57,45 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     setForm({...BLANK});
   };
 
-  const updateStatus = (taskId, newStatus) => {
-    onUpdateTasks(prev => prev.map(t => t.id===taskId
-      ? { ...t, status:newStatus, updatedAt:new Date().toISOString(),
-          completedAt: newStatus==="done" ? new Date().toISOString() : t.completedAt }
-      : t));
+  // Quyền bàn giao: đúng người tạo (giao việc) hoặc Ban Giám đốc mới được duyệt/trả lại/giao lại.
+  const canManage = (t) => canManageTask(t, currentUser, currentRole);
+  const isAssignee = (t) => isTaskAssignee(t, currentUser);
+  const isSelfAssigned = (t) => isSelfAssignedTask(t);
+
+  const applyTaskUpdate = (taskId, updater) => {
+    onUpdateTasks(prev => prev.map(t => t.id===taskId ? updater(t) : t));
+    setSelectedTask(prev => prev && prev.id===taskId ? updater(prev) : prev);
+  };
+
+  const startTask = (t) => {
+    if (!(isAssignee(t) || canManage(t))) return;
+    applyTaskUpdate(t.id, cur => ({ ...cur, status:"in_progress", updatedAt:new Date().toISOString() }));
+  };
+
+  const submitForReview = (t) => {
+    if (isSelfAssigned(t) || !(isAssignee(t) || canManage(t))) return;
+    applyTaskUpdate(t.id, cur => ({ ...cur, status:"pending_review", updatedAt:new Date().toISOString() }));
+  };
+
+  const approveTask = (t) => {
+    const canFinishSelf = isSelfAssigned(t) && (isAssignee(t) || canManage(t));
+    if (!canFinishSelf && !canManage(t)) return;
+    const now = new Date().toISOString();
+    applyTaskUpdate(t.id, cur => ({ ...cur, status:"done", approvedBy:currentUser?.name, completedAt:now, updatedAt:now }));
+  };
+
+  const returnTask = (t, reason) => {
+    if (!canManage(t) || !reason.trim()) return;
+    const now = new Date().toISOString();
+    applyTaskUpdate(t.id, cur => ({ ...cur, status:"in_progress", updatedAt:now,
+      comments:[...(cur.comments||[]), { id:Date.now(), by:currentUser?.name, text:`↩ Trả lại: ${reason.trim()}`, ts:now, kind:"return" }] }));
+  };
+
+  const reassignTask = (t, newAssignee) => {
+    if (!canManage(t) || !newAssignee || newAssignee===t.assignee) return;
+    const now = new Date().toISOString();
+    applyTaskUpdate(t.id, cur => ({ ...cur, assignee:newAssignee, updatedAt:now,
+      comments:[...(cur.comments||[]), { id:Date.now(), by:currentUser?.name, text:`🔁 Đổi người nhận: ${t.assignee||"—"} → ${newAssignee}`, ts:now, kind:"system" }] }));
   };
 
   const addComment = (taskId, text) => {
@@ -160,18 +195,10 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
               </div>
             </div>
           </div>
-          {/* Deadline + Trạng thái */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            <div>
-              <label style={fieldLbl}>Deadline</label>
-              <input type="date" value={form.dueDate} onChange={e=>setF("dueDate",e.target.value)} style={fieldInp}/>
-            </div>
-            <div>
-              <label style={fieldLbl}>Trạng thái</label>
-              <select value={form.status} onChange={e=>setF("status",e.target.value)} style={fieldInp}>
-                {Object.entries(STATUS).map(([k,s])=><option key={k} value={k}>{s.label}</option>)}
-              </select>
-            </div>
+          {/* Deadline */}
+          <div>
+            <label style={fieldLbl}>Deadline</label>
+            <input type="date" value={form.dueDate} onChange={e=>setF("dueDate",e.target.value)} style={fieldInp}/>
           </div>
           {/* Liên kết khách hàng + đơn hàng */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
@@ -206,6 +233,9 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
 
   // ── TASK DETAIL PANEL ────────────────────────────────────
   const [commentText, setCommentText] = React.useState("");
+  const [showReturnBox, setShowReturnBox] = React.useState(false);
+  const [returnReason, setReturnReason] = React.useState("");
+  const [reassignSelect, setReassignSelect] = React.useState("");
   const TaskDetail = ({t}) => {
     if (!t) return null;
     const dl = daysLeft(t.dueDate);
@@ -274,16 +304,60 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
                 </div>
               </div>
             )}
-            {/* Đổi trạng thái */}
+            {/* Đổi trạng thái — bàn giao 2 chiều, chỉ đúng vai trò mới thao tác được */}
             <div>
               <div style={{fontSize:"var(--text-sm)",fontWeight:700,color:"var(--c-text-3)",textTransform:"uppercase",marginBottom:8}}>Cập nhật trạng thái</div>
-              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                {Object.entries(STATUS).map(([k,s])=>(
-                  <button key={k} onClick={()=>{updateStatus(t.id,k);setSelectedTask(prev=>({...prev,status:k}));}}
-                    style={{padding:"8px 14px",borderRadius:"var(--r-pill)",border:`1.5px solid ${t.status===k?s.color:"var(--c-border)"}`,background:t.status===k?s.bg:"var(--c-surface)",color:t.status===k?s.color:"var(--c-text-muted)",fontWeight:700,fontSize:"var(--text-sm)",cursor:"pointer"}}>
-                    {s.label}
-                  </button>
-                ))}
+              <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  {t.status==="new" && (isAssignee(t)||canManage(t)) && (
+                    <Btn onClick={()=>startTask(t)}><i className="ti ti-player-play" style={{fontSize:15}}/>Bắt đầu làm</Btn>
+                  )}
+                  {t.status==="in_progress" && isSelfAssigned(t) && (isAssignee(t)||canManage(t)) && (
+                    <Btn onClick={()=>approveTask(t)}><i className="ti ti-check" style={{fontSize:15}}/>Hoàn thành</Btn>
+                  )}
+                  {t.status==="in_progress" && !isSelfAssigned(t) && (isAssignee(t)||canManage(t)) && (
+                    <Btn onClick={()=>submitForReview(t)}><i className="ti ti-send" style={{fontSize:15}}/>Báo cáo hoàn thành</Btn>
+                  )}
+                  {t.status==="pending_review" && canManage(t) && (
+                    <>
+                      <Btn onClick={()=>approveTask(t)}><i className="ti ti-check" style={{fontSize:15}}/>Duyệt hoàn thành</Btn>
+                      <Btn variant="secondary" onClick={()=>setShowReturnBox(v=>!v)}><i className="ti ti-arrow-back-up" style={{fontSize:15}}/>Trả lại</Btn>
+                    </>
+                  )}
+                  {t.status==="done" && (
+                    <span style={{fontSize:"var(--text-sm)",color:"var(--c-success-mid)",fontWeight:600}}>
+                      ✓ Đã hoàn thành{t.approvedBy?` · duyệt bởi ${t.approvedBy}`:""}
+                    </span>
+                  )}
+                </div>
+                {t.status!=="done" && !canManage(t) && !isAssignee(t) && (
+                  <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-muted)"}}>
+                    Đang chờ {t.status==="pending_review" ? (t.createdBy||"người giao việc") : (t.assignee||"người nhận việc")} xử lý
+                  </div>
+                )}
+                {showReturnBox && (
+                  <div style={{background:"var(--c-warning-bg)",borderRadius:"var(--r-md)",padding:12,display:"flex",flexDirection:"column",gap:8}}>
+                    <textarea value={returnReason} onChange={e=>setReturnReason(e.target.value)} rows={2}
+                      placeholder="Lý do trả lại (bắt buộc)..."
+                      style={{...fieldInp,padding:"8px 12px",resize:"vertical",fontFamily:"inherit"}}/>
+                    <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+                      <Btn variant="secondary" onClick={()=>{setShowReturnBox(false);setReturnReason("");}}>Hủy</Btn>
+                      <Btn disabled={!returnReason.trim()} onClick={()=>{returnTask(t,returnReason);setShowReturnBox(false);setReturnReason("");}}>Xác nhận trả lại</Btn>
+                    </div>
+                  </div>
+                )}
+                {canManage(t) && t.status!=="done" && (
+                  <div>
+                    <label style={fieldLbl}>Đổi người nhận</label>
+                    <div style={{display:"flex",gap:8}}>
+                      <select value={reassignSelect} onChange={e=>setReassignSelect(e.target.value)} style={{...fieldInp,flex:1}}>
+                        <option value="">-- Chọn người nhận mới --</option>
+                        {staffList.filter(n=>n!==t.assignee).map(n=><option key={n} value={n}>{n}</option>)}
+                      </select>
+                      <Btn variant="secondary" disabled={!reassignSelect} onClick={()=>{reassignTask(t,reassignSelect);setReassignSelect("");}}>Xác nhận</Btn>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             {/* Comments */}
@@ -312,15 +386,17 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
               </div>
             </div>
           </div>
-          {/* Footer actions */}
-          <div style={{padding:"14px 22px",borderTop:"1px solid var(--c-border)",display:"flex",gap:8,background:"var(--c-surface-2)"}}>
-            <Btn variant="secondary" style={{flex:1,justifyContent:"center",background:"var(--c-primary-light)",color:"var(--c-primary-mid)"}} onClick={()=>{setForm({...t});setShowForm(true);setSelectedTask(null);}}>
-              <i className="ti ti-edit" style={{fontSize:16}}/>Sửa
-            </Btn>
-            <Btn variant="danger" onClick={()=>deleteTask(t.id)}>
-              <i className="ti ti-trash" style={{fontSize:16}}/>
-            </Btn>
-          </div>
+          {/* Footer actions — chỉ người tạo hoặc Ban Giám đốc mới sửa/xóa được */}
+          {canManage(t) && (
+            <div style={{padding:"14px 22px",borderTop:"1px solid var(--c-border)",display:"flex",gap:8,background:"var(--c-surface-2)"}}>
+              <Btn variant="secondary" style={{flex:1,justifyContent:"center",background:"var(--c-primary-light)",color:"var(--c-primary-mid)"}} onClick={()=>{setForm({...t});setShowForm(true);setSelectedTask(null);}}>
+                <i className="ti ti-edit" style={{fontSize:16}}/>Sửa
+              </Btn>
+              <Btn variant="danger" onClick={()=>deleteTask(t.id)}>
+                <i className="ti ti-trash" style={{fontSize:16}}/>
+              </Btn>
+            </div>
+          )}
         </div>
       </div>
     );

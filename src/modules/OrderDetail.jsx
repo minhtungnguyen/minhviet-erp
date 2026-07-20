@@ -420,7 +420,7 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
               <div style={{display:"flex",alignItems:"center",gap:8}}>
                 <span style={{fontSize:12,color:"var(--c-text-3)"}}>{t.assignee||"Chưa giao"}</span>
                 <span style={{fontSize:11,fontWeight:700,padding:"2px 8px",borderRadius:20,background:t.status==="done"?"var(--c-success-bg)":t.status==="in_progress"?"var(--c-primary-light)":"var(--c-surface-2)",color:t.status==="done"?"var(--c-success-mid)":t.status==="in_progress"?"var(--c-primary-mid)":"var(--c-text-3)"}}>
-                  {({new:"Mới",in_progress:"Đang làm",pending_review:"Chờ xác nhận",done:"Hoàn thành"})[t.status]||t.status}
+                  {({new:"Mới",in_progress:"Đang làm",pending_review:"Chờ duyệt hoàn thành",done:"Hoàn thành"})[t.status]||t.status}
                 </span>
               </div>
             </div>
