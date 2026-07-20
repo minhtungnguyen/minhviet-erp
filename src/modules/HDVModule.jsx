@@ -1,10 +1,12 @@
 import React from "react";
 
 export default function HDVModule({ hdvList=[], onUpdate, orders=[], pushNotif, currentRole }) {
-  const EMPTY={name:'',phone:'',speciality:'',lang:[],available:true,cardNo:'',cardType:'domestic',cardExpiry:'',cccd:'',cccdDate:'',cccdPlace:'Cục Cảnh sát QLHCVTTXH',cccdImg:null,photo:null,facebook:'',zalo:'',email:'',dob:'',address:'',dailyRate:0,type:'freelance',notes:'',ratings:[]};
+  const EMPTY={name:'',phone:'',speciality:'',lang:[],available:true,cardNo:'',cardType:'domestic',cardExpiry:'',cccd:'',cccdDate:'',cccdPlace:'Cục Cảnh sát QLHCVTTXH',cccdImg:null,cardImg:null,taxCode:'',photo:null,facebook:'',zalo:'',email:'',dob:'',address:'',dailyRate:0,type:'freelance',notes:'',ratings:[]};
   const [showForm,setShowForm]=React.useState(false);
   const [editHdv,setEditHdv]=React.useState(null);
   const [filterLang,setFilterLang]=React.useState("all");
+  const [filterArea,setFilterArea]=React.useState("all");
+  const [search,setSearch]=React.useState("");
   const [form,setForm]=React.useState(EMPTY);
   const [contractHdv,setContractHdv]=React.useState(null);
   const [cf,setCf]=React.useState({tourName:'',startDate:'',endDate:'',days:1,dailyRate:0,mealAllowance:0,accommodation:0,transport:0,notes:''});
@@ -240,7 +242,17 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
     setContractHdv(null);
   };
 
-  const filtered=filterLang==="all"?hdvList:hdvList.filter(h=>(h.lang||[]).includes(filterLang));
+  const allAreas=[...new Set(hdvList.map(h=>h.speciality).map(s=>(s||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi'));
+
+  const filtered=hdvList
+    .filter(h=>filterLang==="all"||(h.lang||[]).includes(filterLang))
+    .filter(h=>filterArea==="all"||(h.speciality||'').trim()===filterArea)
+    .filter(h=>{
+      if(!search.trim()) return true;
+      const q=search.trim().toLowerCase();
+      return (h.name||'').toLowerCase().includes(q)||(h.phone||'').includes(q)||(h.cardNo||'').toLowerCase().includes(q)||(h.speciality||'').toLowerCase().includes(q);
+    })
+    .sort((a,b)=>(a.name||'').localeCompare(b.name||'','vi'));
 
   return (
     <div style={{padding:24}}>
@@ -287,6 +299,7 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
             <div><label style={lbl}>Số CCCD</label><input value={form.cccd||''} onChange={e=>set('cccd',e.target.value)} style={inp}/></div>
             <div><label style={lbl}>Ngày cấp CCCD</label><input type="date" value={form.cccdDate||''} onChange={e=>set('cccdDate',e.target.value)} style={inp}/></div>
             <div><label style={lbl}>Nơi cấp CCCD</label><input value={form.cccdPlace||''} onChange={e=>set('cccdPlace',e.target.value)} placeholder="Cục Cảnh sát QLHCVTTXH" style={inp}/></div>
+            <div><label style={lbl}>Mã số thuế cá nhân (MST)</label><input value={form.taxCode||''} onChange={e=>set('taxCode',e.target.value)} placeholder="VD: 8012345678" style={inp}/></div>
             <div><label style={lbl}>Ngày sinh</label><input type="date" value={form.dob||''} onChange={e=>set('dob',e.target.value)} style={inp}/></div>
             <div style={{gridColumn:"1/-1"}}><label style={lbl}>Địa chỉ thường trú</label><input value={form.address||''} onChange={e=>set('address',e.target.value)} placeholder="VD: Thôn Trà Lâm, Thuận Thành, Bắc Ninh" style={inp}/></div>
             <div><label style={lbl}>Email</label><input value={form.email||''} onChange={e=>set('email',e.target.value)} style={inp}/></div>
@@ -325,6 +338,16 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
                   {form.cccdImg?"Đổi CCCD":"📄 Tải CCCD lên"}<input type="file" accept="image/*" onChange={e=>handleImg('cccdImg',e)} style={{display:"none"}}/>
                 </label>
                 {form.cccdImg&&<button onClick={()=>set('cccdImg',null)} style={{border:"none",background:"none",cursor:"pointer",color:"var(--c-danger-mid)",fontSize:12}}>Xóa</button>}
+              </div>
+            </div>
+            <div>
+              <label style={lbl}>Ảnh Thẻ HDV</label>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                {form.cardImg&&<img src={form.cardImg} alt="" style={{width:80,height:50,borderRadius:6,objectFit:"cover",border:"2px solid var(--c-border)"}}/>}
+                <label style={{padding:"7px 14px",background:"var(--c-surface-3)",border:"1px dashed var(--c-border-mid)",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600}}>
+                  {form.cardImg?"Đổi thẻ HDV":"🪪 Tải thẻ HDV lên"}<input type="file" accept="image/*" onChange={e=>handleImg('cardImg',e)} style={{display:"none"}}/>
+                </label>
+                {form.cardImg&&<button onClick={()=>set('cardImg',null)} style={{border:"none",background:"none",cursor:"pointer",color:"var(--c-danger-mid)",fontSize:12}}>Xóa</button>}
               </div>
             </div>
             <div style={{gridColumn:"1/-1"}}><label style={lbl}>Ghi chú nội bộ</label><textarea rows={2} value={form.notes||''} onChange={e=>set('notes',e.target.value)} style={{...inp,resize:"vertical"}}/></div>
@@ -408,14 +431,36 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
         </div>
       )}
 
+      {/* Search box */}
+      <div style={{position:"relative",marginBottom:14}}>
+        <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"var(--c-text-muted)",fontSize:14}}>🔍</span>
+        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Tìm theo tên, SĐT, số thẻ HDV hoặc khu vực..." style={{width:"100%",border:"1px solid var(--c-border)",borderRadius:10,padding:"10px 12px 10px 36px",fontSize:13,boxSizing:"border-box"}}/>
+      </div>
+
+      {/* Area filter */}
+      {allAreas.length>0&&(
+        <div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap",alignItems:"center"}}>
+          <span style={{fontSize:11,color:"var(--c-text-muted)",fontWeight:700,letterSpacing:.4,marginRight:2}}>KHU VỰC</span>
+          <button onClick={()=>setFilterArea("all")} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterArea==="all"?"var(--c-primary-mid)":"var(--c-surface-3)",color:filterArea==="all"?"var(--c-text-inverse)":"var(--c-text-3)"}}>Tất cả</button>
+          {allAreas.map(a=>(
+            <button key={a} onClick={()=>setFilterArea(a)} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterArea===a?"var(--c-primary-mid)":"var(--c-surface-3)",color:filterArea===a?"var(--c-text-inverse)":"var(--c-text-3)"}}>{a}</button>
+          ))}
+        </div>
+      )}
+
       {/* Language filter */}
       {allLangs.length>0&&(
-        <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
-          <button onClick={()=>setFilterLang("all")} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterLang==="all"?"var(--c-text-2)":"var(--c-surface-3)",color:filterLang==="all"?"var(--c-text-inverse)":"var(--c-text-3)"}}>Tất cả ngôn ngữ</button>
+        <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap",alignItems:"center"}}>
+          <span style={{fontSize:11,color:"var(--c-text-muted)",fontWeight:700,letterSpacing:.4,marginRight:2}}>NGÔN NGỮ</span>
+          <button onClick={()=>setFilterLang("all")} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterLang==="all"?"var(--c-text-2)":"var(--c-surface-3)",color:filterLang==="all"?"var(--c-text-inverse)":"var(--c-text-3)"}}>Tất cả</button>
           {allLangs.map(l=>(
             <button key={l} onClick={()=>setFilterLang(l)} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:filterLang===l?"var(--c-text-2)":"var(--c-surface-3)",color:filterLang===l?"var(--c-text-inverse)":"var(--c-text-3)"}}>{LANG_LABEL[l]||l}</button>
           ))}
         </div>
+      )}
+
+      {(search.trim()||filterArea!=="all"||filterLang!=="all")&&(
+        <div style={{fontSize:12,color:"var(--c-text-3)",marginBottom:12,marginTop:-4}}>Tìm thấy {filtered.length}/{hdvList.length} HDV</div>
       )}
 
       {/* Cards */}
@@ -451,6 +496,7 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
                 {h.email&&<div>✉ {h.email}</div>}
                 {h.cardNo&&<div>🪪 Thẻ HDV: <strong>{h.cardNo}</strong>{h.cardExpiry&&<span style={{marginLeft:6,color:isExpiring?"var(--c-danger-mid)":"var(--c-text-3)",fontWeight:isExpiring?700:400}}>· HH: {new Date(h.cardExpiry).toLocaleDateString("vi-VN")}{isExpiring&&<span style={{marginLeft:4,background:"var(--c-danger-bg)",color:"var(--c-danger)",borderRadius:4,padding:"0 5px"}}>{expiryInfo._daysLeft<=0?"ĐÃ HẾT HẠN":expiryInfo._daysLeft+"ngày"}</span>}</span>}</div>}
                 {h.cccd&&<div>🆔 CCCD: {h.cccd}</div>}
+                {h.taxCode&&<div>🧾 MST: {h.taxCode}</div>}
                 {h.dob&&<div>🎂 {new Date(h.dob).toLocaleDateString("vi-VN")}</div>}
                 {h.speciality&&<div>🗺 {h.speciality}</div>}
                 {h.dailyRate>0&&<div>💰 {Number(h.dailyRate).toLocaleString("vi-VN")}đ/ngày</div>}
@@ -463,8 +509,19 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
                   {h.zalo&&<span style={{fontSize:11,background:"var(--c-success-bg)",color:"var(--c-success)",borderRadius:6,padding:"3px 10px",fontWeight:600}}>💬 Zalo: {h.zalo}</span>}
                 </div>
               )}
-              {/* CCCD preview */}
-              {h.cccdImg&&<img src={h.cccdImg} alt="CCCD" style={{width:"100%",maxHeight:80,objectFit:"cover",borderRadius:6,marginBottom:8,border:"1px solid var(--c-border)"}}/>}
+              {/* CCCD / Thẻ HDV preview */}
+              {(h.cccdImg||h.cardImg)&&(
+                <div style={{display:"flex",gap:6,marginBottom:8}}>
+                  {h.cccdImg&&<div style={{flex:1,minWidth:0}}>
+                    <img src={h.cccdImg} alt="CCCD" style={{width:"100%",height:60,objectFit:"cover",borderRadius:6,border:"1px solid var(--c-border)"}}/>
+                    <div style={{fontSize:10,color:"var(--c-text-muted)",textAlign:"center",marginTop:2}}>CCCD</div>
+                  </div>}
+                  {h.cardImg&&<div style={{flex:1,minWidth:0}}>
+                    <img src={h.cardImg} alt="Thẻ HDV" style={{width:"100%",height:60,objectFit:"cover",borderRadius:6,border:"1px solid var(--c-border)"}}/>
+                    <div style={{fontSize:10,color:"var(--c-text-muted)",textAlign:"center",marginTop:2}}>Thẻ HDV</div>
+                  </div>}
+                </div>
+              )}
               {/* Languages */}
               {(h.lang||[]).length>0&&(
                 <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap"}}>

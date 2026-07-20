@@ -863,7 +863,7 @@ export default function App(){
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   // ── Persistence cho collections phụ (quotes/bookings/credits/tasks/careTasks/personalTargets) ──
-  const collSetters = { quotes:setQuotes, bookings:setBookings, credits:setCredits, tasks:setTasks, careTasks:setCareTasks, personalTargets:setPersonalTargets, tourGhepProducts:setTourGhepProducts };
+  const collSetters = { quotes:setQuotes, bookings:setBookings, credits:setCredits, tasks:setTasks, careTasks:setCareTasks, personalTargets:setPersonalTargets, tourGhepProducts:setTourGhepProducts, hdvList:setHdvList };
   // Load tất cả collection từ Supabase khi mount
   React.useEffect(()=>{
     if(!import.meta.env.VITE_SUPABASE_URL) return;
@@ -920,6 +920,7 @@ export default function App(){
   const setCareTasksP     = React.useMemo(()=>makePersistedSetter("careTasks",setCareTasks),[makePersistedSetter]);
   const setPersonalTargetsP = React.useMemo(()=>makePersistedSetter("personalTargets",setPersonalTargets),[makePersistedSetter]);
   const setTourGhepProductsP = React.useMemo(()=>makePersistedSetter("tourGhepProducts",setTourGhepProducts),[makePersistedSetter]);
+  const setHdvListP       = React.useMemo(()=>makePersistedSetter("hdvList",setHdvList),[makePersistedSetter]);
   const [selected, setSelected] = React.useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false);
   const [toasts, setToasts] = React.useState([]);
@@ -1102,7 +1103,7 @@ export default function App(){
     if(o.hdvId){
       const hdv=hdvList.find(h=>h.id===o.hdvId);
       if(hdv){
-        setHdvList(prev=>prev.map(h=>h.id===o.hdvId?{...h,available:true}:h));
+        setHdvListP(prev=>prev.map(h=>h.id===o.hdvId?{...h,available:true}:h));
         pushToast("HDV "+hdv.name+" đã sẵn sàng nhận tour mới","info","dieu_hanh");
       }
     }
@@ -1166,7 +1167,7 @@ export default function App(){
       {view==="crm"&&<CrmModule orders={orders} pushNotif={pushToast} customers={customers} onUpdateCustomers={setCustomers} currentUser={currentUser} msgHistory={msgHistory} onLogMessage={rec=>setMsgHistory(h=>[rec,...h].slice(0,500))} onCreateOrderFromLead={()=>setView("create")} onViewOrder={(o)=>{setSelected(o);setView("detail");}}/>}
       {view==="tourops"&&<TourOpsModule orders={orders} pushNotif={pushToast} currentUser={currentUser} currentRole={currentRole} hdvList={hdvList} onUpdateOrder={handleUpdateOrder}/>}
       {view==="tourprogram"&&<TourProgramModule tourPrograms={tourPrograms} onUpdate={setTourPrograms} currentRole={currentRole} pushNotif={pushToast} currentUser={currentUser}/>}
-      {view==="hdv"&&<HDVModule hdvList={hdvList} onUpdate={setHdvList} orders={orders} pushNotif={pushToast} currentRole={currentRole}/>}
+      {view==="hdv"&&<HDVModule hdvList={hdvList} onUpdate={setHdvListP} orders={orders} pushNotif={pushToast} currentRole={currentRole}/>}
       {view==="quotes"&&<QuoteModule quotes={quotes} onUpdate={setQuotesP} orders={orders} tourPrograms={tourPrograms} currentUser={currentUser} pushNotif={pushToast} onCreateOrder={(data)=>{handleCreateOrder(data);}}/>}
       {(view==="accounting"||view==="finance")&&<AccountingDashboard orders={orders} vouchers={vouchers} expenses={expenses} refunds={refunds} bankAccounts={bankAccounts} onUpdateBankAccounts={setBankAccounts} outputInvoices={outputInvoices} onUpdateOutputInvoices={setOutputInvoices} inputInvoices={inputInvoices} onUpdateInputInvoices={setInputInvoices} suppliers={suppliers} pushNotif={pushToast}/>}
       {view==="ncc"&&<SupplierModule suppliers={suppliers} onAddSupplier={addSupplier} onUpdateSupplier={updateSupplier} onDeleteSupplier={deleteSupplier} orders={orders} vouchers={vouchers} expenses={expenses} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser} bookings={bookings} onUpdateBookings={setBookingsP} onCreateExpense={(exp)=>{saveExpense(exp);pushToast("Phiếu chi "+exp.id+" chờ KT duyệt","warning");}}/>}
