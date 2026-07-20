@@ -1,7 +1,7 @@
 import React from "react";
 import { Btn, SearchInp } from "../components/ui.jsx";
 
-export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], customers=[], currentUser, currentRole, userAccounts=[], pushNotif }) {
+export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], customers=[], currentUser, currentRole, userAccounts=[], pushNotif, prefill=null, onPrefillConsumed }) {
   const [view, setView] = React.useState("kanban"); // kanban | list | mine
   const [showForm, setShowForm] = React.useState(false);
   const [selectedTask, setSelectedTask] = React.useState(null);
@@ -31,6 +31,14 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     assignee:"", dueDate:"", orderId:"", customerId:"", tags:[], comments:[] };
   const [form, setForm] = React.useState({...BLANK});
   const setF = (k,v) => setForm(f=>({...f,[k]:v}));
+
+  // Tạo nhanh việc mới cho cùng khách hàng/đơn hàng đang xem (từ CRM hoặc chi tiết đơn)
+  React.useEffect(() => {
+    if (!prefill) return;
+    setForm({...BLANK, customerId: prefill.customerId||"", orderId: prefill.orderId||""});
+    setShowForm(true);
+    onPrefillConsumed && onPrefillConsumed();
+  }, [prefill]);
 
   const saveTask = () => {
     if (!form.title.trim()) return;

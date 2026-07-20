@@ -38,7 +38,7 @@ const MSG_TEMPLATES = {
   },
 };
 
-export default function CrmModule({orders,pushNotif,customers:customersProp=SEED_CUSTOMERS,onUpdateCustomers,currentUser,msgHistory,onLogMessage,onCreateOrderFromLead,onViewOrder,tasks=[],onViewTasks}){
+export default function CrmModule({orders,pushNotif,customers:customersProp=SEED_CUSTOMERS,onUpdateCustomers,currentUser,msgHistory,onLogMessage,onCreateOrderFromLead,onViewOrder,tasks=[],onViewTasks,onQuickAddTask}){
   const [customers,setCustomers]=React.useState(customersProp);
   const [subView,setSubView]=React.useState("list");
   const [mainTab,setMainTab]=React.useState("list"); // "list"|"segment"|"history"
@@ -255,12 +255,16 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
           </div>
         )}
 
-        {myTasks.length>0&&(
+        {(myTasks.length>0||onQuickAddTask)&&(
           <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:20,boxShadow:"var(--sh-sm)",marginTop:16}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
               <div style={{fontWeight:700}}>Công việc liên quan ({myTasks.length})</div>
-              {onViewTasks&&<button onClick={onViewTasks} style={{background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:600}}>Xem tất cả →</button>}
+              <div style={{display:"flex",gap:14,alignItems:"center"}}>
+                {onQuickAddTask&&<button onClick={()=>onQuickAddTask({customerId:live.id})} style={{background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:600}}>+ Thêm việc khác</button>}
+                {onViewTasks&&myTasks.length>0&&<button onClick={onViewTasks} style={{background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:600}}>Xem tất cả →</button>}
+              </div>
             </div>
+            {myTasks.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:"12px 0",fontSize:"var(--text-sm)"}}>Chưa có việc nào cho khách này</div>}
             {myTasks.map(t=>(
               <div key={t.id} onClick={onViewTasks} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid var(--c-border)",cursor:onViewTasks?"pointer":"default",borderRadius:6,paddingLeft:4,paddingRight:4}}
                 onMouseEnter={e=>{if(onViewTasks)e.currentTarget.style.background="var(--c-surface-2)";}}

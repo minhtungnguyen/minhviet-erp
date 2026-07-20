@@ -14,7 +14,7 @@ import {
 } from "../print/index.jsx";
 import { openPrintWindow, buildConfirmation } from "../print/legacy.jsx";
 
-export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBack,onUpdate,onDelete,onAddVoucher,onApprove,onReject,pushNotif,currentRole,bankAccounts=[],currentUser,hdvList=[],credits=[],onUpdateCredits,bookings=[],customers=[],suppliers=[],onAddSupplier,tasks=[],onViewTasks}){
+export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBack,onUpdate,onDelete,onAddVoucher,onApprove,onReject,pushNotif,currentRole,bankAccounts=[],currentUser,hdvList=[],credits=[],onUpdateCredits,bookings=[],customers=[],suppliers=[],onAddSupplier,tasks=[],onViewTasks,onQuickAddTask}){
   const [showDeleteConfirm,setShowDeleteConfirm]=React.useState(false);
   const [activeTab,setActiveTab]=React.useState("info");
   const [showStatusMenu,setShowStatusMenu]=React.useState(false);
@@ -402,12 +402,16 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
         </div>
       )}
 
-      {activeTab==="info"&&myTasks.length>0&&(
+      {activeTab==="info"&&(myTasks.length>0||onQuickAddTask)&&(
         <div style={{background:"var(--c-surface)",borderRadius:14,padding:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)",marginTop:16}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
             <div style={{fontWeight:700,fontSize:14,color:"var(--c-text-2)"}}>✅ Công việc liên quan ({myTasks.length})</div>
-            {onViewTasks&&<button onClick={onViewTasks} style={{background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:13,fontWeight:600}}>Xem tất cả →</button>}
+            <div style={{display:"flex",gap:14,alignItems:"center"}}>
+              {onQuickAddTask&&<button onClick={()=>onQuickAddTask({orderId:order?.id,customerId:[...orderCustomerIds][0]||""})} style={{background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:13,fontWeight:600}}>+ Thêm việc khác</button>}
+              {onViewTasks&&myTasks.length>0&&<button onClick={onViewTasks} style={{background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:13,fontWeight:600}}>Xem tất cả →</button>}
+            </div>
           </div>
+          {myTasks.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:"10px 0",fontSize:13}}>Chưa có việc nào cho đơn này</div>}
           {myTasks.map(t=>(
             <div key={t.id} onClick={onViewTasks} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 4px",borderBottom:"1px solid var(--c-border)",cursor:onViewTasks?"pointer":"default",borderRadius:6}}
               onMouseEnter={e=>{if(onViewTasks)e.currentTarget.style.background="var(--c-surface-2)";}}
