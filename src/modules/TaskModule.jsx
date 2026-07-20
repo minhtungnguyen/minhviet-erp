@@ -76,7 +76,8 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     if (filterPriority !== "all" && t.priority !== filterPriority) return false;
     if (searchQ.trim()) {
       const q = searchQ.toLowerCase();
-      return t.title?.toLowerCase().includes(q) || t.assignee?.toLowerCase().includes(q) || t.orderId?.toLowerCase().includes(q);
+      const customerName = findCustomer(t.customerId)?.name || "";
+      return t.title?.toLowerCase().includes(q) || t.assignee?.toLowerCase().includes(q) || t.orderId?.toLowerCase().includes(q) || customerName.toLowerCase().includes(q);
     }
     return true;
   });
@@ -86,6 +87,8 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
   const dueToday  = tasks.filter(t => t.dueDate === today && t.status !== "done");
   const inProgress= tasks.filter(t => t.status === "in_progress");
   const doneThis  = tasks.filter(t => t.completedAt && t.completedAt.slice(0,7) === today.slice(0,7));
+
+  const findCustomer = (id) => customers.find(c=>c.id===id);
 
   const staffList = [...new Set([
     ...userAccounts.filter(u=>u.active!==false).map(u=>u.name),
@@ -162,13 +165,26 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
               </select>
             </div>
           </div>
-          {/* Liên kết đơn hàng */}
-          <div>
-            <label style={fieldLbl}>Liên kết đơn hàng (tuỳ chọn)</label>
-            <select value={form.orderId} onChange={e=>setF("orderId",e.target.value)} style={fieldInp}>
-              <option value="">-- Không liên kết --</option>
-              {orders.slice(0,50).map(o=><option key={o.id} value={o.id}>{o.id} · {o.customerName} · {o.tourName||o.service}</option>)}
-            </select>
+          {/* Liên kết khách hàng + đơn hàng */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div>
+              <label style={fieldLbl}>Liên kết khách hàng (tuỳ chọn)</label>
+              <select value={form.customerId} onChange={e=>setF("customerId",e.target.value)} style={fieldInp}>
+                <option value="">-- Không liên kết --</option>
+                {customers.map(c=><option key={c.id} value={c.id}>{c.name} · {c.phone}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={fieldLbl}>Liên kết đơn hàng (tuỳ chọn)</label>
+              <select value={form.orderId} onChange={e=>{
+                const oid=e.target.value;
+                const ord=orders.find(o=>o.id===oid);
+                setForm(f=>({...f,orderId:oid,customerId:ord?.customerId||f.customerId}));
+              }} style={fieldInp}>
+                <option value="">-- Không liên kết --</option>
+                {orders.slice(0,50).map(o=><option key={o.id} value={o.id}>{o.id} · {o.customerName} · {o.tourName||o.service}</option>)}
+              </select>
+            </div>
           </div>
         </div>
         {/* Footer */}
@@ -189,6 +205,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     const p = PRIORITY[t.priority] || PRIORITY.normal;
     const s = STATUS[t.status] || STATUS.new;
     const linkedOrder = orders.find(o=>o.id===t.orderId);
+    const linkedCustomer = findCustomer(t.customerId);
     return (
       <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",justifyContent:"flex-end"}} onClick={e=>e.target===e.currentTarget&&setSelectedTask(null)}>
         <div style={{width:480,maxWidth:"95vw",height:"100vh",background:"var(--c-surface)",boxShadow:"var(--sh-xl)",display:"flex",flexDirection:"column",animation:"slideInRight .25s ease"}}>
@@ -227,6 +244,16 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
               <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-md)",padding:"14px 16px"}}>
                 <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)",fontWeight:600,textTransform:"uppercase",marginBottom:8}}>Mô tả</div>
                 <div style={{fontSize:"var(--text-md)",color:"var(--c-text-2)",lineHeight:1.7,whiteSpace:"pre-wrap"}}>{t.description}</div>
+              </div>
+            )}
+            {/* Khách hàng liên kết */}
+            {linkedCustomer&&(
+              <div style={{background:"var(--c-purple-light,#f3f0ff)",borderRadius:"var(--r-md)",padding:"12px 16px",display:"flex",alignItems:"center",gap:10}}>
+                <i className="ti ti-user" style={{fontSize:20,color:"var(--c-purple,#7c3aed)"}}/>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:"var(--text-xs)",color:"var(--c-purple,#7c3aed)",fontWeight:600}}>Khách hàng liên kết</div>
+                  <div style={{fontSize:"var(--text-base)",color:"var(--c-text-2)"}}>{linkedCustomer.name} · {linkedCustomer.phone}</div>
+                </div>
               </div>
             )}
             {/* Đơn hàng liên kết */}
@@ -300,6 +327,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     const isDueToday = t.dueDate===today && t.status!=="done";
     const avatar = (t.assignee||"?")[0].toUpperCase();
     const avatarColor = { "Nguyễn Thị Hoa":"#059669","Trần Văn Nam":"#2563eb","Lê Thị Mai":"#7c3aed","Phạm Quốc Hùng":"#d97706" }[t.assignee]||"#64748b";
+    const linkedCustomer = findCustomer(t.customerId);
 
     return (
       <div onClick={()=>setSelectedTask(t)}
@@ -312,6 +340,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
         <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
           <span style={{background:p.bg,color:p.color,borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"2px 8px"}}>{p.label}</span>
           {t.orderId&&<span style={{background:"var(--c-primary-light)",color:"var(--c-primary-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:600,padding:"2px 8px",display:"flex",alignItems:"center",gap:3}}><i className="ti ti-file-text" style={{fontSize:11}}/>{t.orderId}</span>}
+          {linkedCustomer&&<span style={{background:"var(--c-purple-light,#f3f0ff)",color:"var(--c-purple,#7c3aed)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:600,padding:"2px 8px",display:"flex",alignItems:"center",gap:3}}><i className="ti ti-user" style={{fontSize:11}}/>{linkedCustomer.name}</span>}
           {isOverdue&&<span style={{background:"var(--c-danger-bg)",color:"var(--c-danger-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"2px 8px"}}>Trễ {Math.abs(dl)}n</span>}
           {isDueToday&&!isOverdue&&<span style={{background:"var(--c-warning-bg)",color:"var(--c-warning-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"2px 8px"}}>Hôm nay</span>}
         </div>
