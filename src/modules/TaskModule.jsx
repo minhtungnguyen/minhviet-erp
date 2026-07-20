@@ -330,11 +330,15 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
                     </span>
                   )}
                 </div>
-                {t.status!=="done" && !canManage(t) && !isAssignee(t) && (
-                  <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-muted)"}}>
-                    Đang chờ {t.status==="pending_review" ? (t.createdBy||"người giao việc") : (t.assignee||"người nhận việc")} xử lý
-                  </div>
-                )}
+                {(() => {
+                  const canActNow = t.status==="pending_review" ? canManage(t) : (isAssignee(t)||canManage(t));
+                  if (t.status==="done" || canActNow) return null;
+                  return (
+                    <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-muted)"}}>
+                      Đang chờ {t.status==="pending_review" ? (t.createdBy||"người giao việc") : (t.assignee||"người nhận việc")} xử lý
+                    </div>
+                  );
+                })()}
                 {showReturnBox && (
                   <div style={{background:"var(--c-warning-bg)",borderRadius:"var(--r-md)",padding:12,display:"flex",flexDirection:"column",gap:8}}>
                     <textarea value={returnReason} onChange={e=>setReturnReason(e.target.value)} rows={2}
