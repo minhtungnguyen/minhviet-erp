@@ -1,5 +1,6 @@
 import React from "react";
 import { exportCustomersToExcel } from "../utils/importExcel.js";
+import { findCustomerByPhone } from "../utils/customers.js";
 import { SEED_CUSTOMERS } from "../seeds/index.js";
 import { Btn, SearchInp, PageHeader, TabBar } from "../components/ui.jsx";
 
@@ -97,6 +98,14 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
       syncUp(customers.map(c=>c.id===selected.id?updated:c));
       setSelected(updated); setShowForm(false); pushNotif&&pushNotif("Đã cập nhật khách hàng");
     } else {
+      const dup=findCustomerByPhone(customers,form.phone);
+      if(dup){
+        if(window.confirm("Số điện thoại "+form.phone+" đã có khách hàng \""+dup.name+"\" trong hệ thống.\n\nBấm OK để mở hồ sơ khách đó (khuyến nghị, tránh trùng dữ liệu).\nBấm Hủy nếu chắc chắn đây là 2 người khác nhau và muốn tạo hồ sơ mới.")){
+          setSelected(dup); setShowForm(false); setEditMode(false);
+          pushNotif&&pushNotif("Đã mở hồ sơ có sẵn: "+dup.name,"info");
+          return;
+        }
+      }
       const newC={...form,id:"KH"+Date.now(),totalOrders:0,totalRevenue:0,totalProfit:0,interactions:[],events:[],tags:form.tags||[],createdAt:new Date().toISOString()};
       syncUp([newC,...customers]); setShowForm(false); pushNotif&&pushNotif("Đã thêm khách hàng mới");
     }
