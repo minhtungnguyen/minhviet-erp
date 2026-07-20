@@ -2,14 +2,11 @@ import React from "react";
 import { NumberInput } from "../components/ui.jsx";
 import { downloadAsWord } from "../print/index.jsx";
 import { openPrintWindow, buildPhieuThu, buildPhieuChi } from "../print/legacy.jsx";
+import { calcPaymentTimeline } from "../utils/paymentTimeline.js";
+import { calcVoucherTotals } from "../utils/orderFinancials.js";
 
 function PaymentTimeline({order,vouchers}){
-  const approved=(vouchers||[]).filter(v=>v.orderId===order.id&&v.type==="thu"&&["approved","confirmed"].includes(v.status));
-  const totalPaid=approved.reduce((s,v)=>s+(v.amount||0),0);
-  const addonTotal=(order.additionalItems||[]).reduce((s,i)=>s+(i.totalPrice||0),0);
-  const grandTotal=(order.totalPrice||0)+addonTotal;
-  const remaining=grandTotal-totalPaid;
-  const paidPct=grandTotal>0?Math.min(100,Math.round(totalPaid/grandTotal*100)):0;
+  const {addonTotal,grandTotal,totalPaid,remaining,paidPct}=calcPaymentTimeline(order,vouchers);
   return(
     <div style={{padding:"14px 16px",background:"var(--c-surface-2)",borderRadius:10,marginBottom:16,border:"1px solid var(--c-border)"}}>
       <div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:6}}>
@@ -57,8 +54,7 @@ export default function FinancePanel({order,vouchers,onAddVoucher,onApprove,onRe
   const orderVouchers=(vouchers||[]).filter(v=>v.orderId===order?.id);
   const thuList=orderVouchers.filter(v=>v.type==="thu");
   const chiList=orderVouchers.filter(v=>v.type==="chi");
-  const totalThu=thuList.filter(v=>["approved","confirmed"].includes(v.status)).reduce((s,v)=>s+(v.amount||0),0);
-  const totalChi=chiList.filter(v=>["approved","confirmed"].includes(v.status)).reduce((s,v)=>s+(v.amount||0),0);
+  const {totalPaid:totalThu,totalChi}=calcVoucherTotals(vouchers,order?.id);
 
   const saveVoucher=()=>{
     if(!vForm.amount||Number(vForm.amount)<=0) return pushNotif&&pushNotif("Nhập số tiền","error");

@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { COMPANY, PROVINCES, SALE_STAFF, KT_STAFF, NCC_LIST, METHODS, GD_APPROVAL_THRESHOLD, ROLES } from '../config.js';
 import { ORDER_STATUS, VOUCHER_STATUS, PRICE_APPROVAL_STATUS, EXP_PIPELINE_STATUS, REFUND_STATUS, CREDIT_STATUS, TOUR_OP_STATUS, BK_STATUS, INVOICE_TYPES } from '../statuses.js';
 import { SERVICES, COST_GROUPS, CHECKLIST_TEMPLATES } from '../services.js';
+import { DEFAULT_CHECKLIST } from '../checklist.js';
+import { SERVICE_TYPES } from '../serviceTypes.js';
 
 // config.js
 describe('config.js', () => {
@@ -122,5 +124,47 @@ describe('services.js', () => {
   it('CHECKLIST_TEMPLATES là object có ít nhất 1 key', () => {
     expect(typeof CHECKLIST_TEMPLATES).toBe('object');
     expect(Object.keys(CHECKLIST_TEMPLATES).length).toBeGreaterThan(0);
+  });
+});
+
+// checklist.js — dùng bởi TourOpsModule làm checklist mặc định khi đơn chưa có checklist riêng
+describe('checklist.js', () => {
+  it('DEFAULT_CHECKLIST có đủ 3 giai đoạn: Trước tour / Trong tour / Sau tour', () => {
+    const cats = new Set(DEFAULT_CHECKLIST.map(c => c.cat));
+    expect(cats).toEqual(new Set(['Trước tour', 'Trong tour', 'Sau tour']));
+  });
+
+  it('mỗi mục checklist có id, item, và done=false mặc định', () => {
+    DEFAULT_CHECKLIST.forEach(c => {
+      expect(c.id).toBeTruthy();
+      expect(c.item).toBeTruthy();
+      expect(c.done).toBe(false);
+    });
+  });
+
+  it('id không trùng lặp', () => {
+    const ids = DEFAULT_CHECKLIST.map(c => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+});
+
+// serviceTypes.js — dùng bởi OrderForm/QuickSaleForm/SupplierModule để chọn loại dịch vụ
+describe('serviceTypes.js', () => {
+  it('SERVICE_TYPES là mảng có ít nhất 1 phần tử', () => {
+    expect(Array.isArray(SERVICE_TYPES)).toBe(true);
+    expect(SERVICE_TYPES.length).toBeGreaterThan(0);
+  });
+
+  it('mỗi loại dịch vụ có id, label, icon', () => {
+    SERVICE_TYPES.forEach(t => {
+      expect(t.id).toBeTruthy();
+      expect(t.label).toBeTruthy();
+      expect(t.icon).toBeTruthy();
+    });
+  });
+
+  it('id không trùng lặp', () => {
+    const ids = SERVICE_TYPES.map(t => t.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });

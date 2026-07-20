@@ -4,6 +4,7 @@ import {
 } from "../print/index.jsx";
 import { openPrintWindow } from "../print/legacy.jsx";
 import { DEFAULT_CHECKLIST } from "../constants/checklist.js";
+import { getOpsStage, daysToDepart } from "../utils/tourOpsStage.js";
 
 export default function TourOpsModule({ orders=[], pushNotif, currentUser, currentRole, hdvList=[], onUpdateOrder }) {
   const [selected,setSelected]=React.useState(null);
@@ -11,20 +12,13 @@ export default function TourOpsModule({ orders=[], pushNotif, currentUser, curre
 
   const activeOrders = orders.filter(o=>['confirmed','in_progress'].includes(o.status));
   const fmtDate=(d)=>d?new Date(d).toLocaleDateString("vi-VN"):"—";
-  const daysTo=(d)=>d?Math.ceil((new Date(d)-new Date())/86400000):null;
+  const daysTo=daysToDepart;
 
   const MILESTONES=["assigned","departed","returned","settled"];
   const MILESTONE_LABEL={assigned:"Đã giao HDV",departed:"Đã khởi hành",returned:"Đã về điểm cuối",settled:"Đã quyết toán"};
   const MILESTONE_ICON={assigned:"🧑‍🦯",departed:"🚌",returned:"🏁",settled:"✅"};
 
-  const getStage=(o)=>{
-    const m=o.opsMilestones||{};
-    if(m.settled) return 4;
-    if(m.returned) return 3;
-    if(m.departed) return 2;
-    if(m.assigned||o.hdvName) return 1;
-    return 0;
-  };
+  const getStage=getOpsStage;
 
   const toggleMilestone=(o,key)=>{
     const m={...(o.opsMilestones||{})};

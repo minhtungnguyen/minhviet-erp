@@ -3,6 +3,9 @@ import PassengerPanel from "./PassengerPanel.jsx";
 import FinancePanel from "./FinancePanel.jsx";
 import { getProfitStatus } from "../utils/profit.js";
 import { ORDER_STATUS } from "../constants/statuses.js";
+import { NEXT_STATUSES } from "../utils/orderStatus.js";
+import { calcOrderFinancials } from "../utils/orderFinancials.js";
+import { calcPaymentStages } from "../utils/paymentStages.js";
 import {
   buildContractAirline, buildContractTour, buildCostStatement,
   buildPaymentRequest, buildLiquidation,
@@ -16,15 +19,7 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
   const [activeTab,setActiveTab]=React.useState("info");
   const [showStatusMenu,setShowStatusMenu]=React.useState(false);
 
-  const NEXT_STATUSES={pending_payment:["confirmed","cancelled"],confirmed:["in_progress","cancelled"],in_progress:["closed","cancelled"],closed:[],cancelled:[]};
-
-  const orderVouchers=(vouchers||[]).filter(v=>v.orderId===order?.id);
-  const totalPaid=orderVouchers.filter(v=>v.type==="thu"&&["approved","confirmed"].includes(v.status)).reduce((s,v)=>s+(v.amount||0),0);
-  const totalChi=orderVouchers.filter(v=>v.type==="chi"&&["approved","confirmed"].includes(v.status)).reduce((s,v)=>s+(v.amount||0),0);
-  const nccDebt=(bookings||[]).filter(b=>b.orderId===order?.id&&b.status!=="cancelled"&&b.status!=="paid").reduce((s,b)=>s+(b.amount||0),0);
-  const debt=(order?.totalPrice||0)-totalPaid;
-  const profit=(order?.totalPrice||0)-totalChi-(order?.costPrice||0);
-  const profitPct=order?.totalPrice?(profit/order.totalPrice*100):0;
+  const {totalPaid,totalChi,debt,profit,profitPct,nccDebt}=calcOrderFinancials(order,vouchers,bookings);
   const profitStatus=getProfitStatus(profitPct,order?.service);
   const passengerCount=(order?.passengers||[]).length;
   const missingCccdCount=(order?.passengers||[]).filter(p=>p.type!=="baby"&&!p.cccd).length;
@@ -258,16 +253,8 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
           {/* ── TÀI LIỆU IN ── */}
           {(()=>{
             // ── Tính toán số tiền theo từng giai đoạn ──────────
-            const orderVouchers = (vouchers||[]).filter(v=>v.orderId===order?.id&&v.type==="thu"&&["approved","confirmed"].includes(v.status));
-            const totalPaid     = orderVouchers.reduce((s,v)=>s+(v.amount||0),0);
-            const totalPrice    = order?.totalPrice||0;
-            const depositAmt    = order?.depositAmount||Math.round(totalPrice*0.3); // Dùng số cọc thực tế từ đơn
-            const remainingAmt  = Math.max(0, totalPrice - totalPaid);              // Còn phải thu
-            const overpayAmt    = Math.max(0, totalPaid - totalPrice);              // Thu thừa
+            const {totalPaid,totalPrice,depositAmt,remainingAmt,overpayAmt,finalPayAmt}=calcPaymentStages(order,vouchers);
             const refundRecord  = (refunds||[]).find(r=>r.orderId===order?.id);
-
-            // Số tiền yêu cầu TT lần 2: còn lại sau khi đã cọc
-            const finalPayAmt = Math.max(0, totalPrice - depositAmt);
 
             // Tên file
             const fid = order?.orderNo||order?.id||"";

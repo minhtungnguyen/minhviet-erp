@@ -1,4 +1,5 @@
 import React from "react";
+import { daysToExpiry, computeCreditStatus, calcCreditAmount, isValidCreditUsage } from "../utils/creditCalc.js";
 
 export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdateCredits, currentUser }) {
   const [showForm,setShowForm]=React.useState(false);
@@ -10,16 +11,9 @@ export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdat
   const fmtMoney=(n)=>(n||0).toLocaleString("vi-VN")+"₫";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
 
-  const daysToExpiry=(d)=>Math.ceil((new Date(d)-new Date())/86400000);
-
   const sync=(list)=>onUpdateCredits&&onUpdateCredits(list);
 
-  const computeStatus=(c)=>{
-    if(daysToExpiry(c.expiryDate)<0) return "expired";
-    if(c.remainingAmount<=0) return "used";
-    if(c.usedAmount>0) return "partial";
-    return "active";
-  };
+  const computeStatus=computeCreditStatus;
   const STATUS={active:{bg:"var(--c-success-bg)",c:"var(--c-success)",label:"Còn hiệu lực"},partial:{bg:"var(--c-primary-pale)",c:"var(--c-primary)",label:"Đã dùng 1 phần"},used:{bg:"var(--c-surface-3)",c:"var(--c-text-2)",label:"Đã dùng hết"},expired:{bg:"var(--c-danger-bg)",c:"var(--c-danger-mid)",label:"Đã hết hạn"}};
 
   const decorated=credits.map(c=>({...c,_status:computeStatus(c)}));
@@ -30,7 +24,7 @@ export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdat
     if(!form.customerName||!form.originalAmount) return pushNotif&&pushNotif("Nhập tên khách và số tiền gốc","error");
     const original=Number(form.originalAmount)||0;
     const fee=Number(form.feeDeducted)||0;
-    const creditAmount=Math.max(0,original-fee);
+    const creditAmount=calcCreditAmount(original,fee);
     const rec={...form,id:"BL"+Date.now(),originalAmount:original,feeDeducted:fee,creditAmount,usedAmount:0,remainingAmount:creditAmount,issueDate:new Date().toISOString().slice(0,10),status:"active",usageHistory:[],createdBy:currentUser?.name};
     sync([rec,...credits]);
     pushNotif&&pushNotif("Đã tạo bảo lưu vé "+rec.id+" — còn "+fmtMoney(creditAmount));
@@ -41,7 +35,7 @@ export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdat
   const applyCredit=()=>{
     if(!selected) return;
     const amt=Number(useAmount)||0;
-    if(amt<=0||amt>selected.remainingAmount) return pushNotif&&pushNotif("Số tiền sử dụng không hợp lệ","error");
+    if(!isValidCreditUsage(amt,selected.remainingAmount)) return pushNotif&&pushNotif("Số tiền sử dụng không hợp lệ","error");
     if(!useOrderId.trim()) return pushNotif&&pushNotif("Nhập mã đơn áp dụng","error");
     const usage={ts:new Date().toISOString(),orderId:useOrderId,amount:amt,by:currentUser?.name};
     const updated={...selected,usedAmount:(selected.usedAmount||0)+amt,remainingAmount:selected.remainingAmount-amt,usageHistory:[...(selected.usageHistory||[]),usage]};
@@ -167,7 +161,7 @@ export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdat
               <input type="date" value={form.expiryDate} onChange={e=>set("expiryDate",e.target.value)} style={fieldStyle}/>
             </div>
           </div>
-          {form.originalAmount&&<div style={{marginTop:10,fontSize:13,color:"var(--c-primary)",fontWeight:600}}>Giá trị bảo lưu thực tế: {fmtMoney(Math.max(0,(Number(form.originalAmount)||0)-(Number(form.feeDeducted)||0)))}</div>}
+          {form.originalAmount&&<div style={{marginTop:10,fontSize:13,color:"var(--c-primary)",fontWeight:600}}>Giá trị bảo lưu thực tế: {fmtMoney(calcCreditAmount(Number(form.originalAmount)||0,Number(form.feeDeducted)||0))}</div>}
           <div style={{marginTop:12}}>
             <label style={labelStyle}>Điều kiện sử dụng</label>
             <input value={form.conditions} onChange={e=>set("conditions",e.target.value)} placeholder="VD: Áp dụng mọi chặng, không hoàn tiền mặt..." style={fieldStyle}/>

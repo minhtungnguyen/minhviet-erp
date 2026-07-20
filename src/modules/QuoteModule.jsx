@@ -1,5 +1,6 @@
 import React from "react";
 import { NumberInput } from "../components/ui.jsx";
+import { calcQuoteTotal, calcDepositAmount, daysLeft } from "../utils/quoteCalc.js";
 
 export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, currentUser, pushNotif, onCreateOrder }){
   const BLANK_FORM={
@@ -22,10 +23,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
   const lbl={display:"block",fontSize:12,fontWeight:600,marginBottom:4,color:"var(--c-text-2)"};
   const inp={width:"100%",border:"1px solid var(--c-border)",borderRadius:8,padding:"9px 12px",fontSize:13,boxSizing:"border-box"};
 
-  const calcTotal=(f)=>
-    (f.pax.adults*(f.pricing.adultPrice||0))+
-    (f.pax.children*(f.pricing.childPrice||0))+
-    (f.pax.babies*(f.pricing.babyPrice||0));
+  const calcTotal=(f)=>calcQuoteTotal(f.pax,f.pricing);
 
   const setPax=(k,v)=>setForm(f=>({...f,pax:{...f.pax,[k]:Number(v)||0}}));
   const setPrice=(k,v)=>{
@@ -50,11 +48,6 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
     }
   },[]);
 
-  const daysLeft=(validUntil)=>{
-    if(!validUntil) return null;
-    return Math.ceil((new Date(validUntil)-new Date())/86400000);
-  };
-
   const saveQuote=()=>{
     if(!form.customerName) return pushNotif&&pushNotif("Nhập tên khách","error");
     if(!form.tourName)     return pushNotif&&pushNotif("Nhập tên dịch vụ","error");
@@ -64,7 +57,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
     const q={
       ...form,
       id:newId,version:1,status:"draft",
-      depositAmount:Math.round(form.pricing.totalPrice*form.depositPct/100),
+      depositAmount:calcDepositAmount(form.pricing.totalPrice,form.depositPct),
       versions:[],
       createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),
       createdBy:currentUser?.name,convertedOrderId:null
@@ -87,7 +80,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
       ...q,
       version:q.version+1,
       pricing:{...q.pricing,totalPrice:Number(revisePrice)},
-      depositAmount:Math.round(Number(revisePrice)*q.depositPct/100),
+      depositAmount:calcDepositAmount(Number(revisePrice),q.depositPct),
       status:"sent",
       sentAt:new Date().toISOString(),updatedAt:new Date().toISOString(),
       versions:[...(q.versions||[]),{version:q.version,totalPrice:q.pricing?.totalPrice||q.totalPrice,sentAt:q.sentAt,note:reviseNote||"Phiên bản "+q.version}],
@@ -108,7 +101,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
       pax:(q.pax?.adults||1)+(q.pax?.children||0)+(q.pax?.babies||0),
       adultPrice:q.pricing?.adultPrice||0,childPrice:q.pricing?.childPrice||0,babyPrice:q.pricing?.babyPrice||0,
       totalPrice:totalPrc,
-      depositAmount:q.depositAmount||Math.round(totalPrc*(q.depositPct||30)/100),
+      depositAmount:q.depositAmount||calcDepositAmount(totalPrc,q.depositPct||30),
       paymentDeadline:q.paymentDeadline,
       includes:q.includes,excludes:q.excludes,cancelPolicy:q.cancelPolicy,
       note:q.note,
@@ -180,7 +173,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
           </div>
           <div style={{marginTop:10,padding:"10px 14px",background:"var(--c-primary-light)",borderRadius:8,fontSize:13}}>
             Tổng báo giá: <strong>{form.pricing.totalPrice.toLocaleString("vi-VN")} ₫</strong>
-            &nbsp;·&nbsp; Cọc {form.depositPct}%: <strong>{Math.round(form.pricing.totalPrice*form.depositPct/100).toLocaleString("vi-VN")} ₫</strong>
+            &nbsp;·&nbsp; Cọc {form.depositPct}%: <strong>{calcDepositAmount(form.pricing.totalPrice,form.depositPct).toLocaleString("vi-VN")} ₫</strong>
           </div>
         </div>
 

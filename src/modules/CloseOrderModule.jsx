@@ -1,4 +1,5 @@
 import React from "react";
+import { calcOrderFinancials } from "../utils/orderFinancials.js";
 
 export default function CloseOrderModule({orders,vouchers,expenses,refunds,onCloseOrder,pushNotif,currentRole,currentUser}){
   const [search,setSearch]=React.useState("");
@@ -13,14 +14,7 @@ export default function CloseOrderModule({orders,vouchers,expenses,refunds,onClo
 
   const fmtMoney=(n)=>(n||0).toLocaleString("vi-VN")+"₫";
 
-  const getFinancials=(o)=>{
-    const ovs=(vouchers||[]).filter(v=>v.orderId===o.id);
-    const totalPaid=ovs.filter(v=>v.type==="thu"&&["approved","confirmed"].includes(v.status)).reduce((s,v)=>s+(v.amount||0),0);
-    const totalChi=ovs.filter(v=>v.type==="chi"&&["approved","confirmed"].includes(v.status)).reduce((s,v)=>s+(v.amount||0),0);
-    const debt=(o.totalPrice||0)-totalPaid;
-    const profit=(o.totalPrice||0)-totalChi-(o.costPrice||0);
-    return {totalPaid,totalChi,debt,profit};
-  };
+  const getFinancials=(o)=>calcOrderFinancials(o,vouchers);
 
   const doClose=()=>{
     if(!selected) return;

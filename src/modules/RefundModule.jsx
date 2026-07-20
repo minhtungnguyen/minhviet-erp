@@ -1,18 +1,6 @@
 import React from "react";
 import { NumberInput } from "../components/ui.jsx";
-import { REFUND_POLICY } from "../constants/refundPolicy.js";
-
-function daysUntilDepart(departDateStr){
-  const now = new Date();
-  const depart = new Date(departDateStr);
-  return Math.max(0, Math.ceil((depart - now) / 86400000));
-}
-
-function calcRefundPolicy(departDateStr,totalPrice){
-  const days=daysUntilDepart?daysUntilDepart(departDateStr):Math.ceil((new Date(departDateStr)-new Date())/86400000);
-  const rule=REFUND_POLICY.find(r=>days>=r.minDays)||REFUND_POLICY[REFUND_POLICY.length-1];
-  return {days,pct:rule.pct,label:rule.label,amount:Math.round((totalPrice||0)*rule.pct/100)};
-}
+import { calcRefundPolicy } from "../utils/refund.js";
 
 export default function RefundModule({ orders=[], vouchers=[], refunds=[], onRefundUpdate, onRefundCreate, pushNotif, currentRole, currentUser }) {
   const [showForm, setShowForm] = React.useState(false);
