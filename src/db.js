@@ -409,25 +409,25 @@ export async function fetchNotifications() {
   if (error) throw error
   return data.map(r => ({
     id: r.id, msg: r.msg, type: r.type || 'info',
-    targetRole: r.target_role, createdBy: r.created_by,
-    orderId: r.order_id, readBy: r.read_by || [],
-    read: false, time: r.created_at,
+    targetRole: r.role, targetUser: r.target_user, createdBy: r.created_by,
+    orderId: r.order_id, taskId: r.task_id, read: !!r.read,
+    time: r.created_at,
   }))
 }
 
 export async function insertNotification(n) {
   const { error } = await supabase.from('notifications').insert({
-    id: n.id, msg: n.msg, type: n.type || 'info',
-    target_role: n.targetRole || null,
+    msg: n.msg, type: n.type || 'info',
+    role: n.targetRole || null,
+    target_user: n.targetUser || null,
     created_by: n.createdBy || null,
     order_id: n.orderId || null,
-    read_by: [],
+    task_id: n.taskId || null,
   })
   if (error) throw error
 }
 
-export async function markNotificationRead(notifId, userId) {
-  const { data } = await supabase.from('notifications').select('read_by').eq('id', notifId).single()
-  const readBy = [...(data?.read_by || []), userId]
-  await supabase.from('notifications').update({ read_by: readBy }).eq('id', notifId)
+export async function markNotificationRead(notifId) {
+  const { error } = await supabase.from('notifications').update({ read: true }).eq('id', notifId)
+  if (error) throw error
 }

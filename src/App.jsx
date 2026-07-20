@@ -17,6 +17,7 @@ import { DEFAULT_CHECKLIST } from "./constants/checklist.js";
 import { SERVICE_TYPES } from "./constants/serviceTypes.js";
 import { ORDER_STATUS } from "./constants/statuses.js";
 import { PERMISSION_GROUPS, ALL_PERM_KEYS, PERM_LABEL, ROLE_DEFAULT_PERMS, isBanGiamDoc, getEffectivePerms, canSeeTourGhepSensitive, canAccessTourGhep } from "./utils/permissions.js";
+import { isNotifRead, isNotifVisible } from "./utils/notifications.js";
 import { NumberInput, fmtNum } from "./components/ui.jsx";
 import CloseOrderModule from "./modules/CloseOrderModule.jsx";
 import QuoteModule from "./modules/QuoteModule.jsx";
@@ -735,7 +736,7 @@ export default function App(){
     users: userAccounts,
     dbNotifs,
     setOrders, setVouchers, setExpenses, setRefunds, setCustomers, setUsers: setUserAccounts,
-    saveOrder, removeOrder, saveVoucher, saveExpense, saveRefund, saveCustomer, saveUser, removeUser, saveNotification,
+    saveOrder, removeOrder, saveVoucher, saveExpense, saveRefund, saveCustomer, saveUser, removeUser, saveNotification, markNotifRead,
     verifyLogin,
     loading: dbLoading,
   } = useSupabase();
@@ -911,6 +912,7 @@ export default function App(){
   const setHdvListP       = React.useMemo(()=>makePersistedSetter("hdvList",setHdvList),[makePersistedSetter]);
   const [selected, setSelected] = React.useState(null);
   const [taskPrefill, setTaskPrefill] = React.useState(null);
+  const [openTaskId, setOpenTaskId] = React.useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false);
   const [toasts, setToasts] = React.useState([]);
 
@@ -1120,7 +1122,7 @@ export default function App(){
   const pendingApprovals = expenses.filter(e=>["pending_kt","pending_gd","pending_pay"].includes(e.status)).length + vouchers.filter(v=>v.status==="pending").length;
   const pendingRefunds = (refunds||[]).filter(r=>r.status==="pending").length;
   const pendingCare = (careTasks||[]).filter(t=>!t.done).length;
-  const unreadCount = notifs.filter(n=>(!n.targetRole||n.targetRole===currentRole||(n.targetRole==="manager"&&currentRole==="pho_giam_doc"))&&!n.read).length;
+  const unreadCount = notifs.filter(n=>isNotifVisible(n,currentUser,currentRole)&&!isNotifRead(n)).length;
 
   if(dbLoading && !orders.length){
     return(
@@ -1169,21 +1171,37 @@ export default function App(){
       {view==="tourghep"&&canAccessTourGhep(currentUser)&&<TourGhepModule tourGhepProducts={tourGhepProducts} onUpdateTourGhepProducts={setTourGhepProductsP} orders={orders} suppliers={suppliers} onCreateOrder={(prefill)=>{ handleCreateOrder(prefill); }} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser}/>}
       {view==="tourghep"&&!canAccessTourGhep(currentUser)&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"60vh",gap:12,color:"#94a3b8"}}><div style={{fontSize:48}}>🔒</div><div style={{fontSize:16,fontWeight:600}}>Bạn không có quyền truy cập Module Tour Ghép</div><div style={{fontSize:13}}>Liên hệ Giám đốc để được cấp quyền.</div></div>}
       {view==="aftercare"&&<AfterSaleModule careTasks={careTasks} onUpdateTasks={setCareTasksP} orders={orders} customers={customers} currentUser={currentUser} currentRole={currentRole} pushNotif={pushToast}/>}
-      {view==="tasks"&&<TaskModule tasks={tasks} onUpdateTasks={setTasksP} orders={orders} customers={customers} currentUser={currentUser} currentRole={currentRole} userAccounts={userAccounts} pushNotif={pushToast} prefill={taskPrefill} onPrefillConsumed={()=>setTaskPrefill(null)}/>}
+      {view==="tasks"&&<TaskModule tasks={tasks} onUpdateTasks={setTasksP} orders={orders} customers={customers} currentUser={currentUser} currentRole={currentRole} userAccounts={userAccounts} pushNotif={pushToast} saveNotification={saveNotification} prefill={taskPrefill} onPrefillConsumed={()=>setTaskPrefill(null)} openTaskId={openTaskId} onOpenTaskConsumed={()=>setOpenTaskId(null)}/>}
       {view==="deploy"&&getEffectivePerms(currentUser).includes("deploy")&&<DeployPanel deploySteps={deploySteps} onUpdateSteps={setDeploySteps}/>}
       {view==="profile"&&<ProfilePage currentUser={currentUser} onUpdate={handleUpdateCurrentUser} onBack={()=>setView("dashboard")} pushNotif={pushToast} verifyLogin={verifyLogin}/>}
       {view==="banks"&&<BankAccountModule bankAccounts={bankAccounts} onUpdate={setBankAccounts} pushNotif={pushToast}/>}
     </div>
 
-      {showNotif&&(
-        <NotifPanel notifs={notifs} onClose={()=>setShowNotif(false)} onMarkRead={()=>setNotifs(n=>n.map(x=>({...x,read:true})))} currentRole={currentRole} currentUser={currentUser}
-          onNav={(orderId)=>{
-            const o=orders.find(x=>x.id===orderId);
-            if(o){setSelected(o);setView("detail");}
-            setShowNotif(false);
-            setNotifs(n=>n.map(x=>x.orderId===orderId?{...x,read:true}:x));
-          }}/>
-      )}
+      {showNotif&&(() => {
+        const visibleNotifs = notifs.filter(n=>isNotifVisible(n,currentUser,currentRole))
+          .map(n=>({...n, read:isNotifRead(n)}));
+        return (
+          <NotifPanel notifs={visibleNotifs} onClose={()=>setShowNotif(false)}
+            onMarkRead={()=>{
+              const ids = visibleNotifs.filter(n=>!n.read).map(n=>n.id);
+              setNotifs(prev=>prev.map(x=>ids.includes(x.id) ? {...x, read:true} : x));
+              ids.forEach(id=>markNotifRead(id));
+            }}
+            currentRole={currentRole} currentUser={currentUser}
+            onNav={(n)=>{
+              if(n.taskId){
+                setOpenTaskId(n.taskId);
+                setView("tasks");
+              } else if(n.orderId){
+                const o=orders.find(x=>x.id===n.orderId);
+                if(o){setSelected(o);setView("detail");}
+              }
+              setShowNotif(false);
+              setNotifs(prev=>prev.map(x=>x.id===n.id ? {...x, read:true} : x));
+              markNotifRead(n.id);
+            }}/>
+        );
+      })()}
       {showSearch&&(
         <GlobalSearch orders={orders} customers={customers} suppliers={suppliers} hdvList={hdvList} onClose={()=>setShowSearch(false)}
           onSelectOrder={(o)=>{setSelected(o);setView("detail");setShowSearch(false);}}

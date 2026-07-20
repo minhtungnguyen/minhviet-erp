@@ -2,7 +2,7 @@ import React from "react";
 import { Btn, SearchInp } from "../components/ui.jsx";
 import { canManageTask, isTaskAssignee, isSelfAssignedTask } from "../utils/taskPermissions.js";
 
-export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], customers=[], currentUser, currentRole, userAccounts=[], pushNotif, prefill=null, onPrefillConsumed }) {
+export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], customers=[], currentUser, currentRole, userAccounts=[], pushNotif, saveNotification, prefill=null, onPrefillConsumed, openTaskId=null, onOpenTaskConsumed }) {
   const [view, setView] = React.useState("kanban"); // kanban | list | mine
   const [showForm, setShowForm] = React.useState(false);
   const [selectedTask, setSelectedTask] = React.useState(null);
@@ -41,6 +41,21 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     onPrefillConsumed && onPrefillConsumed();
   }, [prefill]);
 
+  // Mở đúng task khi bấm vào từ thông báo (bell) trỏ tới taskId cụ thể
+  React.useEffect(() => {
+    if (!openTaskId) return;
+    const found = tasks.find(t => t.id === openTaskId);
+    if (found) setSelectedTask(found);
+    onOpenTaskConsumed && onOpenTaskConsumed();
+  }, [openTaskId, tasks]);
+
+  // Báo cho đúng người liên quan (bỏ qua nếu báo cho chính người đang thao tác)
+  const notifyUser = (name, msg, type, taskId) => {
+    if (!name || name === currentUser?.name) return;
+    saveNotification?.({ id:"N"+Date.now()+"_"+Math.random().toString(36).slice(2,7),
+      msg, type, targetUser:name, createdBy:currentUser?.name, taskId });
+  };
+
   const saveTask = () => {
     if (!form.title.trim()) return;
     const isNew = !form.id;
@@ -51,6 +66,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
       updatedAt: new Date().toISOString(),
     };
     onUpdateTasks(prev => isNew ? [t, ...prev] : prev.map(x => x.id===t.id ? t : x));
+    if (isNew) notifyUser(t.assignee, `📋 Bạn được giao việc mới: ${t.title}`, "info", t.id);
     pushNotif?.(isNew ? `Đã tạo việc: ${t.title}` : `Đã cập nhật: ${t.title}`, "success");
     setShowForm(false);
     setSelectedTask(null);
@@ -75,6 +91,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
   const submitForReview = (t) => {
     if (isSelfAssigned(t) || !(isAssignee(t) || canManage(t))) return;
     applyTaskUpdate(t.id, cur => ({ ...cur, status:"pending_review", updatedAt:new Date().toISOString() }));
+    notifyUser(t.createdBy, `✅ ${t.assignee} đã báo cáo hoàn thành: ${t.title}`, "info", t.id);
   };
 
   const approveTask = (t) => {
@@ -82,6 +99,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     if (!canFinishSelf && !canManage(t)) return;
     const now = new Date().toISOString();
     applyTaskUpdate(t.id, cur => ({ ...cur, status:"done", approvedBy:currentUser?.name, completedAt:now, updatedAt:now }));
+    if (!isSelfAssigned(t)) notifyUser(t.assignee, `🎉 Việc đã được duyệt hoàn thành: ${t.title}`, "success", t.id);
   };
 
   const returnTask = (t, reason) => {
@@ -89,10 +107,12 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     const now = new Date().toISOString();
     applyTaskUpdate(t.id, cur => ({ ...cur, status:"in_progress", updatedAt:now,
       comments:[...(cur.comments||[]), { id:Date.now(), by:currentUser?.name, text:`↩ Trả lại: ${reason.trim()}`, ts:now, kind:"return" }] }));
+    notifyUser(t.assignee, `↩ Việc bị trả lại, cần làm lại: ${t.title}`, "warning", t.id);
   };
 
   const reassignTask = (t, newAssignee) => {
     if (!canManage(t) || !newAssignee || newAssignee===t.assignee) return;
+    notifyUser(newAssignee, `📋 Bạn được giao việc mới: ${t.title}`, "info", t.id);
     const now = new Date().toISOString();
     applyTaskUpdate(t.id, cur => ({ ...cur, assignee:newAssignee, updatedAt:now,
       comments:[...(cur.comments||[]), { id:Date.now(), by:currentUser?.name, text:`🔁 Đổi người nhận: ${t.assignee||"—"} → ${newAssignee}`, ts:now, kind:"system" }] }));

@@ -184,6 +184,10 @@ export function useSupabase() {
     if(SUPABASE_READY){ try{ await DB.insertNotification(n) }catch(e){ console.error('[saveNotification]',e) } }
   },[])
 
+  const markNotifRead = useCallback(async(notifId)=>{
+    if(SUPABASE_READY){ try{ await DB.markNotificationRead(notifId) }catch(e){ console.error('[markNotifRead]',e) } }
+  },[])
+
   return {
     // Data
     orders, vouchers, expenses, refunds, nccList, customers, users, dbNotifs,
@@ -192,7 +196,7 @@ export function useSupabase() {
     // DB-synced savers
     saveOrder, removeOrder, saveVoucher, saveExpense, saveRefund,
     saveNcc, removeNcc, saveCustomer, saveUser, removeUser,
-    saveNotification, verifyLogin,
+    saveNotification, markNotifRead, verifyLogin,
     // Meta
     loading, error,
     supabaseReady: SUPABASE_READY,

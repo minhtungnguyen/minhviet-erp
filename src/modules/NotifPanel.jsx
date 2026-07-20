@@ -23,14 +23,15 @@ export default function NotifPanel({notifs=[],onClose,onMarkRead,onNav,currentRo
           {notifs.some(n=>!n.read)&&<button onClick={onMarkRead} style={{background:"none",border:"none",color:"var(--c-primary-mid)",fontSize:12,cursor:"pointer",fontWeight:600}}>Đánh dấu đã đọc</button>}
         </div>
         <div style={{overflowY:"auto",flex:1}}>
-          {notifs.filter(n=>!n.targetRole||n.targetRole===currentRole||(n.targetRole==="manager"&&currentRole==="pho_giam_doc")).length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:40,fontSize:13}}>Không có thông báo nào</div>}
-          {notifs.filter(n=>!n.targetRole||n.targetRole===currentRole||(n.targetRole==="manager"&&currentRole==="pho_giam_doc")).slice(0,30).map(n=>{
+          {notifs.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:40,fontSize:13}}>Không có thông báo nào</div>}
+          {notifs.slice(0,30).map(n=>{
             const canView=canViewOrder(n);
+            const clickable=canView||!!n.taskId;
             return(
               <div key={n.id}
-                style={{display:"flex",gap:10,padding:"12px 18px",borderBottom:"1px solid var(--c-surface-2)",background:n.read?"var(--c-surface)":"var(--c-primary-light)",cursor:canView?"pointer":"default",transition:"background .15s"}}
-                onClick={()=>{ if(canView&&onNav) onNav(n.orderId); }}
-                onMouseEnter={e=>{if(canView) e.currentTarget.style.background=n.read?"var(--c-surface-2)":"var(--c-primary-pale)";}}
+                style={{display:"flex",gap:10,padding:"12px 18px",borderBottom:"1px solid var(--c-surface-2)",background:n.read?"var(--c-surface)":"var(--c-primary-light)",cursor:clickable?"pointer":"default",transition:"background .15s"}}
+                onClick={()=>{ if(clickable&&onNav) onNav(n); }}
+                onMouseEnter={e=>{if(clickable) e.currentTarget.style.background=n.read?"var(--c-surface-2)":"var(--c-primary-pale)";}}
                 onMouseLeave={e=>{e.currentTarget.style.background=n.read?"var(--c-surface)":"var(--c-primary-light)";}}>
                 <span style={{fontSize:16,flexShrink:0,marginTop:1}}>{ICON[n.type]||"📌"}</span>
                 <div style={{flex:1,minWidth:0}}>
@@ -39,8 +40,9 @@ export default function NotifPanel({notifs=[],onClose,onMarkRead,onNav,currentRo
                     <span style={{fontSize:11,color:"var(--c-text-muted)"}}>{fmtTime(n.time)}</span>
                     {n.createdBy&&<span style={{fontSize:11,color:"var(--c-text-muted)"}}>· {n.createdBy}</span>}
                   </div>
-                  {canView&&<div style={{fontSize:11,color:"var(--c-primary-mid)",fontWeight:600,marginTop:3}}>Xem đơn hàng →</div>}
-                  {n.orderId&&!canView&&<div style={{fontSize:11,color:"var(--c-text-muted)",marginTop:3}}>Chỉ sale phụ trách và kế toán / điều hành có thể xem</div>}
+                  {n.taskId&&<div style={{fontSize:11,color:"var(--c-primary-mid)",fontWeight:600,marginTop:3}}>Xem công việc →</div>}
+                  {!n.taskId&&canView&&<div style={{fontSize:11,color:"var(--c-primary-mid)",fontWeight:600,marginTop:3}}>Xem đơn hàng →</div>}
+                  {n.orderId&&!n.taskId&&!canView&&<div style={{fontSize:11,color:"var(--c-text-muted)",marginTop:3}}>Chỉ sale phụ trách và kế toán / điều hành có thể xem</div>}
                 </div>
               </div>
             );
