@@ -20,6 +20,7 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
   const [showStatusMenu,setShowStatusMenu]=React.useState(false);
 
   const {totalPaid,totalChi,debt,profit,profitPct,nccDebt}=calcOrderFinancials(order,vouchers,bookings);
+  const {depositAmt}=calcPaymentStages(order,vouchers);
   const profitStatus=getProfitStatus(profitPct,order?.service);
   const passengerCount=(order?.passengers||[]).length;
   const missingCccdCount=(order?.passengers||[]).filter(p=>p.type!=="baby"&&!p.cccd).length;
@@ -27,6 +28,9 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
   const changeStatus=(status)=>{
     if(status==="confirmed"&&missingCccdCount>0){
       if(!window.confirm("Còn "+missingCccdCount+" khách thiếu CCCD. Vẫn xác nhận đơn?")) return;
+    }
+    if(status==="in_progress"&&totalPaid<depositAmt){
+      if(!window.confirm("Khách mới đóng "+fmtMoney(totalPaid)+" / "+fmtMoney(depositAmt)+" tiền cọc. Vẫn bàn giao cho điều hành?")) return;
     }
     onUpdate&&onUpdate({...order,status});
     setShowStatusMenu(false);
