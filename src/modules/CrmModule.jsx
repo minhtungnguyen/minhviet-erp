@@ -38,7 +38,7 @@ const MSG_TEMPLATES = {
   },
 };
 
-export default function CrmModule({orders,pushNotif,customers:customersProp=SEED_CUSTOMERS,onUpdateCustomers,currentUser,msgHistory,onLogMessage,onCreateOrderFromLead,onViewOrder}){
+export default function CrmModule({orders,pushNotif,customers:customersProp=SEED_CUSTOMERS,onUpdateCustomers,currentUser,msgHistory,onLogMessage,onCreateOrderFromLead,onViewOrder,tasks=[],onViewTasks}){
   const [customers,setCustomers]=React.useState(customersProp);
   const [subView,setSubView]=React.useState("list");
   const [mainTab,setMainTab]=React.useState("list"); // "list"|"segment"|"history"
@@ -169,6 +169,8 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
   if(subView==="detail"&&selected){
     const live=customers.find(c=>c.id===selected.id)||selected;
     const myOrders=orders.filter(o=>o.customerId===live.id||(o.customerPhone&&(o.customerPhone===live.phone||o.customerPhone===live.sdt))||o.customerName?.trim().toLowerCase()===live.name?.trim().toLowerCase()||o.customer===live.name);
+    const myOrderIds=new Set(myOrders.map(o=>o.id));
+    const myTasks=tasks.filter(t=>t.customerId===live.id||(t.orderId&&myOrderIds.has(t.orderId)));
     const missingCccd=!live.cccd;
     const nextBirthday=(live.events||[]).find(e=>e.type==="birthday");
     let bdayDays=null,bdayYears=null;
@@ -247,6 +249,28 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
                   <span style={{fontWeight:700,color:"var(--c-success-mid)",fontSize:"var(--text-base)"}}>{fmtMoney(o.totalPrice)}</span>
                   {onViewOrder&&<span style={{fontSize:"var(--text-xs)",color:"var(--c-primary-mid)"}}>→</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {myTasks.length>0&&(
+          <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:20,boxShadow:"var(--sh-sm)",marginTop:16}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div style={{fontWeight:700}}>Công việc liên quan ({myTasks.length})</div>
+              {onViewTasks&&<button onClick={onViewTasks} style={{background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:600}}>Xem tất cả →</button>}
+            </div>
+            {myTasks.map(t=>(
+              <div key={t.id} onClick={onViewTasks} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid var(--c-border)",cursor:onViewTasks?"pointer":"default",borderRadius:6,paddingLeft:4,paddingRight:4}}
+                onMouseEnter={e=>{if(onViewTasks)e.currentTarget.style.background="var(--c-surface-2)";}}
+                onMouseLeave={e=>{e.currentTarget.style.background="transparent";}}>
+                <span style={{fontWeight:600,fontSize:"var(--text-base)"}}>{t.title}</span>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{t.assignee||"Chưa giao"}</span>
+                  <span style={{fontSize:"var(--text-xs)",fontWeight:700,padding:"2px 8px",borderRadius:"var(--r-pill)",background:t.status==="done"?"var(--c-success-bg)":t.status==="in_progress"?"var(--c-primary-light)":"var(--c-surface-2)",color:t.status==="done"?"var(--c-success-mid)":t.status==="in_progress"?"var(--c-primary-mid)":"var(--c-text-3)"}}>
+                    {({new:"Mới",in_progress:"Đang làm",pending_review:"Chờ xác nhận",done:"Hoàn thành"})[t.status]||t.status}
+                  </span>
                 </div>
               </div>
             ))}

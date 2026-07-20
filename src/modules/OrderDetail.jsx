@@ -14,7 +14,7 @@ import {
 } from "../print/index.jsx";
 import { openPrintWindow, buildConfirmation } from "../print/legacy.jsx";
 
-export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBack,onUpdate,onDelete,onAddVoucher,onApprove,onReject,pushNotif,currentRole,bankAccounts=[],currentUser,hdvList=[],credits=[],onUpdateCredits,bookings=[],customers=[],suppliers=[],onAddSupplier}){
+export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBack,onUpdate,onDelete,onAddVoucher,onApprove,onReject,pushNotif,currentRole,bankAccounts=[],currentUser,hdvList=[],credits=[],onUpdateCredits,bookings=[],customers=[],suppliers=[],onAddSupplier,tasks=[],onViewTasks}){
   const [showDeleteConfirm,setShowDeleteConfirm]=React.useState(false);
   const [activeTab,setActiveTab]=React.useState("info");
   const [showStatusMenu,setShowStatusMenu]=React.useState(false);
@@ -23,6 +23,8 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
   const {depositAmt}=calcPaymentStages(order,vouchers);
   const profitStatus=getProfitStatus(profitPct,order?.service);
   const passengerCount=(order?.passengers||[]).length;
+  const orderCustomerIds=new Set(customers.filter(c=>c.id===order?.customerId||(c.phone&&c.phone===order?.customerPhone)||c.name?.trim().toLowerCase()===order?.customerName?.trim().toLowerCase()).map(c=>c.id));
+  const myTasks=tasks.filter(t=>t.orderId===order?.id||(t.customerId&&orderCustomerIds.has(t.customerId)));
   const missingCccdCount=(order?.passengers||[]).filter(p=>p.type!=="baby"&&!p.cccd).length;
 
   const changeStatus=(status)=>{
@@ -397,6 +399,28 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
               </div>
             );
           })()}
+        </div>
+      )}
+
+      {activeTab==="info"&&myTasks.length>0&&(
+        <div style={{background:"var(--c-surface)",borderRadius:14,padding:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)",marginTop:16}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+            <div style={{fontWeight:700,fontSize:14,color:"var(--c-text-2)"}}>✅ Công việc liên quan ({myTasks.length})</div>
+            {onViewTasks&&<button onClick={onViewTasks} style={{background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:13,fontWeight:600}}>Xem tất cả →</button>}
+          </div>
+          {myTasks.map(t=>(
+            <div key={t.id} onClick={onViewTasks} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 4px",borderBottom:"1px solid var(--c-border)",cursor:onViewTasks?"pointer":"default",borderRadius:6}}
+              onMouseEnter={e=>{if(onViewTasks)e.currentTarget.style.background="var(--c-surface-2)";}}
+              onMouseLeave={e=>{e.currentTarget.style.background="transparent";}}>
+              <span style={{fontWeight:600,fontSize:13}}>{t.title}</span>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:12,color:"var(--c-text-3)"}}>{t.assignee||"Chưa giao"}</span>
+                <span style={{fontSize:11,fontWeight:700,padding:"2px 8px",borderRadius:20,background:t.status==="done"?"var(--c-success-bg)":t.status==="in_progress"?"var(--c-primary-light)":"var(--c-surface-2)",color:t.status==="done"?"var(--c-success-mid)":t.status==="in_progress"?"var(--c-primary-mid)":"var(--c-text-3)"}}>
+                  {({new:"Mới",in_progress:"Đang làm",pending_review:"Chờ xác nhận",done:"Hoàn thành"})[t.status]||t.status}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
