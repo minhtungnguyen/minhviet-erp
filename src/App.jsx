@@ -737,7 +737,7 @@ export default function App(){
     users: userAccounts,
     dbNotifs,
     setOrders, setVouchers, setExpenses, setRefunds, setCustomers, setUsers: setUserAccounts,
-    saveOrder, removeOrder, saveVoucher, saveExpense, saveRefund, saveCustomer, saveUser, removeUser, saveNotification, markNotifRead,
+    saveOrder, removeOrder, saveVoucher, saveExpense, saveRefund, saveCustomer, removeCustomer, saveUser, removeUser, saveNotification, markNotifRead,
     verifyLogin,
     loading: dbLoading,
   } = useSupabase();
@@ -1189,7 +1189,7 @@ export default function App(){
       {view==="quicksale"&&<QuickSaleForm onSave={(d)=>{handleCreateOrder(d);}} onCancel={()=>setView("orders")} customers={customers} suppliers={suppliers} currentUser={currentUser} userAccounts={userAccounts} tourGhepProducts={tourGhepProducts||[]}/>}
       {view==="detail"&&selected&&<OrderDetail order={selected} vouchers={vouchers} expenses={expenses} refunds={refunds} onBack={()=>setView("orders")} onUpdate={handleUpdateOrder} onDelete={handleDeleteOrder} onAddVoucher={handleAddVoucher} onApprove={handleApprove} onReject={handleReject} pushNotif={pushToast} currentRole={currentRole} bankAccounts={bankAccounts} currentUser={currentUser} hdvList={hdvList} credits={credits} onUpdateCredits={setCreditsP} bookings={bookings} customers={customers} suppliers={suppliers} onAddSupplier={addSupplier} tasks={tasks} onViewTasks={()=>setView("tasks")} onQuickAddTask={(prefill)=>{setTaskPrefill(prefill);setView("tasks");}}/>}
 
-      {view==="crm"&&<CrmModule orders={orders} pushNotif={pushToast} customers={customers} onUpdateCustomers={setCustomers} currentUser={currentUser} msgHistory={msgHistory} onLogMessage={rec=>setMsgHistory(h=>[rec,...h].slice(0,500))} onCreateOrderFromLead={()=>setView("create")} onViewOrder={(o)=>{setSelected(o);setView("detail");}} tasks={tasks} onViewTasks={()=>setView("tasks")} onQuickAddTask={(prefill)=>{setTaskPrefill(prefill);setView("tasks");}}/>}
+      {view==="crm"&&<CrmModule orders={orders} pushNotif={pushToast} customers={customers} onSaveCustomer={saveCustomer} onDeleteCustomer={removeCustomer} currentUser={currentUser} currentRole={currentRole} msgHistory={msgHistory} onLogMessage={rec=>setMsgHistory(h=>[rec,...h].slice(0,500))} onCreateOrderFromLead={()=>setView("create")} onViewOrder={(o)=>{setSelected(o);setView("detail");}} tasks={tasks} onViewTasks={()=>setView("tasks")} onQuickAddTask={(prefill)=>{setTaskPrefill(prefill);setView("tasks");}}/>}
       {view==="tourops"&&<TourOpsModule orders={orders} pushNotif={pushToast} currentUser={currentUser} currentRole={currentRole} hdvList={hdvList} onUpdateOrder={handleUpdateOrder}/>}
       {view==="tourprogram"&&<TourProgramModule tourPrograms={tourPrograms} onUpdate={setTourPrograms} currentRole={currentRole} pushNotif={pushToast} currentUser={currentUser}/>}
       {view==="hdv"&&<HDVModule hdvList={hdvList} onUpdate={setHdvListP} orders={orders} pushNotif={pushToast} currentRole={currentRole}/>}

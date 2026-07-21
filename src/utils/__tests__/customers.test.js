@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { findCustomerByPhone } from '../customers.js';
+import { findCustomerByPhone, vietnameseGivenName } from '../customers.js';
 
 describe('findCustomerByPhone — chống tạo trùng khách hàng khi tiếp nhận lead mới', () => {
   it('tìm đúng khách khi SĐT khớp chính xác', () => {
@@ -40,5 +40,40 @@ describe('findCustomerByPhone — chống tạo trùng khách hàng khi tiếp n
       { id: 'KH2', name: 'Nguyễn Văn A (2)', phone: '0912345678' },
     ];
     expect(findCustomerByPhone(customers, '0912345678')?.id).toBe('KH1');
+  });
+});
+
+describe('vietnameseGivenName — lấy tên riêng để sắp xếp "Theo tên" (không phải Họ)', () => {
+  it('lấy từ cuối cùng của họ tên đầy đủ làm tên riêng', () => {
+    expect(vietnameseGivenName({ name: 'Nguyễn Văn An', type: 'personal' })).toBe('An');
+  });
+
+  it('tên chỉ có 1 từ vẫn trả về đúng từ đó', () => {
+    expect(vietnameseGivenName({ name: 'Lan', type: 'personal' })).toBe('Lan');
+  });
+
+  it('bỏ khoảng trắng thừa quanh tên và giữa các từ', () => {
+    expect(vietnameseGivenName({ name: '  Trần   Thị   Bích  ', type: 'personal' })).toBe('Bích');
+  });
+
+  it('khách doanh nghiệp giữ nguyên tên đầy đủ (không tách từ cuối)', () => {
+    expect(vietnameseGivenName({ name: 'Công ty CP Du lịch ABC', type: 'corp' })).toBe('Công ty CP Du lịch ABC');
+    expect(vietnameseGivenName({ name: 'Công ty CP Du lịch ABC', type: 'corporate' })).toBe('Công ty CP Du lịch ABC');
+  });
+
+  it('trả về chuỗi rỗng khi thiếu tên, không lỗi', () => {
+    expect(vietnameseGivenName({ name: '', type: 'personal' })).toBe('');
+    expect(vietnameseGivenName({})).toBe('');
+    expect(vietnameseGivenName(undefined)).toBe('');
+  });
+
+  it('sort theo vietnameseGivenName xếp đúng theo tên riêng, không theo Họ', () => {
+    const list = [
+      { name: 'Trần Văn Bình' },
+      { name: 'Nguyễn Văn An' },
+      { name: 'Lê Thị Cường' },
+    ];
+    const sorted = [...list].sort((a, b) => vietnameseGivenName(a).localeCompare(vietnameseGivenName(b), 'vi'));
+    expect(sorted.map(c => c.name)).toEqual(['Nguyễn Văn An', 'Trần Văn Bình', 'Lê Thị Cường']);
   });
 });

@@ -333,8 +333,15 @@ export async function upsertCustomer(c) {
   const { error } = await supabase.from('customers').upsert(customerToDb(c))
   if (error) throw error
 }
+export async function deleteCustomer(id) {
+  const { error } = await supabase.from('customers').delete().eq('id', id)
+  if (error) throw error
+}
 function customerToDb(c) {
-  return { id:c.id, type:c.type||'personal', name:c.name,
+  // Bảng customers thật ràng buộc CHECK type IN ('personal','business') — app dùng
+  // "corp" nội bộ khắp UI (card/badge/filter), map ở đây để không đụng vào UI.
+  const dbType = (c.type==="corp"||c.type==="corporate") ? "business" : "personal";
+  return { id:c.id, type:dbType, name:c.name,
     company_name:c.companyName||null, company_size:c.companySize||null,
     industry:c.industry||null, phone:c.phone||null, email:c.email||null,
     dob:c.dob||null, province:c.province||null, cccd:c.cccd||null,
@@ -345,7 +352,7 @@ function customerToDb(c) {
     source:c.source||null, events:c.events||[], interactions:c.interactions||[] }
 }
 function dbToCustomer(r) {
-  return { id:r.id, type:r.type, name:r.name, companyName:r.company_name,
+  return { id:r.id, type:r.type==="business"?"corp":"personal", name:r.name, companyName:r.company_name,
     companySize:r.company_size, industry:r.industry, phone:r.phone,
     email:r.email, dob:r.dob, province:r.province, cccd:r.cccd,
     tags:r.tags||[], assignedSale:r.assigned_sale,

@@ -145,6 +145,11 @@ export function useSupabase() {
     if(SUPABASE_READY){ try{ await DB.upsertCustomer(c) }catch(e){ console.error(e) } }
   },[])
 
+  const removeCustomer = useCallback(async(id)=>{
+    setCustomers(prev=>prev.filter(x=>x.id!==id))
+    if(SUPABASE_READY){ try{ await DB.deleteCustomer(id) }catch(e){ console.error('[removeCustomer failed]',e); throw e } }
+  },[])
+
   // Xác thực đăng nhập — server-side qua RPC khi có Supabase; fallback seed data khi chạy offline/dev
   const verifyLogin = useCallback(async(username, password)=>{
     if (SUPABASE_READY) return await DB.verifyLogin(username, password)
@@ -195,7 +200,7 @@ export function useSupabase() {
     setOrders, setVouchers, setExpenses, setRefunds, setNccList, setCustomers, setUsers,
     // DB-synced savers
     saveOrder, removeOrder, saveVoucher, saveExpense, saveRefund,
-    saveNcc, removeNcc, saveCustomer, saveUser, removeUser,
+    saveNcc, removeNcc, saveCustomer, removeCustomer, saveUser, removeUser,
     saveNotification, markNotifRead, verifyLogin,
     // Meta
     loading, error,

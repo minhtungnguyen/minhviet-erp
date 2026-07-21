@@ -2,6 +2,8 @@ import React from "react";
 import { exportCustomersToExcel } from "../utils/importExcel.js";
 import { findCustomerByPhone } from "../utils/customers.js";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
+import { isBanGiamDoc } from "../utils/permissions.js";
+import { vietnameseGivenName } from "../utils/customers.js";
 import { SEED_CUSTOMERS } from "../seeds/index.js";
 import { Btn, SearchInp, PageHeader, TabBar } from "../components/ui.jsx";
 
@@ -39,9 +41,9 @@ const MSG_TEMPLATES = {
   },
 };
 
-export default function CrmModule({orders,pushNotif,customers:customersProp=SEED_CUSTOMERS,onUpdateCustomers,currentUser,msgHistory,onLogMessage,onCreateOrderFromLead,onViewOrder,tasks=[],onViewTasks,onQuickAddTask}){
-  const [customers,setCustomers]=React.useState(customersProp);
+export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onSaveCustomer,onDeleteCustomer,currentUser,currentRole,msgHistory,onLogMessage,onCreateOrderFromLead,onViewOrder,tasks=[],onViewTasks,onQuickAddTask}){
   const [subView,setSubView]=React.useState("list");
+  const [showDeleteConfirm,setShowDeleteConfirm]=React.useState(false);
   const [mainTab,setMainTab]=React.useState("list"); // "list"|"segment"|"history"
   const [selected,setSelected]=React.useState(null);
   const [search,setSearch]=React.useState("");
@@ -56,7 +58,6 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
   const [composeBody,setComposeBody]=React.useState("");
   const [bulkCompose,setBulkCompose]=React.useState(null); // {seg, list}
 
-  const syncUp=(list)=>{setCustomers(list);onUpdateCustomers&&onUpdateCustomers(list);};
   const fmtMoney=(n)=>(n||0).toLocaleString("vi-VN")+"₫";
   const fmtTr=(n)=>((n||0)/1e6).toFixed(1)+" trđ";
   const fmtDate=(s)=>s?new Date(s).toLocaleDateString("vi-VN"):"—";
@@ -88,7 +89,7 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
     if(filterTag!=="all") list=list.filter(c=>(c.tags||[]).includes(filterTag));
     if(sortBy==="revenue") list.sort((a,b)=>(b.totalRevenue||0)-(a.totalRevenue||0));
     else if(sortBy==="recent") list.sort((a,b)=>new Date(b.lastOrderDate||0)-new Date(a.lastOrderDate||0));
-    else if(sortBy==="name") list.sort((a,b)=>a.name.localeCompare(b.name,"vi"));
+    else if(sortBy==="name") list.sort((a,b)=>vietnameseGivenName(a).localeCompare(vietnameseGivenName(b),"vi"));
     return list;
   },[customers,search,filterType,filterTag,sortBy]);
 
@@ -96,7 +97,7 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
     if(!form.name.trim()||!form.phone.trim()) return pushNotif&&pushNotif("Nhập tên và SĐT","error");
     if(editMode&&selected){
       const updated={...selected,...form};
-      syncUp(customers.map(c=>c.id===selected.id?updated:c));
+      onSaveCustomer&&onSaveCustomer(updated);
       setSelected(updated); setShowForm(false); pushNotif&&pushNotif("Đã cập nhật khách hàng");
     } else {
       const dup=findCustomerByPhone(customers,form.phone);
@@ -108,12 +109,19 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
         }
       }
       const newC={...form,id:"KH"+Date.now(),totalOrders:0,totalRevenue:0,totalProfit:0,interactions:[],events:[],tags:form.tags||[],createdAt:new Date().toISOString()};
-      syncUp([newC,...customers]); setShowForm(false); pushNotif&&pushNotif("Đã thêm khách hàng mới");
+      onSaveCustomer&&onSaveCustomer(newC); setShowForm(false); pushNotif&&pushNotif("Đã thêm khách hàng mới");
     }
   };
 
+  const deleteCustomer=()=>{
+    if(!selected) return;
+    onDeleteCustomer&&onDeleteCustomer(selected.id);
+    setShowDeleteConfirm(false); setSubView("list"); setSelected(null);
+    pushNotif&&pushNotif("Đã xóa khách hàng "+selected.name);
+  };
+
   const openEdit=(c)=>{
-    setForm({name:c.name||"",phone:c.phone||"",email:c.email||"",type:c.type||"personal",source:c.source||"Facebook",assignedSale:c.assignedSale||"",province:c.province||"",notes:c.notes||"",tags:c.tags||[]});
+    setForm({name:c.name||"",phone:c.phone||"",email:c.email||"",type:c.type||"personal",source:c.source||"Facebook",assignedSale:c.assignedSale||"",province:c.province||"",notes:c.notes||"",tags:c.tags||[],companyName:c.companyName||"",taxCode:c.taxCode||"",cccd:c.cccd||"",dob:c.dob||""});
     setEditMode(true); setShowForm(true);
   };
 
@@ -126,8 +134,7 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
 
   const sendCompose=()=>{
     const rec={ts:new Date().toISOString(),type:composeChannel,note:"Đã soạn thông điệp: "+composeBody.slice(0,60)+"...",by:currentUser?.name};
-    const updated=customers.map(c=>c.id===composeFor.id?{...c,interactions:[rec,...(c.interactions||[])]}:c);
-    syncUp(updated);
+    onSaveCustomer&&onSaveCustomer({...composeFor,interactions:[rec,...(composeFor.interactions||[])]});
     onLogMessage&&onLogMessage(rec);
     pushNotif&&pushNotif("Đã ghi nhận gửi thông điệp cho "+composeFor.name);
     setComposeFor(null);
@@ -219,6 +226,11 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
               <Btn variant="secondary" style={{flex:1,justifyContent:"center"}} onClick={()=>openEdit(live)}>✏️ Sửa hồ sơ</Btn>
               {onCreateOrderFromLead&&<Btn style={{flex:1,justifyContent:"center"}} onClick={onCreateOrderFromLead}>+ Tạo đơn</Btn>}
             </div>
+            {isBanGiamDoc(currentRole)&&onDeleteCustomer&&(
+              <button onClick={()=>setShowDeleteConfirm(true)} style={{width:"100%",marginTop:8,background:"var(--c-danger-bg)",color:"var(--c-danger-mid)",border:"1px solid var(--c-danger-border)",borderRadius:"var(--r-sm)",padding:"9px 12px",cursor:"pointer",fontWeight:700,fontSize:"var(--text-sm)",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+                <i className="ti ti-trash" style={{fontSize:15}}/> Xóa khách hàng
+              </button>
+            )}
           </div>
 
           <div>
@@ -284,6 +296,25 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
 
         {showForm&&<CustomerFormModal form={form} setForm={setForm} onSave={saveCustomer} onClose={()=>setShowForm(false)} title="Sửa thông tin khách"/>}
         {composeFor&&<ComposeModal customer={composeFor} channel={composeChannel} setChannel={setComposeChannel} body={composeBody} setBody={setComposeBody} onSend={sendCompose} onClose={()=>setComposeFor(null)}/>}
+        {showDeleteConfirm&&(
+          <div className="modal-overlay" {...overlayCloseHandlers(()=>setShowDeleteConfirm(false))} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <div style={{background:"var(--c-surface)",borderRadius:16,padding:28,width:420,maxWidth:"90vw",textAlign:"center",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
+              <div style={{fontSize:40,marginBottom:12}}>🗑️</div>
+              <div style={{fontSize:18,fontWeight:800,color:"var(--c-text)",marginBottom:8}}>Xóa khách hàng {live.name}?</div>
+              <div style={{fontSize:14,color:"var(--c-text-3)",marginBottom:8,lineHeight:1.6}}>
+                SĐT: <strong>{live.phone}</strong>
+                {myOrders.length>0&&<><br/><span style={{color:"var(--c-danger-mid)",fontWeight:700}}>Khách này có {myOrders.length} đơn hàng</span> — đơn hàng vẫn giữ nguyên, chỉ mất hồ sơ CRM (ghi chú, tag, phân khúc, lịch sử liên hệ).</>}
+              </div>
+              <div style={{fontSize:13,color:"var(--c-danger-mid)",background:"var(--c-danger-bg)",borderRadius:8,padding:"10px 14px",marginBottom:20,fontWeight:600}}>
+                ⚠️ Hành động này KHÔNG thể hoàn tác.
+              </div>
+              <div style={{display:"flex",gap:10}}>
+                <button onClick={()=>setShowDeleteConfirm(false)} style={{flex:1,padding:"11px",border:"1.5px solid var(--c-border)",borderRadius:10,background:"var(--c-surface)",fontWeight:600,fontSize:14,cursor:"pointer",color:"var(--c-text-3)"}}>Hủy</button>
+                <button onClick={deleteCustomer} style={{flex:1,padding:"11px",border:"none",borderRadius:10,background:"var(--c-danger-mid)",color:"var(--c-text-inverse)",fontWeight:700,fontSize:14,cursor:"pointer"}}>Xóa vĩnh viễn</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -305,7 +336,7 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
         <div style={{display:"flex",gap:8}}>
           {mainTab==="list"&&<>
             <Btn variant="success" style={{background:"var(--c-success-bg)",color:"var(--c-success)",border:"1px solid var(--c-success-border)"}} onClick={()=>exportCustomersToExcel(filtered)}>📊 Xuất Excel</Btn>
-            <Btn onClick={()=>{setEditMode(false);setForm({name:"",phone:"",email:"",type:"personal",customerType:"personal",cccd:"",dob:"",companyName:"",taxCode:"",source:"Facebook",assignedSale:currentUser?.name||"",province:"",notes:"",tags:[]});setShowForm(true);}}>+ Thêm khách</Btn>
+            <Btn onClick={()=>{setEditMode(false);setForm({name:"",phone:"",email:"",type:"personal",cccd:"",dob:"",companyName:"",taxCode:"",source:"Facebook",assignedSale:currentUser?.name||"",province:"",notes:"",tags:[]});setShowForm(true);}}>+ Thêm khách</Btn>
           </>}
         </div>
       </div>
@@ -541,7 +572,7 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
 }
 
 function CustomerFormModal({form,setForm,onSave,onClose,title}){
-  const isCorpType=(t)=>t==="corporate"||t==="corp";
+  const isCorpType=(t)=>t==="corp"||t==="corporate";
   const lbl={display:"block",fontSize:"var(--text-sm)",fontWeight:600,marginBottom:4,color:"var(--c-text-2)"};
   const inp={width:"100%",border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-sm)",padding:"8px 12px",fontSize:"var(--text-base)",boxSizing:"border-box",outline:"none",background:"var(--c-surface)",color:"var(--c-text)"};
   return (
@@ -551,9 +582,9 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
         <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
           <div>
             <label style={lbl}>Loại khách</label>
-            <select value={form.customerType||form.type||"personal"} onChange={e=>setForm(f=>({...f,customerType:e.target.value,type:e.target.value}))} style={inp}>
+            <select value={form.type||"personal"} onChange={e=>setForm(f=>({...f,type:e.target.value}))} style={inp}>
               <option value="personal">Cá nhân</option>
-              <option value="corporate">Doanh nghiệp / Tổ chức</option>
+              <option value="corp">Doanh nghiệp / Tổ chức</option>
             </select>
           </div>
           <div>
@@ -563,14 +594,14 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
             </select>
           </div>
           <div>
-            <label style={lbl}>{isCorpType(form.customerType||form.type)?"Người đại diện *":"Họ tên *"}</label>
+            <label style={lbl}>{isCorpType(form.type)?"Người đại diện *":"Họ tên *"}</label>
             <input value={form.name||""} onChange={e=>setForm(f=>({...f,name:e.target.value}))} style={inp}/>
           </div>
           <div>
             <label style={lbl}>SĐT *</label>
             <input value={form.phone||""} onChange={e=>setForm(f=>({...f,phone:e.target.value}))} style={inp}/>
           </div>
-          {isCorpType(form.customerType||form.type)&&(
+          {isCorpType(form.type)&&(
             <>
               <div style={{gridColumn:"1/-1"}}>
                 <label style={lbl}>Tên công ty / Tổ chức *</label>
@@ -590,7 +621,7 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
             <label style={lbl}>Email</label>
             <input type="email" value={form.email||""} onChange={e=>setForm(f=>({...f,email:e.target.value}))} style={inp}/>
           </div>
-          {!isCorpType(form.customerType||form.type)&&(
+          {!isCorpType(form.type)&&(
             <div>
               <label style={lbl}>Tỉnh / Thành phố</label>
               <input value={form.province||""} onChange={e=>setForm(f=>({...f,province:e.target.value}))} style={inp}/>
