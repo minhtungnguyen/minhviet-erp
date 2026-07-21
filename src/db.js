@@ -239,15 +239,16 @@ export async function upsertExpense(e) {
   if (error) throw error
 }
 function expenseToDb(e) {
-  return { id:e.id, order_id:e.orderId||null, ncc:e.ncc||null,
+  return { id:e.id, order_id:e.orderId||null, ncc:e.ncc||e.nccName||null, ncc_id:e.nccId||null,
     amount:e.amount, budget_line:e.budgetLine||0, method:e.method||null,
-    note:e.note||null, status:e.status||'pending_kt',
+    note:e.note||null, status:e.status||'pending_kt', type:e.type||'chi',
+    booking_id:e.bookingId||null,
     created_by:e.createdBy||null, audit_log:e.auditLog||[] }
 }
 function dbToExpense(r) {
-  return { id:r.id, type:r.type, orderId:r.order_id, ncc:r.ncc,
+  return { id:r.id, type:r.type, orderId:r.order_id, ncc:r.ncc, nccId:r.ncc_id,
     amount:Number(r.amount), budgetLine:Number(r.budget_line)||0,
-    method:r.method, note:r.note, status:r.status,
+    method:r.method, note:r.note, status:r.status, bookingId:r.booking_id,
     createdBy:r.created_by, auditLog:r.audit_log||[], createdAt:r.created_at }
 }
 
