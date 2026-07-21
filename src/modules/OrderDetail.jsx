@@ -108,7 +108,7 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
       )}
 
       {/* KPI bar */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:12,marginBottom:20}}>
+      <div className="resp-grid-6" style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:12,marginBottom:20}}>
         {[["Doanh thu",fmtMoney(order?.totalPrice),"var(--c-primary-mid)"],["Đã thu (duyệt)",fmtMoney(totalPaid),"var(--c-success-mid)"],["Công nợ KH",fmtMoney(debt),debt>0?"var(--c-danger-mid)":"var(--c-success-mid)"],["Công nợ NCC",fmtMoney(nccDebt),nccDebt>0?"var(--c-danger-mid)":"var(--c-success-mid)"],["Lợi nhuận",fmtMoney(profit),profit>0?"var(--c-purple)":"var(--c-danger-mid)"]].map(([label,val,color])=>(
           <div key={label} style={{background:"var(--c-surface)",borderRadius:12,padding:"14px 16px",boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
             <div style={{fontSize:11,color:"var(--c-text-3)",fontWeight:600}}>{label}</div>
@@ -148,9 +148,9 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
       })()}
 
       {/* Tabs */}
-      <div style={{display:"flex",gap:4,marginBottom:16,borderBottom:"2px solid var(--c-border)",paddingBottom:0}}>
+      <div style={{display:"flex",gap:4,marginBottom:16,borderBottom:"2px solid var(--c-border)",paddingBottom:0,overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
         {tabs.map(t=>(
-          <button key={t} onClick={()=>setActiveTab(t)} style={{padding:"10px 18px",border:"none",background:"none",cursor:"pointer",fontWeight:600,fontSize:13,color:activeTab===t?"var(--c-primary-mid)":"var(--c-text-3)",borderBottom:activeTab===t?"2px solid var(--c-primary-mid)":"2px solid transparent",marginBottom:-2,transition:"all .15s"}}>
+          <button key={t} onClick={()=>setActiveTab(t)} style={{padding:"10px 18px",border:"none",background:"none",cursor:"pointer",fontWeight:600,fontSize:13,color:activeTab===t?"var(--c-primary-mid)":"var(--c-text-3)",borderBottom:activeTab===t?"2px solid var(--c-primary-mid)":"2px solid transparent",marginBottom:-2,transition:"all .15s",whiteSpace:"nowrap",flexShrink:0}}>
             {tabLabel[t]}
           </button>
         ))}
@@ -158,7 +158,7 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
 
       {/* INFO TAB */}
       {activeTab==="info"&&(
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
           <div style={{background:"var(--c-surface)",borderRadius:14,padding:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
             <div style={{fontWeight:700,marginBottom:14,fontSize:14,color:"var(--c-text-2)"}}>👤 Khách hàng</div>
             {[["Họ tên",order?.customerName||order?.customer],["SĐT",order?.customerPhone],["Email",order?.customerEmail||"—"],["Nguồn",order?.source||"—"]].map(([k,v])=>(

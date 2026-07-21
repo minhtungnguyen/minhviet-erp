@@ -17,7 +17,7 @@ function PaymentTimeline({order,vouchers}){
       <div style={{background:"var(--c-border)",borderRadius:4,height:8,marginBottom:10}}>
         <div style={{width:paidPct+"%",height:8,borderRadius:4,background:paidPct>=100?"var(--c-success-mid)":"var(--c-primary-mid)",transition:"width .4s"}}/>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+      <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
         {[["Tổng đơn",grandTotal,"var(--c-text-2)"],["Đã thu",totalPaid,"var(--c-success-mid)"],["Còn lại",remaining,remaining>0?"var(--c-danger-mid)":"var(--c-success-mid)"]].map(([label,val,color])=>(
           <div key={label} style={{textAlign:"center"}}>
             <div style={{fontSize:11,color:"var(--c-text-3)"}}>{label}</div>
@@ -161,7 +161,7 @@ export default function FinancePanel({order,vouchers,onAddVoucher,onApprove,onRe
           )}
           {showForm&&(
             <div style={{background:"var(--c-surface-2)",borderRadius:12,padding:16,marginBottom:16,border:"1px solid var(--c-border)"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+              <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
                 {/* Loại phiếu — cứng theo tab đang chọn, không cho đổi */}
                 <div style={{gridColumn:"1/-1"}}>
                   <div style={{
@@ -326,7 +326,7 @@ export default function FinancePanel({order,vouchers,onAddVoucher,onApprove,onRe
           )}
           {showAddonForm&&(
             <div style={{background:"var(--c-warning-bg)",borderRadius:12,padding:16,marginBottom:16,border:"1px solid var(--c-warning-border)"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
                 <div style={{gridColumn:"1/-1"}}>
                   <label style={{fontSize:12,fontWeight:600,display:"block",marginBottom:4}}>Tên dịch vụ bổ sung *</label>
                   <input value={addonForm.name} onChange={e=>setAddonForm(f=>({...f,name:e.target.value}))} placeholder="VD: Nâng phòng Superior lên Deluxe" style={inp11}/>

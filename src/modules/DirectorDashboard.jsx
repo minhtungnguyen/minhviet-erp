@@ -202,7 +202,7 @@ export default function DirectorDashboard({ orders=[], vouchers=[], expenses=[],
     <div style={{padding:24,background:"var(--c-bg)",minHeight:"100vh"}}>
 
       {/* HEADER */}
-      <div style={{marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <div style={{marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",rowGap:12}}>
         <div>
           <h2 style={{margin:0,fontSize:"var(--text-2xl)",fontWeight:700,color:"var(--c-text)"}}>Tổng quan kinh doanh</h2>
           <div style={{fontSize:"var(--text-base)",color:"var(--c-text-3)",marginTop:2}}>
@@ -214,7 +214,7 @@ export default function DirectorDashboard({ orders=[], vouchers=[], expenses=[],
       </div>
 
       {/* KPI CARDS — gradient */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginBottom:14}}>
+      <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginBottom:14}}>
         {D.kpiGrad.slice(0,3).map(k=>(
           <div key={k.label} onClick={k.onClick} style={{background:k.bg,borderRadius:"var(--r-lg)",padding:"20px 22px",cursor:k.onClick?"pointer":"default",boxShadow:"var(--sh-md)",position:"relative",overflow:"hidden"}}>
             <div style={{position:"absolute",right:16,top:16,fontSize:28,opacity:.25}}>{k.icon}</div>
@@ -229,7 +229,7 @@ export default function DirectorDashboard({ orders=[], vouchers=[], expenses=[],
           </div>
         ))}
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginBottom:20}}>
+      <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginBottom:20}}>
         {D.kpiGrad.slice(3).map(k=>(
           <div key={k.label} onClick={k.onClick} style={{background:k.bg,borderRadius:"var(--r-lg)",padding:"20px 22px",cursor:k.onClick?"pointer":"default",boxShadow:"var(--sh-md)",position:"relative",overflow:"hidden"}}>
             <div style={{position:"absolute",right:16,top:16,fontSize:28,opacity:.25}}>{k.icon}</div>
@@ -241,7 +241,7 @@ export default function DirectorDashboard({ orders=[], vouchers=[], expenses=[],
       </div>
 
       {/* KPI VẬN HÀNH */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:10,marginBottom:20}}>
+      <div className="resp-grid-6" style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:10,marginBottom:20}}>
         {[
           {label:"Đơn tháng này",val:closedThis.length,sub:orders.filter(o=>thisMonth(o.createdAt)).length+" tổng tạo",color:"var(--c-primary-mid)",bg:"var(--c-primary-light)"},
           {label:"Sắp khởi hành",val:upcomingDepartures.length,sub:"Trong 7 ngày",color:"var(--c-purple)",bg:"var(--c-purple-bg)",onClick:()=>setView?.("tourops")},
@@ -259,7 +259,7 @@ export default function DirectorDashboard({ orders=[], vouchers=[], expenses=[],
       </div>
 
       {/* MAIN GRID 2:1 */}
-      <div style={{display:"grid",gridTemplateColumns:"minmax(0,2fr) minmax(0,1fr)",gap:16,alignItems:"start"}}>
+      <div className="resp-grid-split" style={{display:"grid",gridTemplateColumns:"minmax(0,2fr) minmax(0,1fr)",gap:16,alignItems:"start"}}>
 
         {/* CỘT TRÁI */}
         <div style={{display:"flex",flexDirection:"column",gap:14}}>

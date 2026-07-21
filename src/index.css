@@ -101,6 +101,14 @@ table { border-collapse: collapse; }
   .grid-3 { grid-template-columns: 1fr 1fr !important; }
   .grid-2 { grid-template-columns: 1fr !important; }
 
+  /* Lưới cột cứng (KPI/summary card, form 2 cột...) → co giãn theo màn hình hẹp.
+     Dùng !important vì các module set gridTemplateColumns qua inline style. */
+  .resp-grid-6, .resp-grid-5, .resp-grid-4 { grid-template-columns: repeat(2,1fr) !important; }
+  .resp-grid-3 { grid-template-columns: repeat(2,1fr) !important; }
+  .resp-grid-2 { grid-template-columns: 1fr !important; }
+  /* Layout 2 cột lệch (nội dung chính + panel phụ) → xếp chồng */
+  .resp-grid-split { grid-template-columns: 1fr !important; }
+
   /* Tables: horizontal scroll */
   table {
     display: block;

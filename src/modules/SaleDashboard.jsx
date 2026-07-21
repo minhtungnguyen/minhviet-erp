@@ -203,12 +203,12 @@ export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quo
     <div style={{ padding:24, background:"var(--c-bg)", minHeight:"100vh" }}>
 
       {/* HEADER */}
-      <div style={{ marginBottom:20, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+      <div style={{ marginBottom:20, display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", rowGap:12 }}>
         <div>
           <h2 style={{ margin:0, fontSize:"var(--text-2xl)", fontWeight:800, color:"var(--c-text)" }}>
             {greeting}, {currentUser?.name?.split("–").pop().trim()||currentUser?.name} 👋
           </h2>
-          <div style={{ fontSize:"var(--text-md)", color:"var(--c-text-3)", marginTop:4, display:"flex", alignItems:"center", gap:12 }}>
+          <div style={{ fontSize:"var(--text-md)", color:"var(--c-text-3)", marginTop:4, display:"flex", alignItems:"center", gap:12, flexWrap:"wrap" }}>
             <span>{now.toLocaleDateString("vi-VN",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"})}</span>
             <span style={{ background:"var(--c-primary)", color:"#fff", borderRadius:"var(--r-sm)", padding:"2px 10px", fontWeight:700, fontSize:"var(--text-base)", fontVariantNumeric:"tabular-nums" }}>{timeStr}</span>
             {totalUrgent>0 && <span style={{ background:"var(--c-danger-bg)", color:"var(--c-danger-mid)", padding:"2px 10px", borderRadius:"var(--r-pill)", fontWeight:600, fontSize:"var(--text-base)" }}>⚠ {totalUrgent} việc cần xử lý</span>}
@@ -220,7 +220,7 @@ export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quo
       </div>
 
       {/* KPI GRADIENT CARDS */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:20 }}>
+      <div className="resp-grid-4" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:20 }}>
         {[
           { bg:"linear-gradient(135deg,var(--c-primary-mid),var(--c-primary-hover))", icon:"📋", label:"Đơn đang theo dõi", val:myOrders.length, sub:activeOrders.length+" đang xử lý" },
           { bg: targetPct>=100 ? "linear-gradient(135deg,var(--c-success-mid),#047857)" : "linear-gradient(135deg,var(--c-purple),#5b21b6)", icon:"💰", label:`Doanh thu ${thisMonthStr}`, val:fmtM(revenue), sub: targetAmt>0 ? `Chỉ tiêu: ${fmtM(targetAmt)} · ${targetPct}%` : "Chưa set chỉ tiêu" },
@@ -242,7 +242,7 @@ export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quo
       </div>
 
       {/* MAIN GRID 2 cột */}
-      <div style={{ display:"grid", gridTemplateColumns:"minmax(0,3fr) minmax(0,2fr)", gap:16, alignItems:"start" }}>
+      <div className="resp-grid-split" style={{ display:"grid", gridTemplateColumns:"minmax(0,3fr) minmax(0,2fr)", gap:16, alignItems:"start" }}>
 
         {/* CỘT TRÁI */}
         <div style={{ display:"flex", flexDirection:"column", gap:14 }}>

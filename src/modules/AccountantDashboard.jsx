@@ -115,7 +115,7 @@ export default function AccountantDashboard({ orders=[], vouchers=[], expenses=[
       </div>
 
       {/* ── KPI ROW: 5 chỉ số ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(5,minmax(0,1fr))", gap: 10, marginBottom: 20 }}>
+      <div className="resp-grid-5" style={{ display: "grid", gridTemplateColumns: "repeat(5,minmax(0,1fr))", gap: 10, marginBottom: 20 }}>
         <div style={kpiCard}>
           <div style={kpiLabel}>Doanh thu tháng</div>
           <div style={kpiVal("var(--c-primary-mid)")}>{fmtM(doanhThuThisMonth)}</div>
@@ -149,7 +149,7 @@ export default function AccountantDashboard({ orders=[], vouchers=[], expenses=[
       </div>
 
       {/* ── CÔNG NỢ: 2 cột ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: 12, marginBottom: 18 }}>
+      <div className="resp-grid-2" style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: 12, marginBottom: 18 }}>
         <div>
           <div style={sectionHeader}>
             <div style={sectionTitle}>
@@ -239,7 +239,7 @@ export default function AccountantDashboard({ orders=[], vouchers=[], expenses=[
               Vào xử lý <i className="ti ti-arrow-right" style={{ fontSize: 13 }} />
             </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,minmax(0,1fr))", gap: 10 }}>
+          <div className="resp-grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4,minmax(0,1fr))", gap: 10 }}>
             <div style={{ ...queueCard, boxShadow: pendingThu.length > 0 ? "0 2px 10px rgba(22,163,74,.18)" : queueCard.boxShadow, background: pendingThu.length > 0 ? "var(--c-success-bg)" : "var(--c-surface)", cursor: pendingThu.length > 0 ? "pointer" : "default" }} onClick={() => pendingThu.length > 0 && setView?.("approvals")}>
               <i className="ti ti-receipt" style={{ fontSize: 20, color: pendingThu.length > 0 ? "var(--c-success-mid)" : "var(--c-text-muted)" }} />
               <div style={{ fontSize: 22, fontWeight: 800, color: pendingThu.length > 0 ? "var(--c-success-mid)" : "var(--c-text-muted)", margin: "6px 0 2px" }}>{pendingThu.length}</div>
@@ -342,7 +342,7 @@ export default function AccountantDashboard({ orders=[], vouchers=[], expenses=[
       )}
 
       {/* ── ACTIONS ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 10 }}>
+      <div className="resp-grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 10 }}>
         <button onClick={() => setView?.("approvals")} style={btnPrimary}>
           <i className="ti ti-check" style={{ fontSize: 16 }} /> Duyệt phiếu
           {totalPending > 0 && <span style={{ background: "var(--c-surface)", color: "var(--c-success)", borderRadius: 999, fontSize: 11, padding: "1px 6px", fontWeight: 500 }}>{totalPending}</span>}

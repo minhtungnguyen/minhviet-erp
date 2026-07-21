@@ -597,6 +597,7 @@ export const TabBar = ({ tabs, active, onChange, style = {} }) => (
 export const PageHeader = ({ title, subtitle, actions, back, onBack, badge }) => (
   <div style={{
     display: "flex", justifyContent: "space-between", alignItems: "flex-start",
+    flexWrap: "wrap", rowGap: "var(--sp-3)",
     marginBottom: "var(--sp-6)",
     paddingBottom: "var(--sp-5)",
     borderBottom: "1px solid var(--c-border)",
@@ -640,7 +641,7 @@ export const PageHeader = ({ title, subtitle, actions, back, onBack, badge }) =>
       </div>
     </div>
     {actions && (
-      <div style={{ display: "flex", gap: "var(--sp-2)", alignItems: "center", flexShrink: 0, paddingTop: 2 }}>
+      <div style={{ display: "flex", gap: "var(--sp-2)", alignItems: "center", flexWrap: "wrap", flexShrink: 0, paddingTop: 2 }}>
         {actions}
       </div>
     )}

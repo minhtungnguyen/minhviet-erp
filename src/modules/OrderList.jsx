@@ -46,7 +46,7 @@ export default function OrderList({orders,vouchers,onView,onCreate,onQuickSale,c
       />
 
       {/* Summary cards */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"var(--sp-3)",marginBottom:"var(--sp-5)"}}>
+      <div className="resp-grid-4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"var(--sp-3)",marginBottom:"var(--sp-5)"}}>
         <StatCard label="Tổng đơn"   value={summary.total}         icon={<i className="ti ti-file-text"/>}       color="var(--c-primary-mid)"/>
         <StatCard label="Chờ thu"    value={summary.pending}       icon={<i className="ti ti-clock"/>}           color="var(--c-warning-mid)"/>
         <StatCard label="Đang chạy"  value={summary.active}        icon={<i className="ti ti-route"/>}           color="var(--c-success-mid)"/>
