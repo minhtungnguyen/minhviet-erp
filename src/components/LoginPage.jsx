@@ -96,6 +96,7 @@ export default function LoginPage({ onLogin, onVerify }) {
                 Tên đăng nhập
               </label>
               <FocusInput
+                name="username"
                 value={username}
                 onChange={e => { setUsername(e.target.value); setError(""); }}
                 onKeyDown={e => e.key === "Enter" && handleSubmit()}
@@ -112,6 +113,7 @@ export default function LoginPage({ onLogin, onVerify }) {
               </label>
               <div style={{ position: "relative" }}>
                 <FocusInput
+                  name="password"
                   type={showPw ? "text" : "password"}
                   value={password}
                   onChange={e => { setPassword(e.target.value); setError(""); }}
