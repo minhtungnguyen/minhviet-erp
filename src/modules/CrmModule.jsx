@@ -121,7 +121,7 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
   };
 
   const openEdit=(c)=>{
-    setForm({name:c.name||"",phone:c.phone||"",email:c.email||"",type:c.type||"personal",source:c.source||"Facebook",assignedSale:c.assignedSale||"",province:c.province||"",notes:c.notes||"",tags:c.tags||[],companyName:c.companyName||"",taxCode:c.taxCode||"",cccd:c.cccd||"",dob:c.dob||"",representativeTitle:c.representativeTitle||"",companyAddress:c.companyAddress||"",companyBankAccount:c.companyBankAccount||""});
+    setForm({name:c.name||"",phone:c.phone||"",email:c.email||"",type:c.type||"personal",source:c.source||"Facebook",assignedSale:c.assignedSale||"",province:c.province||"",notes:c.notes||"",tags:c.tags||[],companyName:c.companyName||"",taxCode:c.taxCode||"",cccd:c.cccd||"",dob:c.dob||"",representativeTitle:c.representativeTitle||"",companyAddress:c.companyAddress||"",companyBankAccount:c.companyBankAccount||"",contactName:c.contactName||"",contactPhone:c.contactPhone||""});
     setEditMode(true); setShowForm(true);
   };
 
@@ -207,17 +207,23 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
         <div className="resp-grid-split" style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:16}}>
           <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:22,boxShadow:"var(--sh-sm)"}}>
             <div style={{textAlign:"center",fontWeight:700,fontSize:"var(--text-lg)",marginBottom:18,color:"var(--c-text-2)"}}>👤 Hồ sơ khách hàng</div>
-            {[
-              [live.type==="corp"?"Người đại diện":"Họ và tên",live.name,"var(--c-primary-mid)"],
-              ...(live.type==="corp"?[
-                ["Chức danh",live.representativeTitle||"—"],
-                ["Tên công ty",live.companyName||"—"],
-                ["Mã số thuế",live.taxCode||"—"],
-                ["Địa chỉ công ty",live.companyAddress||"—"],
-                ["Số TK công ty",live.companyBankAccount||"—"],
-              ]:[]),
+            {(live.type==="corp"?[
+              ["Tên công ty",live.companyName||"—","var(--c-primary-mid)"],
+              ["Người đại diện",live.name],
+              ["Chức danh",live.representativeTitle||"—"],
+              ["Mã số thuế",live.taxCode||"—"],
+              ["Điện thoại",live.phone],
+              ["Địa chỉ công ty",live.companyAddress||"—"],
+              ["Số TK công ty",live.companyBankAccount||"—"],
+              ["Tên người liên hệ",live.contactName||"—"],
+              ["SĐT liên hệ",live.contactPhone||"—"],
+              ["Email",live.email||"—"],["Tỉnh/TP",live.province||"—"],
+              ["Ngày thành lập",fmtDate(live.dob)],
+              ["Nguồn KH",live.source||"—"],["Sale phụ trách",live.assignedSale||"—"],
+            ]:[
+              ["Họ và tên",live.name,"var(--c-primary-mid)"],
               ["Điện thoại",live.phone],["Email",live.email||"—"],["Ngày sinh",fmtDate(live.dob)],["Tỉnh/TP",live.province||"—"],["Nguồn KH",live.source||"—"],["Sale phụ trách",live.assignedSale||"—"],
-            ].map(([k,v,color])=>(
+            ]).map(([k,v,color])=>(
               <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid var(--c-border)",fontSize:"var(--text-base)"}}>
                 <span style={{color:"var(--c-text-3)"}}>{k}</span><span style={{fontWeight:600,color:color||"var(--c-text-2)"}}>{v}</span>
               </div>
@@ -603,19 +609,15 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
               {["Facebook","Zalo","TikTok","Giới thiệu","Website","Walk-in","Khác"].map(s=><option key={s}>{s}</option>)}
             </select>
           </div>
-          <div>
-            <label style={lbl}>{isCorpType(form.type)?"Người đại diện *":"Họ tên *"}</label>
-            <input value={form.name||""} onChange={e=>setForm(f=>({...f,name:e.target.value}))} style={inp}/>
-          </div>
-          <div>
-            <label style={lbl}>SĐT *</label>
-            <input value={form.phone||""} onChange={e=>setForm(f=>({...f,phone:e.target.value}))} style={inp}/>
-          </div>
-          {isCorpType(form.type)&&(
+          {isCorpType(form.type)?(
             <>
               <div style={{gridColumn:"1/-1"}}>
                 <label style={lbl}>Tên công ty / Tổ chức *</label>
                 <input value={form.companyName||""} onChange={e=>setForm(f=>({...f,companyName:e.target.value}))} placeholder="VD: Công ty CP ABC" style={inp}/>
+              </div>
+              <div>
+                <label style={lbl}>Người đại diện *</label>
+                <input value={form.name||""} onChange={e=>setForm(f=>({...f,name:e.target.value}))} style={inp}/>
               </div>
               <div>
                 <label style={lbl}>Chức danh người đại diện</label>
@@ -629,6 +631,10 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
                 <label style={lbl}>Mã số thuế</label>
                 <input value={form.taxCode||""} onChange={e=>setForm(f=>({...f,taxCode:e.target.value}))} placeholder="0312345678" style={inp}/>
               </div>
+              <div>
+                <label style={lbl}>SĐT *</label>
+                <input value={form.phone||""} onChange={e=>setForm(f=>({...f,phone:e.target.value}))} style={inp}/>
+              </div>
               <div style={{gridColumn:"1/-1"}}>
                 <label style={lbl}>Địa chỉ công ty</label>
                 <input value={form.companyAddress||""} onChange={e=>setForm(f=>({...f,companyAddress:e.target.value}))} placeholder="Địa chỉ đăng ký kinh doanh" style={inp}/>
@@ -641,26 +647,51 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
                 <label style={lbl}>Tỉnh / Thành phố</label>
                 <input value={form.province||""} onChange={e=>setForm(f=>({...f,province:e.target.value}))} style={inp}/>
               </div>
+              <div>
+                <label style={lbl}>Tên người liên hệ <span style={{fontWeight:400,color:"var(--c-text-muted)"}}>(không bắt buộc)</span></label>
+                <input value={form.contactName||""} onChange={e=>setForm(f=>({...f,contactName:e.target.value}))} placeholder="VD: Thư ký, phụ trách đặt tour..." style={inp}/>
+              </div>
+              <div>
+                <label style={lbl}>SĐT liên hệ <span style={{fontWeight:400,color:"var(--c-text-muted)"}}>(không bắt buộc)</span></label>
+                <input value={form.contactPhone||""} onChange={e=>setForm(f=>({...f,contactPhone:e.target.value}))} style={inp}/>
+              </div>
+              <div>
+                <label style={lbl}>Email</label>
+                <input type="email" value={form.email||""} onChange={e=>setForm(f=>({...f,email:e.target.value}))} style={inp}/>
+              </div>
+              <div>
+                <label style={lbl}>Ngày thành lập Công ty</label>
+                <input type="date" value={form.dob||""} onChange={e=>setForm(f=>({...f,dob:e.target.value}))} style={inp}/>
+              </div>
+            </>
+          ):(
+            <>
+              <div>
+                <label style={lbl}>Họ tên *</label>
+                <input value={form.name||""} onChange={e=>setForm(f=>({...f,name:e.target.value}))} style={inp}/>
+              </div>
+              <div>
+                <label style={lbl}>SĐT *</label>
+                <input value={form.phone||""} onChange={e=>setForm(f=>({...f,phone:e.target.value}))} style={inp}/>
+              </div>
+              <div>
+                <label style={lbl}>Email</label>
+                <input type="email" value={form.email||""} onChange={e=>setForm(f=>({...f,email:e.target.value}))} style={inp}/>
+              </div>
+              <div>
+                <label style={lbl}>Tỉnh / Thành phố</label>
+                <input value={form.province||""} onChange={e=>setForm(f=>({...f,province:e.target.value}))} style={inp}/>
+              </div>
+              <div>
+                <label style={lbl}>Số CCCD / CMND</label>
+                <input value={form.cccd||""} onChange={e=>setForm(f=>({...f,cccd:e.target.value}))} style={inp}/>
+              </div>
+              <div>
+                <label style={lbl}>Ngày sinh</label>
+                <input type="date" value={form.dob||""} onChange={e=>setForm(f=>({...f,dob:e.target.value}))} style={inp}/>
+              </div>
             </>
           )}
-          <div>
-            <label style={lbl}>Email</label>
-            <input type="email" value={form.email||""} onChange={e=>setForm(f=>({...f,email:e.target.value}))} style={inp}/>
-          </div>
-          {!isCorpType(form.type)&&(
-            <div>
-              <label style={lbl}>Tỉnh / Thành phố</label>
-              <input value={form.province||""} onChange={e=>setForm(f=>({...f,province:e.target.value}))} style={inp}/>
-            </div>
-          )}
-          <div>
-            <label style={lbl}>Số CCCD / CMND</label>
-            <input value={form.cccd||""} onChange={e=>setForm(f=>({...f,cccd:e.target.value}))} style={inp}/>
-          </div>
-          <div>
-            <label style={lbl}>Ngày sinh</label>
-            <input type="date" value={form.dob||""} onChange={e=>setForm(f=>({...f,dob:e.target.value}))} style={inp}/>
-          </div>
         </div>
         <div style={{marginTop:12}}>
           <label style={{...lbl,marginBottom:8}}>Nhãn phân loại</label>
