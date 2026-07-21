@@ -1,6 +1,8 @@
 import React from "react";
 import { exportCustomersToExcel } from "../utils/importExcel.js";
 import { findCustomerByPhone, customerDisplayName } from "../utils/customers.js";
+import { RFM_SEGMENTS, classifyRFM as classifyRFMShared, customerRevenue } from "../utils/customerSegments.js";
+import CustomerAnalyticsCharts from "./CustomerAnalyticsCharts.jsx";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 import { isBanGiamDoc } from "../utils/permissions.js";
 import { vietnameseGivenName } from "../utils/customers.js";
@@ -142,29 +144,8 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
 
   const STAGE_TAGS=CRM_TAGS;
 
-  // ── RFM SEGMENTATION ─────────────────────────────────────
-  const RFM_SEGMENTS = [
-    { id:"vip",     label:"VIP",           color:"#7c3aed", bg:"#f5f3ff", desc:"≥4 đơn & ≥50 triệu" },
-    { id:"loyal",   label:"Thân thiết",    color:"#0284c7", bg:"#e0f2fe", desc:"≥2 đơn, <180 ngày" },
-    { id:"active",  label:"Đang hoạt động",color:"#15803d", bg:"#dcfce7", desc:"Đơn gần nhất <90 ngày" },
-    { id:"atrisk",  label:"Có rủi ro",     color:"#d97706", bg:"#fef3c7", desc:"90–365 ngày vắng" },
-    { id:"dormant", label:"Ngủ đông",      color:"#dc2626", bg:"#fee2e2", desc:">365 ngày vắng" },
-    { id:"new",     label:"Khách mới",     color:"#64748b", bg:"#f1f5f9", desc:"Mới 1 đơn" },
-  ];
-  const classifyRFM = (c) => {
-    const now = new Date();
-    const myOrds = orders.filter(o => o.customerId===c.id||(o.customerPhone&&o.customerPhone===c.phone)||o.customerName?.trim().toLowerCase()===c.name?.trim().toLowerCase());
-    const n = myOrds.length;
-    const rev = c.totalRevenue || myOrds.reduce((s,o)=>s+(o.totalPrice||0),0);
-    const lastDate = c.lastOrderDate ? new Date(c.lastOrderDate) : (myOrds.length ? new Date(Math.max(...myOrds.map(o=>new Date(o.createdAt||o.departDate||0)))) : null);
-    const daysSince = lastDate ? Math.round((now - lastDate)/86400000) : 9999;
-    if(n>=4 && rev>=50e6) return "vip";
-    if(n>=2 && daysSince<=180) return "loyal";
-    if(daysSince<=90) return "active";
-    if(daysSince<=365) return "atrisk";
-    if(daysSince>365 && n>0) return "dormant";
-    return "new";
-  };
+  // ── RFM SEGMENTATION (logic dùng chung — src/utils/customerSegments.js) ──
+  const classifyRFM = (c) => classifyRFMShared(c, orders);
   const customersWithSeg = React.useMemo(()=>customers.map(c=>({...c,_seg:classifyRFM(c)})),[customers,orders]);
   const segCounts = React.useMemo(()=>{
     const m={};
@@ -450,6 +431,7 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
       {/* ── TAB: PHÂN KHÚC RFM ── */}
       {mainTab==="segment"&&(
         <div>
+          <CustomerAnalyticsCharts customers={customers} orders={orders}/>
           <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:24}}>
             {RFM_SEGMENTS.map(seg=>(
               <div key={seg.id} onClick={()=>setSegFilter(segFilter===seg.id?null:seg.id)}
