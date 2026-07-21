@@ -15,6 +15,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
+  overflow-x: hidden;
 }
 
 body {
@@ -109,10 +110,11 @@ table { border-collapse: collapse; }
   /* Layout 2 cột lệch (nội dung chính + panel phụ) → xếp chồng */
   .resp-grid-split { grid-template-columns: 1fr !important; }
 
-  /* Tables: horizontal scroll */
+  /* Tables: horizontal scroll. !important vì 1 số bảng tự đặt overflow:hidden
+     inline (để bo góc trên desktop) đè mất rule này nếu không ép. */
   table {
     display: block;
-    overflow-x: auto;
+    overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
     white-space: nowrap;
   }

@@ -1244,7 +1244,7 @@ export default function App(){
 
       {showLogoutConfirm&&(
         <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&setShowLogoutConfirm(false)}>
-          <div className="modal-panel" style={{padding:28,width:360,textAlign:"center"}}>
+          <div className="modal-panel" style={{padding:28,width:360,maxWidth:"90vw",textAlign:"center"}}>
             <div style={{fontSize:32,marginBottom:12}}>🚪</div>
             <div style={{fontWeight:700,fontSize:16,marginBottom:8}}>Đăng xuất khỏi hệ thống?</div>
             <div style={{fontSize:13,color:"#64748b",marginBottom:20}}>Bạn sẽ cần đăng nhập lại để tiếp tục sử dụng.</div>
