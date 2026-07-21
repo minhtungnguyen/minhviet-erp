@@ -245,7 +245,7 @@ function expenseToDb(e) {
     created_by:e.createdBy||null, audit_log:e.auditLog||[] }
 }
 function dbToExpense(r) {
-  return { id:r.id, orderId:r.order_id, ncc:r.ncc,
+  return { id:r.id, type:r.type, orderId:r.order_id, ncc:r.ncc,
     amount:Number(r.amount), budgetLine:Number(r.budget_line)||0,
     method:r.method, note:r.note, status:r.status,
     createdBy:r.created_by, auditLog:r.audit_log||[], createdAt:r.created_at }

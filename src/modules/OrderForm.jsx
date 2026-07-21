@@ -135,39 +135,8 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
   const handleSave=()=>{
     if(!validateStep(1)||!validateStep(2)) return;
     if(dupOrder&&!window.confirm("Khách này đã có đơn "+dupOrder.id+" cùng ngày khởi hành. Vẫn tạo đơn mới?")) return;
-    // Auto-upsert khách vào CRM — check trùng SĐT trước
-    if(onCreateCustomer&&form.customerPhone.trim()){
-      const existingCustomer=customers?.find(c=>c.phone===form.customerPhone.trim()||c.sdt===form.customerPhone.trim());
-      if(existingCustomer){
-        onCreateCustomer({...existingCustomer,
-          email:existingCustomer.email||form.customerEmail||"",
-          cccd:existingCustomer.cccd||form.cccd||"",
-          province:existingCustomer.province||form.customerProvince||"",
-          totalOrders:(existingCustomer.totalOrders||0)+1,
-          lastOrderDate:new Date().toISOString().slice(0,10),
-        });
-      } else if(!form.customerId){
-        onCreateCustomer({
-          id:"KH-"+Date.now(),
-          type:"personal",
-          customerType:form.customerType||"personal",
-          invoiceType:form.invoiceType||"no_invoice",
-          name:form.customerName,
-          phone:form.customerPhone,
-          email:form.customerEmail||"",
-          province:form.customerProvince||"",
-          cccd:form.cccd||"",
-          companyName:form.companyName||"",
-          taxCode:form.taxCode||"",
-          source:form.source||"Khác",
-          tags:[],notes:"",
-          totalOrders:1,totalRevenue:0,totalProfit:0,
-          firstOrderDate:new Date().toISOString().slice(0,10),
-          lastOrderDate:new Date().toISOString().slice(0,10),
-          createdAt:new Date().toISOString(),
-        });
-      }
-    }
+    // Upsert khách vào CRM (check trùng SĐT + cập nhật totalOrders) do App.handleCreateOrder đảm nhiệm,
+    // dùng chung cho mọi nguồn tạo đơn (OrderForm/QuickSale/Quote/TourGhep) — tránh tạo trùng khách.
     const svcLabel = SERVICE_TYPES.find(s=>s.id===form.service)?.label||form.service;
     const resolvedName = isCombo ? (form.comboName.trim()||autoComboName||"Combo") : form.tourName;
     onSave({

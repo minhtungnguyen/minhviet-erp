@@ -959,8 +959,37 @@ export default function App(){
     if(data.depositAmount>0){
       saveVoucher({id:"V"+Date.now(),orderId:newId,type:"thu",amount:data.depositAmount,method:"cash",note:"Tiền cọc khi tạo đơn",date:new Date().toISOString().slice(0,10),status:"pending",bankAccountId:data.invoiceType==="invoice"?"TK001":"TK002",createdBy:currentUser?.name,createdAt:new Date().toISOString()});
     }
-    if(!data.customerId&&data.customerName){
-      saveCustomer({id:"KH-"+Date.now(),name:data.customerName,phone:data.customerPhone,email:data.customerEmail||"",cccd:data.cccd||"",customerType:data.customerType||"personal",source:data.source||"Khác",tags:[],notes:"",createdAt:new Date().toISOString()});
+    if(data.customerName&&data.customerPhone){
+      const existingCustomer=customers.find(c=>c.phone===data.customerPhone||c.sdt===data.customerPhone);
+      if(existingCustomer){
+        saveCustomer({...existingCustomer,
+          email:existingCustomer.email||data.customerEmail||"",
+          cccd:existingCustomer.cccd||data.cccd||"",
+          province:existingCustomer.province||data.customerProvince||"",
+          totalOrders:(existingCustomer.totalOrders||0)+1,
+          lastOrderDate:new Date().toISOString().slice(0,10),
+        });
+      } else if(!data.customerId){
+        saveCustomer({
+          id:"KH-"+Date.now(),
+          type:"personal",
+          customerType:data.customerType||"personal",
+          invoiceType:data.invoiceType||"no_invoice",
+          name:data.customerName,
+          phone:data.customerPhone,
+          email:data.customerEmail||"",
+          province:data.customerProvince||"",
+          cccd:data.cccd||"",
+          companyName:data.companyName||"",
+          taxCode:data.taxCode||"",
+          source:data.source||"Khác",
+          tags:[],notes:"",
+          totalOrders:1,totalRevenue:0,totalProfit:0,
+          firstOrderDate:new Date().toISOString().slice(0,10),
+          lastOrderDate:new Date().toISOString().slice(0,10),
+          createdAt:new Date().toISOString(),
+        });
+      }
     }
     setView("orders");
   };
@@ -1078,6 +1107,10 @@ export default function App(){
         updateSupplier(nccId,{cong_no:newDebt});
       }
     }
+    // Khi paid → đồng bộ trạng thái booking liên kết (nếu không, "Công nợ NCC" trên OrderDetail vẫn tính booking là chưa trả)
+    if(exp.status==="paid"&&exp.bookingId){
+      setBookingsP(prev=>(prev||[]).map(b=>b.id===exp.bookingId?{...b,status:"paid"}:b));
+    }
     if(exp.status==="pending_pay") pushToast("Phiếu chi "+exp.id+" đã duyệt — KT Quỹ cần chuyển tiền","info","cashier");
     if(exp.status==="pending_gd") pushToast("Phiếu chi "+exp.id+" cần GĐ phê duyệt","warn","manager");
   };
@@ -1162,7 +1195,7 @@ export default function App(){
       {view==="quotes"&&<QuoteModule quotes={quotes} onUpdate={setQuotesP} orders={orders} tourPrograms={tourPrograms} currentUser={currentUser} pushNotif={pushToast} onCreateOrder={(data)=>{handleCreateOrder(data);}}/>}
       {(view==="accounting"||view==="finance")&&<AccountingDashboard orders={orders} vouchers={vouchers} expenses={expenses} refunds={refunds} bankAccounts={bankAccounts} onUpdateBankAccounts={setBankAccounts} outputInvoices={outputInvoices} onUpdateOutputInvoices={setOutputInvoices} inputInvoices={inputInvoices} onUpdateInputInvoices={setInputInvoices} suppliers={suppliers} pushNotif={pushToast}/>}
       {view==="ncc"&&<SupplierModule suppliers={suppliers} onAddSupplier={addSupplier} onUpdateSupplier={updateSupplier} onDeleteSupplier={deleteSupplier} orders={orders} vouchers={vouchers} expenses={expenses} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser} bookings={bookings} onUpdateBookings={setBookingsP} onCreateExpense={(exp)=>{saveExpense(exp);pushToast("Phiếu chi "+exp.id+" chờ KT duyệt","warning");}}/>}
-      {view==="approvals"&&<ApprovalsModule orders={orders} expenses={expenses} vouchers={vouchers} onExpenseUpdate={handleExpenseUpdate} onVoucherUpdate={saveVoucher} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser} approvalThreshold={approvalThreshold}/>}
+      {view==="approvals"&&<ApprovalsModule orders={orders} expenses={expenses} vouchers={vouchers} onExpenseUpdate={handleExpenseUpdate} onVoucherUpdate={(v)=>{ if(v.status==="approved") handleApprove(v.id); else if(v.status==="rejected") handleReject(v.id); else saveVoucher(v); }} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser} approvalThreshold={approvalThreshold}/>}
       {view==="refunds"&&<RefundModule orders={orders} vouchers={vouchers} refunds={refunds} onRefundUpdate={handleRefundUpdate} onRefundCreate={handleRefundCreate} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser}/>}
       {view==="credits"&&<CreditModule orders={orders} pushNotif={pushToast} credits={credits} onUpdateCredits={setCreditsP} currentUser={currentUser}/>}
       {view==="closeorders"&&<CloseOrderModule orders={orders} vouchers={vouchers} expenses={expenses} refunds={refunds} onCloseOrder={handleCloseOrder} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser}/>}
