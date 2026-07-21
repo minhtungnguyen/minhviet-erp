@@ -1,6 +1,7 @@
 import React from "react";
 import { NumberInput } from "../components/ui.jsx";
 import { calcQuoteTotal, calcDepositAmount, daysLeft } from "../utils/quoteCalc.js";
+import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 
 export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, currentUser, pushNotif, onCreateOrder }){
   const BLANK_FORM={
@@ -258,7 +259,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
 
       {/* Modal sửa giá & gửi lại */}
       {reviseModal&&(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.4)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}} onClick={e=>{if(e.target===e.currentTarget){setReviseModal(null);}}}>
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.4)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}} {...overlayCloseHandlers(()=>setReviseModal(null))}>
           <div style={{background:"var(--c-surface)",borderRadius:14,padding:24,width:400,maxWidth:"95vw",boxShadow:"0 8px 32px rgba(0,0,0,.15)"}}>
             <div style={{fontWeight:800,fontSize:16,marginBottom:16}}>Sửa giá & Gửi lại — {reviseModal.id}</div>
             <div style={{marginBottom:12}}>

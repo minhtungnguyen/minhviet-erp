@@ -1,4 +1,5 @@
 import React from "react";
+import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 
 export default function NotifPanel({notifs=[],onClose,onMarkRead,onNav,currentRole,currentUser}){
   const fmtTime=(t)=>{
@@ -16,7 +17,7 @@ export default function NotifPanel({notifs=[],onClose,onMarkRead,onNav,currentRo
     return false;
   };
   return(
-    <div style={{position:"fixed",inset:0,zIndex:1500}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,zIndex:1500}} {...overlayCloseHandlers(onClose)}>
       <div className="anim-scale" onClick={e=>e.stopPropagation()} style={{position:"absolute",top:64,right:16,width:380,maxWidth:"calc(100vw - 32px)",maxHeight:500,background:"var(--c-surface)",borderRadius:14,boxShadow:"0 8px 32px rgba(0,0,0,.18)",overflow:"hidden",display:"flex",flexDirection:"column",transformOrigin:"top right"}}>
         <div style={{padding:"14px 18px",borderBottom:"1px solid var(--c-surface-3)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div style={{fontWeight:700,fontSize:14}}>Thông báo</div>

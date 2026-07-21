@@ -1,6 +1,7 @@
 // Shared UI atoms — tất cả dùng CSS vars từ theme.css
 // Import: import { Btn, Inp, Card, ... } from "../components/ui"
 import { useState, useEffect } from "react";
+import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 
 /* ──────────────────────────────────────────────────────────
    BADGE — status chip với dot
@@ -304,7 +305,7 @@ export const Modal = ({ open, onClose, title, children, width = 560, footer }) =
   if (!open) return null;
   return (
     <div
-      onClick={e => { if (e.target === e.currentTarget) onClose?.(); }}
+      {...overlayCloseHandlers(() => onClose?.())}
       style={{
         position: "fixed", inset: 0,
         background: "rgba(15,23,42,.55)",

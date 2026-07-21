@@ -8,6 +8,7 @@ import { NEXT_STATUSES } from "../utils/orderStatus.js";
 import { calcOrderFinancials } from "../utils/orderFinancials.js";
 import { calcPaymentStages } from "../utils/paymentStages.js";
 import { getOrderPlaybookStep, isPlaybookMyTurn } from "../utils/orderPlaybook.js";
+import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 import {
   buildContractAirline, buildContractTour, buildCostStatement,
   buildPaymentRequest, buildLiquidation,
@@ -91,7 +92,7 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
 
       {/* Modal xác nhận xóa */}
       {showDeleteConfirm&&(
-        <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&setShowDeleteConfirm(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <div className="modal-overlay" {...overlayCloseHandlers(()=>setShowDeleteConfirm(false))} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center"}}>
           <div style={{background:"var(--c-surface)",borderRadius:16,padding:28,width:420,maxWidth:"90vw",textAlign:"center",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
             <div style={{fontSize:40,marginBottom:12}}>🗑️</div>
             <div style={{fontSize:18,fontWeight:800,color:"var(--c-text)",marginBottom:8}}>Xóa đơn {order?.id}?</div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 
 export default function GlobalSearch({orders=[],customers=[],suppliers=[],hdvList=[],onClose,onSelectOrder,onSelectCustomer,onSelectSupplier,setView}){
   const [q,setQ]=React.useState("");
@@ -17,7 +18,7 @@ export default function GlobalSearch({orders=[],customers=[],suppliers=[],hdvLis
   const hdvResults=ql?(hdvList||[]).filter(h=>h.name?.toLowerCase().includes(ql)||h.phone?.includes(ql)).slice(0,2):[];
 
   return(
-    <div className="modal-overlay" style={{alignItems:"flex-start",paddingTop:"10vh"}} onClick={onClose}>
+    <div className="modal-overlay" style={{alignItems:"flex-start",paddingTop:"10vh"}} {...overlayCloseHandlers(onClose)}>
       <div className="anim-scale" onClick={e=>e.stopPropagation()} style={{background:"var(--c-surface)",borderRadius:16,width:560,maxWidth:"90vw",maxHeight:"70vh",overflow:"hidden",boxShadow:"0 16px 48px rgba(0,0,0,.3)"}}>
         <div style={{padding:16,borderBottom:"1px solid var(--c-surface-3)"}}>
           <input ref={inputRef} value={q} onChange={e=>setQ(e.target.value)} placeholder="Tìm đơn hàng, khách hàng, SĐT..." style={{width:"100%",border:"none",outline:"none",fontSize:16,padding:"6px 4px"}}/>

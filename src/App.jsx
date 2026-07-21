@@ -18,6 +18,7 @@ import { SERVICE_TYPES } from "./constants/serviceTypes.js";
 import { ORDER_STATUS } from "./constants/statuses.js";
 import { PERMISSION_GROUPS, ALL_PERM_KEYS, PERM_LABEL, ROLE_DEFAULT_PERMS, isBanGiamDoc, getEffectivePerms, canSeeTourGhepSensitive, canAccessTourGhep } from "./utils/permissions.js";
 import { isNotifRead, isNotifVisible } from "./utils/notifications.js";
+import { overlayCloseHandlers } from "./utils/modalOverlay.js";
 import { NumberInput, fmtNum } from "./components/ui.jsx";
 import CloseOrderModule from "./modules/CloseOrderModule.jsx";
 import QuoteModule from "./modules/QuoteModule.jsx";
@@ -1243,7 +1244,7 @@ export default function App(){
       )}
 
       {showLogoutConfirm&&(
-        <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&setShowLogoutConfirm(false)}>
+        <div className="modal-overlay" {...overlayCloseHandlers(()=>setShowLogoutConfirm(false))}>
           <div className="modal-panel" style={{padding:28,width:360,maxWidth:"90vw",textAlign:"center"}}>
             <div style={{fontSize:32,marginBottom:12}}>🚪</div>
             <div style={{fontWeight:700,fontSize:16,marginBottom:8}}>Đăng xuất khỏi hệ thống?</div>

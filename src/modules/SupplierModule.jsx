@@ -1,5 +1,6 @@
 import React from "react";
 import { NumberInput, Btn, SearchInp, PageHeader, Sel } from "../components/ui.jsx";
+import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 
 const PROVINCES = [
   "An Giang","Bà Rịa - Vũng Tàu","Bắc Giang","Bắc Kạn","Bạc Liêu",
@@ -365,7 +366,7 @@ function QuickFindModal({ suppliers, onClose, onSelect }){
   const fmtM=(n)=>{const a=Math.abs(n||0),s=(n||0)<0?"-":"";if(a>=1e9)return s+(a/1e9).toFixed(1)+"tỷ";return s+Math.round(a).toLocaleString("vi-VN")+"đ";};
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,.55)",zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:80}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,.55)",zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:80}} {...overlayCloseHandlers(onClose)}>
       <div style={{background:"var(--c-surface)",borderRadius:"var(--r-xl)",width:"100%",maxWidth:560,boxShadow:"var(--sh-modal)",overflow:"hidden"}} onClick={e=>e.stopPropagation()}>
         <div style={{padding:"14px 16px",borderBottom:"1px solid var(--c-border)",display:"flex",alignItems:"center",gap:10}}>
           <span style={{fontSize:18}}>🔍</span>

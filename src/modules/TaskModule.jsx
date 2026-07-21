@@ -1,6 +1,7 @@
 import React from "react";
 import { Btn, SearchInp } from "../components/ui.jsx";
 import { canManageTask, isTaskAssignee, isSelfAssignedTask } from "../utils/taskPermissions.js";
+import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 
 export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], customers=[], currentUser, currentRole, userAccounts=[], pushNotif, saveNotification, prefill=null, onPrefillConsumed, openTaskId=null, onOpenTaskConsumed }) {
   const [view, setView] = React.useState("kanban"); // kanban | list | mine
@@ -165,7 +166,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
 
   // ── FORM TẠO/SỬA TASK ──────────────────────────────────
   const TaskForm = () => (
-    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&(setShowForm(false),setForm({...BLANK}))}>
+    <div className="modal-overlay" {...overlayCloseHandlers(()=>{setShowForm(false);setForm({...BLANK});})}>
       <div style={{background:"var(--c-surface)",borderRadius:"var(--r-2xl)",width:580,maxWidth:"95vw",maxHeight:"90vh",overflow:"hidden",display:"flex",flexDirection:"column",boxShadow:"var(--sh-modal)"}}>
         {/* Header */}
         <div style={{padding:"20px 24px",background:"linear-gradient(135deg,var(--c-primary),var(--c-primary-mid))",color:"#fff",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -265,7 +266,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     const linkedOrder = orders.find(o=>o.id===t.orderId);
     const linkedCustomer = findCustomer(t.customerId);
     return (
-      <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",justifyContent:"flex-end"}} onClick={e=>e.target===e.currentTarget&&setSelectedTask(null)}>
+      <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",justifyContent:"flex-end"}} {...overlayCloseHandlers(()=>setSelectedTask(null))}>
         <div style={{width:480,maxWidth:"95vw",height:"100vh",background:"var(--c-surface)",boxShadow:"var(--sh-xl)",display:"flex",flexDirection:"column",animation:"slideInRight .25s ease"}}>
           <style>{`@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
           {/* Header */}

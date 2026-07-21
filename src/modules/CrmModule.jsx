@@ -1,6 +1,7 @@
 import React from "react";
 import { exportCustomersToExcel } from "../utils/importExcel.js";
 import { findCustomerByPhone } from "../utils/customers.js";
+import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 import { SEED_CUSTOMERS } from "../seeds/index.js";
 import { Btn, SearchInp, PageHeader, TabBar } from "../components/ui.jsx";
 
@@ -544,7 +545,7 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
   const lbl={display:"block",fontSize:"var(--text-sm)",fontWeight:600,marginBottom:4,color:"var(--c-text-2)"};
   const inp={width:"100%",border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-sm)",padding:"8px 12px",fontSize:"var(--text-base)",boxSizing:"border-box",outline:"none",background:"var(--c-surface)",color:"var(--c-text)"};
   return (
-    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="modal-overlay" {...overlayCloseHandlers(onClose)}>
       <div className="modal-panel" style={{padding:28,width:520,maxWidth:"95vw",maxHeight:"90vh",overflowY:"auto"}}>
         <h3 style={{margin:"0 0 20px",fontSize:"var(--text-xl)",fontWeight:800,color:"var(--c-text)"}}>{title}</h3>
         <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
@@ -638,7 +639,7 @@ function ComposeModal({customer,channel,setChannel,body,setBody,onSend,onClose})
     sms:"sms:"+customer.phone,
   };
   return (
-    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="modal-overlay" {...overlayCloseHandlers(onClose)}>
       <div className="modal-panel" style={{padding:0,width:520,maxWidth:"95vw",maxHeight:"90vh",overflow:"hidden",display:"flex",flexDirection:"column"}}>
         <div style={{padding:"18px 24px",borderBottom:"1px solid var(--c-border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div style={{fontWeight:800,fontSize:"var(--text-xl)",color:"var(--c-primary)"}}>🎂 Soạn thông điệp</div>
@@ -701,7 +702,7 @@ function BulkComposeModal({seg,list,currentUser,onLogMessage,pushNotif,onClose})
   };
 
   return(
-    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="modal-overlay" {...overlayCloseHandlers(onClose)}>
       <div className="modal-panel" style={{padding:0,width:620,maxWidth:"96vw",maxHeight:"92vh",overflow:"hidden",display:"flex",flexDirection:"column"}}>
         <div style={{padding:"16px 24px",borderBottom:"1px solid var(--c-border)",display:"flex",justifyContent:"space-between",alignItems:"center",background:seg.bg}}>
           <div>

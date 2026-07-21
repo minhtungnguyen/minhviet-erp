@@ -1,4 +1,5 @@
 import React from "react";
+import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 
 export default function HDVModule({ hdvList=[], onUpdate, orders=[], pushNotif, currentRole }) {
   const EMPTY={name:'',phone:'',speciality:'',lang:[],available:true,cardNo:'',cardType:'domestic',cardExpiry:'',cccd:'',cccdDate:'',cccdPlace:'Cục Cảnh sát QLHCVTTXH',cccdImg:null,cardImg:null,taxCode:'',photo:null,facebook:'',zalo:'',email:'',dob:'',address:'',dailyRate:0,type:'freelance',notes:'',ratings:[]};
@@ -369,7 +370,7 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
 
       {/* Contract modal */}
       {contractHdv&&(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={e=>e.target===e.currentTarget&&setContractHdv(null)}>
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}} {...overlayCloseHandlers(()=>setContractHdv(null))}>
           <div style={{background:"var(--c-surface)",borderRadius:16,padding:28,width:"min(660px,95vw)",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 8px 40px rgba(0,0,0,.22)"}}>
             <h3 style={{marginTop:0,marginBottom:4}}>📄 Tạo hợp đồng — {contractHdv.name}</h3>
             <div style={{fontSize:12,color:"var(--c-text-3)",marginBottom:16}}>Điền thông tin tour rồi bấm Xuất HĐ để mở trang in</div>
@@ -415,7 +416,7 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
 
       {/* Rating modal */}
       {addRatingHdv&&(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={e=>e.target===e.currentTarget&&setAddRatingHdv(null)}>
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}} {...overlayCloseHandlers(()=>setAddRatingHdv(null))}>
           <div style={{background:"var(--c-surface)",borderRadius:16,padding:28,width:"min(460px,95vw)",boxShadow:"0 8px 40px rgba(0,0,0,.22)"}}>
             <h3 style={{marginTop:0,marginBottom:4}}>⭐ Chấm điểm — {addRatingHdv.name}</h3>
             {(addRatingHdv.ratings||[]).length>0&&<div style={{fontSize:12,color:"var(--c-text-3)",marginBottom:16}}>Trung bình hiện tại: {avgRating(addRatingHdv)} ★ ({(addRatingHdv.ratings||[]).length} lần)</div>}
