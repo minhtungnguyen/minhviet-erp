@@ -4,6 +4,7 @@ import { downloadAsWord } from "../print/index.jsx";
 import { openPrintWindow, buildPhieuThu, buildPhieuChi } from "../print/legacy.jsx";
 import { calcPaymentTimeline } from "../utils/paymentTimeline.js";
 import { calcVoucherTotals } from "../utils/orderFinancials.js";
+import { isBanGiamDoc } from "../utils/permissions.js";
 
 function PaymentTimeline({order,vouchers}){
   const {addonTotal,grandTotal,totalPaid,remaining,paidPct}=calcPaymentTimeline(order,vouchers);
@@ -298,7 +299,7 @@ export default function FinancePanel({order,vouchers,onAddVoucher,onApprove,onRe
                     <button onClick={()=>downloadAsWord(v.type==="thu"?buildPhieuThu(v,order):buildPhieuChi(v,order),(v.type==="thu"?"PhieuThu":"PhieuChi")+"-"+(v.id||""))} style={{padding:"2px 8px",fontSize:11,fontWeight:600,background:"var(--c-primary-pale)",color:"var(--c-primary)",border:"none",cursor:"pointer"}}>📝 Word</button>
                   </div>
                 </div>
-                {v.status==="pending"&&(currentRole==="accountant"||currentRole==="manager")&&(
+                {v.status==="pending"&&(currentRole==="accountant"||isBanGiamDoc(currentRole))&&(
                   <div style={{display:"flex",gap:6,marginTop:6}}>
                     <button onClick={()=>onApprove&&onApprove(v.id)} style={{background:"var(--c-success-mid)",color:"var(--c-text-inverse)",border:"none",borderRadius:6,padding:"3px 10px",fontSize:11,cursor:"pointer"}}>Duyệt</button>
                     <button onClick={()=>onReject&&onReject(v.id)} style={{background:"var(--c-danger-mid)",color:"var(--c-text-inverse)",border:"none",borderRadius:6,padding:"3px 10px",fontSize:11,cursor:"pointer"}}>Từ chối</button>
@@ -320,7 +321,7 @@ export default function FinancePanel({order,vouchers,onAddVoucher,onApprove,onRe
               &nbsp;= Tổng mới: <strong style={{color:"var(--c-success)"}}>{((order.totalPrice||0)+addonTotal).toLocaleString("vi-VN")} ₫</strong></>
             )}
           </div>
-          {(currentRole==="cashier"||currentRole==="accountant"||currentRole==="manager")&&(
+          {(currentRole==="cashier"||currentRole==="accountant"||isBanGiamDoc(currentRole))&&(
             <button onClick={()=>setShowAddonForm(true)} style={{marginBottom:12,background:"var(--c-warning-mid)",color:"var(--c-text-inverse)",border:"none",borderRadius:8,padding:"7px 16px",cursor:"pointer",fontSize:13}}>+ Thêm dịch vụ bổ sung</button>
           )}
           {showAddonForm&&(

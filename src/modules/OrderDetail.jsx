@@ -1,6 +1,7 @@
 import React from "react";
 import PassengerPanel from "./PassengerPanel.jsx";
 import FinancePanel from "./FinancePanel.jsx";
+import { isBanGiamDoc } from "../utils/permissions.js";
 import { getProfitStatus } from "../utils/profit.js";
 import { ORDER_STATUS } from "../constants/statuses.js";
 import { NEXT_STATUSES } from "../utils/orderStatus.js";
@@ -77,8 +78,8 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
           </div>
           <div style={{fontSize:13,color:"var(--c-text-3)",marginTop:2}}>Tạo: {fmtDate(order?.createdAt)} · NV: {order?.sale}</div>
         </div>
-        {/* Nút xóa đơn — chỉ Giám đốc */}
-        {currentRole==="manager"&&onDelete&&(
+        {/* Nút xóa đơn — Ban Giám đốc (Giám đốc/Phó Giám đốc) */}
+        {isBanGiamDoc(currentRole)&&onDelete&&(
           <button onClick={()=>setShowDeleteConfirm(true)} style={{background:"var(--c-danger-bg)",color:"var(--c-danger-mid)",border:"1px solid var(--c-danger-border)",borderRadius:9,padding:"8px 16px",cursor:"pointer",fontWeight:700,fontSize:13,display:"flex",alignItems:"center",gap:6}}>
             <i className="ti ti-trash" style={{fontSize:16}}/> Xóa đơn
           </button>

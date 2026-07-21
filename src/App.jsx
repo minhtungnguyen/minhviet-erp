@@ -1082,7 +1082,7 @@ export default function App(){
     if(exp.status==="pending_gd") pushToast("Phiếu chi "+exp.id+" cần GĐ phê duyệt","warn","manager");
   };
   const handleDeleteOrder = (o) => {
-    if(currentRole!=="manager"){ pushToast("Chỉ Giám đốc mới được xóa đơn","error"); return; }
+    if(!isBanGiamDoc(currentRole)){ pushToast("Chỉ Ban Giám đốc mới được xóa đơn","error"); return; }
     removeOrder(o.id).catch(e=>{ console.error("[deleteOrder]",e.message); pushToast("Xóa lỗi: "+e.message,"error"); });
     pushToast("Đã xóa đơn "+o.id,"success");
     setSelected(null);
