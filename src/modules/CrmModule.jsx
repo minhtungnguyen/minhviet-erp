@@ -1,6 +1,6 @@
 import React from "react";
 import { exportCustomersToExcel } from "../utils/importExcel.js";
-import { findCustomerByPhone } from "../utils/customers.js";
+import { findCustomerByPhone, customerDisplayName } from "../utils/customers.js";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 import { isBanGiamDoc } from "../utils/permissions.js";
 import { vietnameseGivenName } from "../utils/customers.js";
@@ -84,7 +84,7 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
 
   const filtered=React.useMemo(()=>{
     let list=[...customers];
-    if(search.trim()){const q=search.toLowerCase();list=list.filter(c=>c.name?.toLowerCase().includes(q)||c.phone?.includes(q)||c.email?.toLowerCase().includes(q));}
+    if(search.trim()){const q=search.toLowerCase();list=list.filter(c=>c.name?.toLowerCase().includes(q)||c.companyName?.toLowerCase().includes(q)||c.phone?.includes(q)||c.email?.toLowerCase().includes(q));}
     if(filterType!=="all") list=list.filter(c=>c.type===filterType);
     if(filterTag!=="all") list=list.filter(c=>(c.tags||[]).includes(filterTag));
     if(sortBy==="revenue") list.sort((a,b)=>(b.totalRevenue||0)-(a.totalRevenue||0));
@@ -179,7 +179,6 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
     const myOrders=orders.filter(o=>o.customerId===live.id||(o.customerPhone&&(o.customerPhone===live.phone||o.customerPhone===live.sdt))||o.customerName?.trim().toLowerCase()===live.name?.trim().toLowerCase()||o.customer===live.name);
     const myOrderIds=new Set(myOrders.map(o=>o.id));
     const myTasks=tasks.filter(t=>t.customerId===live.id||(t.orderId&&myOrderIds.has(t.orderId)));
-    const missingCccd=!live.cccd;
     const nextBirthday=(live.events||[]).find(e=>e.type==="birthday");
     let bdayDays=null,bdayYears=null;
     if(nextBirthday){
@@ -231,11 +230,6 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
             {(live.tags||[]).length>0&&(
               <div style={{display:"flex",gap:5,marginTop:14,flexWrap:"wrap"}}>
                 {live.tags.map(tId=>{const t=CRM_TAGS.find(x=>x.id===tId);return t&&<span key={tId} style={{fontSize:"var(--text-xs)",background:t.bg,color:t.color,borderRadius:"var(--r-xs)",padding:"3px 10px",fontWeight:600}}>{t.label}</span>;})}
-              </div>
-            )}
-            {missingCccd&&(
-              <div style={{background:"var(--c-primary-light)",borderRadius:"var(--r-sm)",padding:"10px 14px",marginTop:14,fontSize:"var(--text-sm)",color:"var(--c-primary-mid)",textAlign:"center"}}>
-                📋 Thiếu CCCD, đơn bị khóa. Cần follow-up.
               </div>
             )}
             <div style={{display:"flex",gap:8,marginTop:16}}>
@@ -383,7 +377,7 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
                 <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 18px",borderTop:i>0?"1px solid var(--c-border)":"none"}}>
                   <span style={{fontSize:22}}>{cat.icon}</span>
                   <div style={{flex:1}}>
-                    <span style={{fontWeight:700,fontSize:"var(--text-md)"}}>{ev.customer.name}</span>
+                    <span style={{fontWeight:700,fontSize:"var(--text-md)"}}>{customerDisplayName(ev.customer)}</span>
                     <span style={{color:"var(--c-text-3)",fontSize:"var(--text-base)"}}> — {ev.event.label||cat.label}</span>
                   </div>
                   <span style={{fontWeight:700,color:"var(--c-primary-mid)",fontSize:"var(--text-base)"}}>{ev.days===0?"Hôm nay":ev.days+" ngày"}</span>
@@ -425,8 +419,8 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
                     {c.type==="corp"?"🏢":c.name?.[0]?.toUpperCase()}
                   </div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontWeight:700,fontSize:"var(--text-md)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
-                    <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)"}}>{c.phone}</div>
+                    <div style={{fontWeight:700,fontSize:"var(--text-md)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{customerDisplayName(c)}</div>
+                    <div style={{fontSize:"var(--text-sm)",color:"var(--c-text-3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.type==="corp"&&c.name?c.name+" · ":""}{c.phone}</div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:3}}>
                     <span style={{fontSize:"var(--text-2xs)",fontWeight:700,background:c.type==="corp"?"var(--c-purple-bg)":"var(--c-primary-light)",color:c.type==="corp"?"var(--c-purple)":"var(--c-primary-mid)",borderRadius:"var(--r-xs)",padding:"2px 7px"}}>{c.type==="corp"?"DN":"CN"}</span>
@@ -502,7 +496,7 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
                       {list.map((c,i)=>(
                         <tr key={c.id} style={{borderBottom:i<list.length-1?"1px solid var(--c-border)":"none"}} className="table-row-hover">
                           <td style={{padding:"10px 14px"}}>
-                            <div style={{fontWeight:700}}>{c.name}</div>
+                            <div style={{fontWeight:700}}>{customerDisplayName(c)}</div>
                             <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{c.type==="corp"?"Doanh nghiệp":"Cá nhân"}</div>
                           </td>
                           <td style={{padding:"10px 14px",color:"var(--c-text-2)"}}>{c.phone}</td>

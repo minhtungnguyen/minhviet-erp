@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { findCustomerByPhone, vietnameseGivenName } from '../customers.js';
+import { findCustomerByPhone, vietnameseGivenName, customerDisplayName } from '../customers.js';
 
 describe('findCustomerByPhone — chống tạo trùng khách hàng khi tiếp nhận lead mới', () => {
   it('tìm đúng khách khi SĐT khớp chính xác', () => {
@@ -43,6 +43,25 @@ describe('findCustomerByPhone — chống tạo trùng khách hàng khi tiếp n
   });
 });
 
+describe('customerDisplayName — khách DN hiển thị tên công ty, không phải tên người đại diện', () => {
+  it('khách DN có companyName riêng biệt với name (người đại diện) → hiện companyName', () => {
+    expect(customerDisplayName({ type: 'corp', name: 'Nguyễn Văn Đại Diện', companyName: 'Công ty CP ABC' })).toBe('Công ty CP ABC');
+  });
+
+  it('khách DN chưa nhập companyName → fallback về name để không hiện rỗng', () => {
+    expect(customerDisplayName({ type: 'corp', name: 'Nguyễn Văn Đại Diện' })).toBe('Nguyễn Văn Đại Diện');
+  });
+
+  it('khách cá nhân luôn hiện name, bỏ qua companyName nếu có (dữ liệu lạ)', () => {
+    expect(customerDisplayName({ type: 'personal', name: 'Trần Thị B', companyName: 'Không liên quan' })).toBe('Trần Thị B');
+  });
+
+  it('chịu được input rỗng/thiếu, không lỗi', () => {
+    expect(customerDisplayName({})).toBe('');
+    expect(customerDisplayName(undefined)).toBe('');
+  });
+});
+
 describe('vietnameseGivenName — lấy tên riêng để sắp xếp "Theo tên" (không phải Họ)', () => {
   it('lấy từ cuối cùng của họ tên đầy đủ làm tên riêng', () => {
     expect(vietnameseGivenName({ name: 'Nguyễn Văn An', type: 'personal' })).toBe('An');
@@ -59,6 +78,10 @@ describe('vietnameseGivenName — lấy tên riêng để sắp xếp "Theo tên
   it('khách doanh nghiệp giữ nguyên tên đầy đủ (không tách từ cuối)', () => {
     expect(vietnameseGivenName({ name: 'Công ty CP Du lịch ABC', type: 'corp' })).toBe('Công ty CP Du lịch ABC');
     expect(vietnameseGivenName({ name: 'Công ty CP Du lịch ABC', type: 'corporate' })).toBe('Công ty CP Du lịch ABC');
+  });
+
+  it('khách doanh nghiệp sắp xếp theo companyName, không phải tên người đại diện', () => {
+    expect(vietnameseGivenName({ type: 'corp', name: 'Nguyễn Văn Đại Diện', companyName: 'ABC Corp' })).toBe('ABC Corp');
   });
 
   it('trả về chuỗi rỗng khi thiếu tên, không lỗi', () => {
