@@ -349,13 +349,17 @@ function customerToDb(c) {
     total_orders:c.totalOrders||0, total_revenue:c.totalRevenue||0,
     total_profit:c.totalProfit||0, last_order_date:c.lastOrderDate||null,
     first_order_date:c.firstOrderDate||null, notes:c.notes||null,
-    source:c.source||null, events:c.events||[], interactions:c.interactions||[] }
+    source:c.source||null, events:c.events||[], interactions:c.interactions||[],
+    representative_title:c.representativeTitle||null, company_address:c.companyAddress||null,
+    company_bank_account:c.companyBankAccount||null }
 }
 function dbToCustomer(r) {
   return { id:r.id, type:r.type==="business"?"corp":"personal", name:r.name, companyName:r.company_name,
     companySize:r.company_size, industry:r.industry, phone:r.phone,
     email:r.email, dob:r.dob, province:r.province, cccd:r.cccd,
     tags:r.tags||[], assignedSale:r.assigned_sale,
+    representativeTitle:r.representative_title, companyAddress:r.company_address,
+    companyBankAccount:r.company_bank_account,
     totalOrders:r.total_orders||0, totalRevenue:Number(r.total_revenue)||0,
     totalProfit:Number(r.total_profit)||0, lastOrderDate:r.last_order_date,
     firstOrderDate:r.first_order_date, notes:r.notes, source:r.source,

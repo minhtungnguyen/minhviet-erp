@@ -2,11 +2,12 @@ import React from "react";
 import { NumberInput } from "../components/ui.jsx";
 import { calcQuoteTotal, calcDepositAmount, daysLeft } from "../utils/quoteCalc.js";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
+import { SERVICE_TYPES } from "../constants/serviceTypes.js";
 
 export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, currentUser, pushNotif, onCreateOrder }){
   const BLANK_FORM={
     customerName:"",customerPhone:"",customerEmail:"",
-    service:"tour",tourName:"",tourProgramId:"",
+    service:"tour_package",tourName:"",tourProgramId:"",
     departDate:"",returnDate:"",
     pax:{adults:1,children:0,babies:0},
     pricing:{adultPrice:0,childPrice:0,babyPrice:0,totalPrice:0},
@@ -117,7 +118,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
   };
 
   const STATUS={draft:{bg:"var(--c-surface-3)",c:"var(--c-text-2)",label:"Nháp"},sent:{bg:"var(--c-primary-pale)",c:"var(--c-primary)",label:"Đã gửi"},negotiating:{bg:"var(--c-warning-bg)",c:"var(--c-warning)",label:"Đang thương lượng"},converted:{bg:"var(--c-success-bg)",c:"var(--c-success)",label:"Đã chốt"},expired:{bg:"var(--c-danger-bg)",c:"var(--c-danger-mid)",label:"Hết hạn"},lost:{bg:"var(--c-danger-bg)",c:"var(--c-danger)",label:"Mất"}};
-  const SERVICE_LABEL={tour:"Tour trọn gói",cruise:"Du thuyền",ve_may_bay:"Vé máy bay",hotel_flight:"Combo KS+Vé",hotel:"Khách sạn",ve:"Vé tham quan"};
+  const SERVICE_LABEL=Object.fromEntries(SERVICE_TYPES.map(s=>[s.id,s.label]));
 
   if(subView==="new") return(
     <div style={{padding:24,maxWidth:720,margin:"0 auto"}}>
@@ -135,12 +136,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
           {/* Loại dịch vụ */}
           <div><label style={lbl}>Loại dịch vụ *</label>
             <select value={form.service} onChange={e=>setForm(f=>({...f,service:e.target.value}))} style={inp}>
-              <option value="tour">Tour trọn gói</option>
-              <option value="cruise">Du thuyền</option>
-              <option value="ve_may_bay">Vé máy bay</option>
-              <option value="hotel_flight">Combo KS + Vé</option>
-              <option value="hotel">Khách sạn</option>
-              <option value="ve">Vé tham quan / Vui chơi</option>
+              {SERVICE_TYPES.map(s=><option key={s.id} value={s.id}>{s.icon} {s.label}</option>)}
             </select>
           </div>
 

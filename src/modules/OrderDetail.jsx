@@ -287,11 +287,25 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
             const isTour = ["tour","tour_package","tour_ghep"].includes(order?.service)||
                            (order?.tourName||order?.serviceName||"").toLowerCase().includes("tour");
 
+            // Tra khách hàng CRM khớp với đơn — lấy thông tin công ty/người đại diện
+            // mới nhất (không phụ thuộc snapshot cũ lúc tạo đơn) để in hợp đồng đủ dữ liệu.
+            const matchedCustomer = customers.find(c=>c.id===order?.customerId||(c.phone&&c.phone===order?.customerPhone)||c.name?.trim().toLowerCase()===order?.customerName?.trim().toLowerCase());
+
             // Params dùng chung
             const baseOrder = {
               ...order,
               pricing:{ ...order?.pricing, totalRevenue: totalPrice },
-              customer:{ name:order?.customerName, phone:order?.customerPhone, email:order?.customerEmail },
+              customer:{
+                name:order?.customerName, phone:order?.customerPhone, email:order?.customerEmail,
+                cccd: matchedCustomer?.cccd || order?.cccd,
+                province: matchedCustomer?.province || order?.customerProvince,
+                dob: matchedCustomer?.dob,
+                companyName: matchedCustomer?.companyName || order?.companyName,
+                taxCode: matchedCustomer?.taxCode || order?.taxCode,
+                companyAddress: matchedCustomer?.companyAddress || order?.companyAddress,
+                representativeTitle: matchedCustomer?.representativeTitle,
+                companyBankAccount: matchedCustomer?.companyBankAccount,
+              },
             };
 
             const DocBtn = ({label, bg, color, border, onClick, onWord, wordFile}) => (

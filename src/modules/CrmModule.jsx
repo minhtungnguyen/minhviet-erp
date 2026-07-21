@@ -121,7 +121,7 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
   };
 
   const openEdit=(c)=>{
-    setForm({name:c.name||"",phone:c.phone||"",email:c.email||"",type:c.type||"personal",source:c.source||"Facebook",assignedSale:c.assignedSale||"",province:c.province||"",notes:c.notes||"",tags:c.tags||[],companyName:c.companyName||"",taxCode:c.taxCode||"",cccd:c.cccd||"",dob:c.dob||""});
+    setForm({name:c.name||"",phone:c.phone||"",email:c.email||"",type:c.type||"personal",source:c.source||"Facebook",assignedSale:c.assignedSale||"",province:c.province||"",notes:c.notes||"",tags:c.tags||[],companyName:c.companyName||"",taxCode:c.taxCode||"",cccd:c.cccd||"",dob:c.dob||"",representativeTitle:c.representativeTitle||"",companyAddress:c.companyAddress||"",companyBankAccount:c.companyBankAccount||""});
     setEditMode(true); setShowForm(true);
   };
 
@@ -207,7 +207,17 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
         <div className="resp-grid-split" style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:16}}>
           <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:22,boxShadow:"var(--sh-sm)"}}>
             <div style={{textAlign:"center",fontWeight:700,fontSize:"var(--text-lg)",marginBottom:18,color:"var(--c-text-2)"}}>👤 Hồ sơ khách hàng</div>
-            {[["Họ và tên",live.name,"var(--c-primary-mid)"],["Điện thoại",live.phone],["Email",live.email||"—"],["Ngày sinh",fmtDate(live.dob)],["Tỉnh/TP",live.province||"—"],["Nguồn KH",live.source||"—"],["Sale phụ trách",live.assignedSale||"—"]].map(([k,v,color])=>(
+            {[
+              [live.type==="corp"?"Người đại diện":"Họ và tên",live.name,"var(--c-primary-mid)"],
+              ...(live.type==="corp"?[
+                ["Chức danh",live.representativeTitle||"—"],
+                ["Tên công ty",live.companyName||"—"],
+                ["Mã số thuế",live.taxCode||"—"],
+                ["Địa chỉ công ty",live.companyAddress||"—"],
+                ["Số TK công ty",live.companyBankAccount||"—"],
+              ]:[]),
+              ["Điện thoại",live.phone],["Email",live.email||"—"],["Ngày sinh",fmtDate(live.dob)],["Tỉnh/TP",live.province||"—"],["Nguồn KH",live.source||"—"],["Sale phụ trách",live.assignedSale||"—"],
+            ].map(([k,v,color])=>(
               <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid var(--c-border)",fontSize:"var(--text-base)"}}>
                 <span style={{color:"var(--c-text-3)"}}>{k}</span><span style={{fontWeight:600,color:color||"var(--c-text-2)"}}>{v}</span>
               </div>
@@ -608,8 +618,24 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
                 <input value={form.companyName||""} onChange={e=>setForm(f=>({...f,companyName:e.target.value}))} placeholder="VD: Công ty CP ABC" style={inp}/>
               </div>
               <div>
+                <label style={lbl}>Chức danh người đại diện</label>
+                <input value={form.representativeTitle||""} onChange={e=>setForm(f=>({...f,representativeTitle:e.target.value}))} placeholder="VD: Giám đốc, Chủ tịch HĐQT..." list="rep-title-options" style={inp}/>
+                <datalist id="rep-title-options">
+                  <option value="Giám đốc"/><option value="Tổng Giám đốc"/><option value="Phó Tổng Giám đốc"/>
+                  <option value="Chủ tịch Hội đồng quản trị"/><option value="Phó Giám đốc"/><option value="Kế toán trưởng"/>
+                </datalist>
+              </div>
+              <div>
                 <label style={lbl}>Mã số thuế</label>
                 <input value={form.taxCode||""} onChange={e=>setForm(f=>({...f,taxCode:e.target.value}))} placeholder="0312345678" style={inp}/>
+              </div>
+              <div style={{gridColumn:"1/-1"}}>
+                <label style={lbl}>Địa chỉ công ty</label>
+                <input value={form.companyAddress||""} onChange={e=>setForm(f=>({...f,companyAddress:e.target.value}))} placeholder="Địa chỉ đăng ký kinh doanh" style={inp}/>
+              </div>
+              <div>
+                <label style={lbl}>Số tài khoản công ty</label>
+                <input value={form.companyBankAccount||""} onChange={e=>setForm(f=>({...f,companyBankAccount:e.target.value}))} placeholder="VD: Vietcombank - 0123456789" style={inp}/>
               </div>
               <div>
                 <label style={lbl}>Tỉnh / Thành phố</label>

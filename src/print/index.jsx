@@ -14,6 +14,15 @@ const COMPANY = {
   taxCode:  "0200000000",
 };
 
+// Helper: dòng thông tin công ty + người đại diện chèn vào khối "BÊN B — KHÁCH HÀNG"
+// khi khách là doanh nghiệp (c.companyName tồn tại). Chỉ nối thêm, không đổi layout
+// gốc của từng mẫu hợp đồng — khách cá nhân không có companyName sẽ không hiện gì.
+const corpCustomerLines = (c) => {
+  if (!c?.companyName) return "";
+  return `Tên công ty: <strong>${c.companyName}</strong>${c.taxCode ? ` &nbsp;|&nbsp; MST: <strong>${c.taxCode}</strong>` : ""}<br>
+    ${c.companyAddress ? `Địa chỉ trụ sở: ${c.companyAddress}<br>` : ""}${c.representativeTitle ? `Chức danh người đại diện: <strong>${c.representativeTitle}</strong><br>` : ""}${c.companyBankAccount ? `Số tài khoản công ty: ${c.companyBankAccount}<br>` : ""}`;
+};
+
 // Helper: phần thông tin công ty bên trái header (dùng chung toàn bộ template)
 const coHeader = () => `
   <div class="logo-area">
@@ -537,7 +546,8 @@ export function buildContractAirline({ order, contractNo, extraTerms, issuerName
 
   <div class="section-title">BÊN B — KHÁCH HÀNG</div>
   <div style="background:#f8fafc;border-radius:8px;padding:12px 16px;margin-bottom:14px;font-size:13px;line-height:1.9">
-    Họ và tên: <strong>${c.name || order.customerName || "……………………………………"}</strong><br>
+    ${corpCustomerLines(c)}
+    ${c.companyName ? "Người đại diện" : "Họ và tên"}: <strong>${c.name || order.customerName || "……………………………………"}</strong><br>
     CCCD/CMND/Hộ chiếu: <strong>${c.cccd || order.customerCccd || "………………………"}</strong>
     &nbsp;|&nbsp; Ngày sinh: ${c.dob ? new Date(c.dob).toLocaleDateString("vi-VN") : "…………………………"}<br>
     Điện thoại: <strong>${c.phone || order.customerPhone || "………………………"}</strong>
@@ -726,7 +736,8 @@ export function buildContractTour({ order, contractNo, extraTerms, issuerName })
 
   <div class="section-title">BÊN B — KHÁCH HÀNG (TRƯỞNG ĐOÀN)</div>
   <div style="background:#f8fafc;border-radius:8px;padding:12px 16px;margin-bottom:14px;font-size:13px;line-height:2">
-    Họ và tên: <strong>${c.name || order.customerName || "……………………………………"}</strong><br>
+    ${corpCustomerLines(c)}
+    ${c.companyName ? "Người đại diện" : "Họ và tên"}: <strong>${c.name || order.customerName || "……………………………………"}</strong><br>
     CCCD/CMND/Hộ chiếu số: <strong>${c.cccd || order.customerCccd || "………………………"}</strong>
     &nbsp;|&nbsp; Ngày cấp: ………………… &nbsp;|&nbsp; Nơi cấp: …………………………<br>
     Ngày sinh: ${c.dob ? new Date(c.dob).toLocaleDateString("vi-VN") : "……………………"}
@@ -2180,7 +2191,8 @@ export function buildContractCombo({ order, contractNo, issuerName, extraTerms }
   <!-- Bên B -->
   <div class="section-title">BÊN B — KHÁCH HÀNG</div>
   <div style="background:#f8fafc;border-radius:8px;padding:14px 18px;margin-bottom:14px;font-size:13px;line-height:1.9">
-    Họ và tên: <strong>${c.name || order?.customerName || "…………………………………"}</strong><br>
+    ${corpCustomerLines(c)}
+    ${c.companyName ? "Người đại diện" : "Họ và tên"}: <strong>${c.name || order?.customerName || "…………………………………"}</strong><br>
     Điện thoại: <strong>${c.phone || order?.customerPhone || "…………………"}</strong>
     &nbsp;|&nbsp; Email: ${c.email || order?.customerEmail || "…………………………………"}<br>
     CCCD/CMND: ${c.cccd || order?.customerCccd || "………………………"}&nbsp;|&nbsp;
