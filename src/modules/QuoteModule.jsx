@@ -125,7 +125,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
         <h2 style={{margin:0,fontSize:20,fontWeight:800}}>Tạo báo giá mới</h2>
       </div>
       <div style={{background:"var(--c-surface)",borderRadius:14,padding:24,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
           {/* Thông tin khách */}
           <div><label style={lbl}>Tên khách *</label><input value={form.customerName} onChange={e=>setForm(f=>({...f,customerName:e.target.value}))} style={inp}/></div>
           <div><label style={lbl}>SĐT</label><input value={form.customerPhone} onChange={e=>setForm(f=>({...f,customerPhone:e.target.value}))} style={inp}/></div>
@@ -166,7 +166,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
         {/* Giá theo loại khách */}
         <div style={{marginTop:14,padding:"14px 16px",background:"var(--c-surface-2)",borderRadius:10,border:"1px solid var(--c-border)"}}>
           <div style={{fontSize:12,fontWeight:700,color:"var(--c-text-2)",marginBottom:10}}>Giá dịch vụ (₫/người)</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+          <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
             <div><label style={{...lbl,fontSize:11}}>Người lớn</label><NumberInput value={form.pricing.adultPrice||0} onChange={v=>setPrice("adultPrice",v)} placeholder="VD: 1.500.000" style={inp}/></div>
             <div><label style={{...lbl,fontSize:11}}>Trẻ em</label><NumberInput value={form.pricing.childPrice||0} onChange={v=>setPrice("childPrice",v)} placeholder="VD: 1.000.000" style={inp}/></div>
             <div><label style={{...lbl,fontSize:11}}>Em bé</label><NumberInput value={form.pricing.babyPrice||0} onChange={v=>setPrice("babyPrice",v)} placeholder="VD: 300.000" style={inp}/></div>
@@ -177,7 +177,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
           </div>
         </div>
 
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14}}>
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14}}>
           {/* Điều kiện */}
           <div style={{gridColumn:"1/-1"}}><label style={lbl}>Bao gồm dịch vụ</label><textarea rows={2} value={form.includes} onChange={e=>setForm(f=>({...f,includes:e.target.value}))} placeholder="Ăn sáng, xe đưa đón, HDV, bảo hiểm..." style={{...inp,resize:"vertical"}}/></div>
           <div style={{gridColumn:"1/-1"}}><label style={lbl}>Không bao gồm</label><textarea rows={2} value={form.excludes} onChange={e=>setForm(f=>({...f,excludes:e.target.value}))} placeholder="Vé máy bay, visa, chi phí cá nhân..." style={{...inp,resize:"vertical"}}/></div>

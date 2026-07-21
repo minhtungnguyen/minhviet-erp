@@ -211,7 +211,7 @@ export default function ApprovalsModule({ orders, expenses, vouchers=[], onExpen
       </div>
 
       {/* Pipeline summary bar */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+      <div className="resp-grid-4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
         {[
           {s:"pending_kt",label:"Chờ KT Trưởng",color:"var(--c-warning-mid)",bg:"var(--c-warning-bg)",tc:"var(--c-warning)"},
           {s:"pending_gd",label:"Chờ GĐ",color:"var(--c-purple)",bg:"var(--c-purple-bg)",tc:"var(--c-purple)"},

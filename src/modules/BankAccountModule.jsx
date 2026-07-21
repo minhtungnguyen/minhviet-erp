@@ -25,7 +25,7 @@ export default function BankAccountModule({ bankAccounts, onUpdate, pushNotif })
       {showForm&&(
         <div style={{background:"var(--c-surface)",borderRadius:14,padding:20,marginBottom:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
           <h3 style={{margin:"0 0 16px",fontSize:15}}>{editAcc?"Sửa tài khoản":"Thêm tài khoản"}</h3>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             {[["Ngân hàng *","bankName"],["Số tài khoản *","accountNumber"],["Tên tài khoản","accountName"],["Chi nhánh","branch"]].map(([label,key])=>(
               <div key={key}>
                 <label style={{display:"block",fontSize:12,fontWeight:600,marginBottom:4,color:"var(--c-text-2)"}}>{label}</label>

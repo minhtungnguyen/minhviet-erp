@@ -30,7 +30,7 @@ export default function RefundModule({ orders=[], vouchers=[], refunds=[], onRef
       {showForm && (
         <div style={{background:'var(--c-surface)',borderRadius:12,padding:20,marginBottom:16,boxShadow:'0 2px 8px rgba(0,0,0,.1)'}}>
           <h3 style={{marginTop:0}}>Phiếu hoàn tiền mới</h3>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+          <div className="resp-grid-2" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
             <div>
               <label style={{display:'block',marginBottom:4,fontSize:13,fontWeight:600}}>Đơn hàng</label>
               <select value={form.orderId} onChange={e=>setForm(f=>({...f,orderId:e.target.value}))} style={{width:'100%',border:'1px solid var(--c-border)',borderRadius:8,padding:'8px 12px'}}>

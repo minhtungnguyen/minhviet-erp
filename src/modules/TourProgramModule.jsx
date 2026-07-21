@@ -11,7 +11,7 @@ function TourProgramForm({ initial, onSave, onCancel, pushNotif, tourPrograms })
   return(
     <div style={{background:"var(--c-surface)",borderRadius:14,padding:24,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
       <h3 style={{margin:"0 0 20px",fontSize:16,fontWeight:800}}>{initial?"Sửa chương trình":"Thêm chương trình mới"}</h3>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+      <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
         {[["Tên chương trình *","name"],["Lộ trình","route"],["Nhóm đối tượng","targetGroup"],["Đơn vị tổ chức","organizer"]].map(([label,key])=>(
           <div key={key}>
             <label style={{display:"block",fontSize:12,fontWeight:600,marginBottom:4,color:"var(--c-text-2)"}}>{label}</label>

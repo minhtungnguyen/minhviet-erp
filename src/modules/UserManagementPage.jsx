@@ -150,7 +150,7 @@ export default function UserManagementPage({ userAccounts, onUpdateAccounts, sav
             </div>
           </div>
 
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             {[["Họ tên đầy đủ *","name","text"],["Tên đăng nhập","username","text"],["Mật khẩu","password","text"],["Email *","email","email"]].map(([label,key,type])=>(
               <div key={key}>
                 <label style={{display:"block",fontSize:12,fontWeight:600,marginBottom:4,color:"var(--c-text-2)"}}>{label}</label>
@@ -202,7 +202,7 @@ export default function UserManagementPage({ userAccounts, onUpdateAccounts, sav
                 {PERMISSION_GROUPS.map(grp=>(
                   <div key={grp.group} style={{marginBottom:10}}>
                     <div style={{fontSize:11,fontWeight:700,color:"var(--c-text-muted)",textTransform:"uppercase",letterSpacing:.5,marginBottom:6}}>{grp.group}</div>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+                    <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
                       {grp.items.map(it=>{
                         const checked=effective.includes(it.key);
                         return(

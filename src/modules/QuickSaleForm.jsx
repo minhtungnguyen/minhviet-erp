@@ -161,7 +161,7 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
           <input value={f.desc} onChange={e=>set("desc",e.target.value)} placeholder={DESC_PH[f.service]} style={inp}/>
         </div>
 
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14}}>
+        <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14}}>
           <div><label style={lbl}>Ngày khởi hành/sử dụng</label><input type="date" value={f.departDate} onChange={e=>set("departDate",e.target.value)} style={inp}/></div>
           <div><label style={lbl}>Số khách</label><input type="number" min={1} value={f.guests} onChange={e=>{const g=e.target.value; if(f.service==="tour_ghep"&&selectedTgp){applyTgp(selectedTgp,f.tgpDepId,g);}else{set("guests",g);}}} style={inp}/></div>
           <div>
@@ -175,7 +175,7 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
         </div>
 
         {/* Tiền */}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14,alignItems:"end"}}>
+        <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14,alignItems:"end"}}>
           <div><label style={{...lbl,color:"var(--c-danger)"}}>Tổng giá vốn (NCC)</label><NumberInput value={f.costTotal} onChange={v=>set("costTotal",v)} placeholder="VD: 2.600.000" style={inp}/></div>
           <div><label style={{...lbl,color:"var(--c-success)"}}>Tổng giá bán (KH) *</label><NumberInput value={f.sellTotal} onChange={v=>set("sellTotal",v)} placeholder="VD: 3.200.000" style={inp}/></div>
           <div style={{background:profit>=0?"var(--c-warning-bg)":"var(--c-danger-bg)",borderRadius:8,padding:"8px 12px",textAlign:"right"}}>
@@ -184,7 +184,7 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
           </div>
         </div>
 
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
           <div><label style={lbl}>Thu/cọc ngay (tùy chọn)</label><NumberInput value={f.depositAmount} onChange={v=>set("depositAmount",v)} placeholder="VD: 1.000.000" style={inp}/></div>
           <div><label style={lbl}>Phụ trách</label>
             <select value={f.sale} onChange={e=>set("sale",e.target.value)} style={inp}>

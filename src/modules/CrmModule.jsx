@@ -196,7 +196,7 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
           </div>
         )}
 
-        <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:16}}>
+        <div className="resp-grid-split" style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:16}}>
           <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:22,boxShadow:"var(--sh-sm)"}}>
             <div style={{textAlign:"center",fontWeight:700,fontSize:"var(--text-lg)",marginBottom:18,color:"var(--c-text-2)"}}>👤 Hồ sơ khách hàng</div>
             {[["Họ và tên",live.name,"var(--c-primary-mid)"],["Điện thoại",live.phone],["Email",live.email||"—"],["Ngày sinh",fmtDate(live.dob)],["Tỉnh/TP",live.province||"—"],["Nguồn KH",live.source||"—"],["Sale phụ trách",live.assignedSale||"—"]].map(([k,v,color])=>(
@@ -390,7 +390,7 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
                     {c.tags.map(tId=>{const t=CRM_TAGS.find(x=>x.id===tId);return t&&<span key={tId} style={{fontSize:"var(--text-2xs)",background:t.bg,color:t.color,borderRadius:"var(--r-xs)",padding:"2px 7px",fontWeight:600}}>{t.label}</span>;})}
                   </div>
                 )}
-                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,paddingTop:10,borderTop:"1px solid var(--c-border)"}}>
+                <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,paddingTop:10,borderTop:"1px solid var(--c-border)"}}>
                   {[["Đơn",c.totalOrders||0],["DT",fmtTr(c.totalRevenue)],["LN",fmtTr(c.totalProfit)]].map(([k,v])=>(
                     <div key={k} style={{textAlign:"center"}}>
                       <div style={{fontSize:"var(--text-2xs)",color:"var(--c-text-muted)"}}>{k}</div>
@@ -408,7 +408,7 @@ export default function CrmModule({orders,pushNotif,customers:customersProp=SEED
       {/* ── TAB: PHÂN KHÚC RFM ── */}
       {mainTab==="segment"&&(
         <div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:24}}>
+          <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:24}}>
             {RFM_SEGMENTS.map(seg=>(
               <div key={seg.id} onClick={()=>setSegFilter(segFilter===seg.id?null:seg.id)}
                 style={{background:segFilter===seg.id?seg.bg:"var(--c-surface)",border:"2px solid "+(segFilter===seg.id?seg.color:"var(--c-border)"),
@@ -547,7 +547,7 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
     <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
       <div className="modal-panel" style={{padding:28,width:520,maxWidth:"95vw",maxHeight:"90vh",overflowY:"auto"}}>
         <h3 style={{margin:"0 0 20px",fontSize:"var(--text-xl)",fontWeight:800,color:"var(--c-text)"}}>{title}</h3>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
           <div>
             <label style={lbl}>Loại khách</label>
             <select value={form.customerType||form.type||"personal"} onChange={e=>setForm(f=>({...f,customerType:e.target.value,type:e.target.value}))} style={inp}>

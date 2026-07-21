@@ -62,7 +62,7 @@ export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdat
             </div>
             <span style={{background:sc.bg,color:sc.c,borderRadius:20,padding:"5px 14px",fontWeight:700,fontSize:12}}>{sc.label}</span>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:18}}>
+          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:18}}>
             {[["Hãng bay",selected.airlineName],["Chặng",selected.route],["Số vé",selected.ticketNo],["PNR",selected.pnr],["Ngày cấp",new Date(selected.issueDate).toLocaleDateString("vi-VN")],["Hạn dùng",new Date(selected.expiryDate).toLocaleDateString("vi-VN")+(days>=0?" ("+days+" ngày nữa)":" (đã hết hạn)")]].map(([k,v])=>(
               <div key={k} style={{background:"var(--c-surface-2)",borderRadius:8,padding:"8px 12px"}}>
                 <div style={{fontSize:11,color:"var(--c-text-3)"}}>{k}</div>
@@ -70,7 +70,7 @@ export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdat
               </div>
             ))}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginTop:14}}>
+          <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginTop:14}}>
             <div style={{background:"var(--c-primary-light)",borderRadius:10,padding:12,textAlign:"center"}}>
               <div style={{fontSize:11,color:"var(--c-primary)"}}>Giá trị bảo lưu</div>
               <div style={{fontSize:16,fontWeight:800,color:"var(--c-primary)"}}>{fmtMoney(selected.creditAmount)}</div>
@@ -90,7 +90,7 @@ export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdat
         {selected._status!=="expired"&&selected._status!=="used"&&(
           <div style={{background:"var(--c-surface)",borderRadius:16,padding:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)",marginBottom:16}}>
             <div style={{fontWeight:700,marginBottom:12}}>Áp dụng bảo lưu cho đơn mới</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
               <div>
                 <label style={labelStyle}>Mã đơn áp dụng</label>
                 <select value={useOrderId} onChange={e=>setUseOrderId(e.target.value)} style={fieldStyle}>
@@ -141,7 +141,7 @@ export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdat
       {showForm&&(
         <div style={{background:"var(--c-surface)",borderRadius:14,padding:20,marginBottom:20,boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
           <h3 style={{margin:"0 0 16px"}}>Tạo phiếu bảo lưu vé mới</h3>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             {[["Tên khách *","customerName"],["SĐT","customerPhone"],["Hãng bay","airlineName"],["Chặng bay","route"],["Số vé","ticketNo"],["Mã PNR","pnr"]].map(([label,key])=>(
               <div key={key}>
                 <label style={labelStyle}>{label}</label>

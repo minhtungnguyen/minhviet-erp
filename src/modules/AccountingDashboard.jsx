@@ -104,7 +104,7 @@ export default function AccountingDashboard({orders=[],vouchers=[],expenses=[],r
 
       {/* ── TỔNG QUAN ── */}
       {tab==="overview"&&(<>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginBottom:14}}>
+        <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginBottom:14}}>
           {[
             {label:"Tổng thu kỳ này",val:fmtM(thuKy),bg:"linear-gradient(135deg,var(--c-success-mid),#047857)",icon:"ti-arrow-down-circle"},
             {label:"Tổng chi kỳ này",val:fmtM(chiKy),bg:"linear-gradient(135deg,var(--c-danger-mid),var(--c-danger))",icon:"ti-arrow-up-circle"},
@@ -117,7 +117,7 @@ export default function AccountingDashboard({orders=[],vouchers=[],expenses=[],r
             </div>
           ))}
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:16}}>
+        <div className="resp-grid-4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:16}}>
           {[
             {label:"Doanh thu (đơn đóng)",val:fmtM(doanhThu),color:"var(--c-primary-mid)",onClick:null},
             {label:"Công nợ phải thu",val:fmtM(totalPhaiThu),color:"var(--c-warning-mid)",onClick:()=>setTab("receivable"),sub:`${phaiThu.length} đơn`},
@@ -236,7 +236,7 @@ export default function AccountingDashboard({orders=[],vouchers=[],expenses=[],r
 
       {/* ── HÓA ĐƠN VAT ── */}
       {tab==="vat"&&(<>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:14}}>
+        <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:14}}>
           {[["VAT đầu ra",outVat,"var(--c-success-mid)"],["VAT đầu vào",inVat,"var(--c-primary-mid)"],["VAT phải nộp",vatPhaiNop,vatPhaiNop>=0?"var(--c-purple)":"var(--c-success-mid)"]].map(([l,v,c])=>(
             <div key={l} style={{...card,padding:"14px 16px"}}><div style={{fontSize:12,color:"var(--c-text-3)",fontWeight:600}}>{l}</div><div style={{fontSize:18,fontWeight:800,color:c,marginTop:4}}>{fmtMoney(v)}</div></div>
           ))}
@@ -252,7 +252,7 @@ export default function AccountingDashboard({orders=[],vouchers=[],expenses=[],r
           </div>
           {showForm&&(
             <div style={{background:"var(--c-surface-2)",borderRadius:12,padding:16,marginBottom:16,border:"1px solid var(--c-border)"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                 {invTab==="output"&&(
                   <div><label style={{display:"block",fontSize:12,fontWeight:600,marginBottom:4,color:"var(--c-text-2)"}}>Đơn hàng</label>
                   <select value={form.orderId} onChange={e=>set("orderId",e.target.value)} style={{width:"100%",border:"1px solid var(--c-border)",borderRadius:8,padding:"9px 12px",fontSize:13}}>

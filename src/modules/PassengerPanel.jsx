@@ -207,7 +207,7 @@ export default function PassengerPanel({order,onUpdate,pushNotif,customers=[]}){
               </div>
             )}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+          <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
             <div style={{gridColumn:"1/3"}}>
               <label style={{display:"block",fontSize:"var(--text-xs)",fontWeight:600,marginBottom:3,color:"var(--c-text-2)"}}>Họ và tên *</label>
               <input value={form.name} onChange={e=>set("name",e.target.value)} placeholder="Nguyễn Văn An" style={inp}/>

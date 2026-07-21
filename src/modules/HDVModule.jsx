@@ -294,7 +294,7 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
       {showForm&&(
         <div style={{background:'var(--c-surface)',borderRadius:14,padding:24,marginBottom:20,boxShadow:'0 1px 6px rgba(0,0,0,.07)'}}>
           <h3 style={{marginTop:0,marginBottom:16}}>{editHdv?'Sửa HDV':'Thêm HDV mới'}</h3>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             <div><label style={lbl}>Họ tên *</label><input value={form.name} onChange={e=>set('name',e.target.value)} style={inp}/></div>
             <div><label style={lbl}>SĐT</label><input value={form.phone} onChange={e=>set('phone',e.target.value)} style={inp}/></div>
             <div><label style={lbl}>Số thẻ HDV</label><input value={form.cardNo||''} onChange={e=>set('cardNo',e.target.value)} placeholder="VD: 0123456789" style={inp}/></div>
@@ -373,7 +373,7 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
           <div style={{background:"var(--c-surface)",borderRadius:16,padding:28,width:"min(660px,95vw)",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 8px 40px rgba(0,0,0,.22)"}}>
             <h3 style={{marginTop:0,marginBottom:4}}>📄 Tạo hợp đồng — {contractHdv.name}</h3>
             <div style={{fontSize:12,color:"var(--c-text-3)",marginBottom:16}}>Điền thông tin tour rồi bấm Xuất HĐ để mở trang in</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               <div style={{gridColumn:"1/-1"}}><label style={lbl}>Tên tour / chương trình *</label>
                 <input value={cf.tourName} onChange={e=>setCfField('tourName',e.target.value)} placeholder="VD: HÀNH TRÌNH HẢI PHÒNG - MAI CHÂU 2N1Đ" style={inp}/>
               </div>

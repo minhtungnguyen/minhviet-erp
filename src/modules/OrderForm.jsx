@@ -186,7 +186,7 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
         ))}
       </div>
 
-      <div style={{display:"grid",gridTemplateColumns:"1fr 300px",gap:16}}>
+      <div className="resp-grid-split" style={{display:"grid",gridTemplateColumns:"1fr 300px",gap:16}}>
         <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:24,boxShadow:"var(--sh-sm)"}}>
           {step===1&&(
             <div>
@@ -238,7 +238,7 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                   </div>
                 )}
               </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
                 <div><label style={labelStyle}>Họ tên *</label><input value={form.customerName} onChange={e=>set("customerName",e.target.value)} style={inputStyle("customerName")}/></div>
                 <div><label style={labelStyle}>SĐT *</label><input value={form.customerPhone} onChange={e=>set("customerPhone",e.target.value)} style={inputStyle("customerPhone")}/></div>
                 <div><label style={labelStyle}>Email</label><input value={form.customerEmail} onChange={e=>set("customerEmail",e.target.value)} style={inputStyle("customerEmail")}/></div>
@@ -277,7 +277,7 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
               </div>
               {/* Fields doanh nghiệp — chỉ hiện khi có HĐ + corporate */}
               {form.invoiceType==="invoice"&&form.customerType==="corporate"&&(
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14,paddingTop:14,borderTop:"1px solid var(--c-border)"}}>
+                <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14,paddingTop:14,borderTop:"1px solid var(--c-border)"}}>
                   <div style={{gridColumn:"1/-1"}}>
                     <div style={{fontSize:"var(--text-sm)",color:"var(--c-purple)",fontWeight:700,marginBottom:10}}>Thông tin xuất hóa đơn</div>
                   </div>
@@ -310,7 +310,7 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
 
               {/* 7 nút loại dịch vụ */}
               <label style={labelStyle}>Loại dịch vụ *</label>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}}>
+              <div className="resp-grid-4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}}>
                 {SERVICE_TYPES.map(s=>(
                   <button key={s.id} onClick={()=>{set("service",s.id);if(s.id!=="combo")set("comboComponents",{...COMBO_COMPONENTS_DEFAULT});}} style={{display:"flex",alignItems:"center",gap:7,padding:"10px 12px",borderRadius:"var(--r-md)",border:"1.5px solid "+(form.service===s.id?(s.id==="combo"?"var(--c-purple)":"var(--c-primary)"):"var(--c-border)"),background:form.service===s.id?(s.id==="combo"?"var(--c-purple-bg)":"var(--c-primary-light)"):"var(--c-surface)",cursor:"pointer",fontWeight:form.service===s.id?700:500,fontSize:"var(--text-base)",color:form.service===s.id?(s.id==="combo"?"var(--c-purple)":"var(--c-primary)"):"var(--c-text-2)",transition:"all .15s"}}>
                     <span>{s.icon}</span>{s.label}
@@ -419,7 +419,7 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                           <span style={{background:"var(--c-info)",color:"#fff",borderRadius:"var(--r-xs)",padding:"2px 8px",fontSize:"var(--text-xs)",fontWeight:700}}>✓ Đã chọn</span>
                           <span style={{fontWeight:800,fontSize:"var(--text-lg)",color:"var(--c-info)"}}>{selectedProduct.name}</span>
                         </div>
-                        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,fontSize:"var(--text-sm)"}}>
+                        <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,fontSize:"var(--text-sm)"}}>
                           <div><span style={{color:"var(--c-text-3)"}}>Điểm đến:</span><br/><b>{selectedProduct.destination||"—"}</b></div>
                           <div><span style={{color:"var(--c-text-3)"}}>Đối tác/NCC:</span><br/><b>{selectedProduct.partnerName||"—"}</b></div>
                           <div><span style={{color:"var(--c-text-3)"}}>Thời gian:</span><br/><b>{selectedProduct.duration||"—"}</b></div>
@@ -455,7 +455,7 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                             style={{width:"100%",border:"1.5px solid var(--c-info-border)",borderRadius:"var(--r-md)",padding:"9px 12px 9px 34px",fontSize:"var(--text-base)",outline:"none",background:"var(--c-surface)",boxSizing:"border-box"}}/>
                         </div>
                         {!selectedProduct&&(
-                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,maxHeight:240,overflowY:"auto"}}>
+                          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,maxHeight:240,overflowY:"auto"}}>
                             {filteredProducts.length===0&&<div style={{gridColumn:"1/-1",textAlign:"center",color:"var(--c-text-muted)",padding:16,fontSize:"var(--text-base)"}}>Không tìm thấy sản phẩm</div>}
                             {filteredProducts.map(p=>(
                               <div key={p.id} onClick={()=>selectProduct(p)}
@@ -483,7 +483,7 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
               <input value={isCombo?(form.comboName||autoComboName):form.tourName} onChange={e=>isCombo?set("comboName",e.target.value):set("tourName",e.target.value)} placeholder={isCombo?(autoComboName||"Nhập tên combo…"):"Nhập tên dịch vụ / tour…"} style={{...inputStyle("tourName"),marginBottom:14}}/>
               {errors.tourName&&<div style={{color:"var(--c-danger-mid)",fontSize:"var(--text-xs)",marginTop:-10,marginBottom:10}}>{errors.tourName}</div>}
 
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:16}}>
+              <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:16}}>
                 <div>
                   <label style={labelStyle}>Ngày khởi hành *</label>
                   <input type="date" value={form.departDate} onChange={e=>set("departDate",e.target.value)} style={inputStyle("departDate")}/>
@@ -517,7 +517,7 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                 </div>
               </div>
 
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
                 <div>
                   <label style={labelStyle}>Giá vốn (NCC dự kiến){isTourGhep&&!canViewGhepCost&&<span style={{color:"var(--c-danger-mid)",fontWeight:400}}> — ẩn</span>}</label>
                   {(!isTourGhep||canViewGhepCost)
@@ -538,7 +538,7 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
           {step===3&&(
             <div>
               <div style={{fontWeight:700,marginBottom:16,fontSize:"var(--text-lg)",color:"var(--c-text-2)"}}>🔍 Kiểm soát trước khi tạo đơn</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
+              <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
                 {[
                   ["Khách hàng",form.customerName],
                   ["SĐT",form.customerPhone],

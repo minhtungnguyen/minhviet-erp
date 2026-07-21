@@ -56,7 +56,7 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
         {isClone ? "Nhân bản sản phẩm — chỉ sửa phần khác biệt" : initial ? "Sửa sản phẩm" : "Thêm sản phẩm tour ghép"}
       </h3>
 
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+      <div className="resp-grid-2" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
 
         <div style={secLbl}>Thông tin cơ bản</div>
 
@@ -138,7 +138,7 @@ function TourGhepProductForm({ initial, onSave, onCancel, suppliers, isClone=fal
 
         <div style={secLbl}>Phân loại độ tuổi (tùy NCC quy định)</div>
 
-        <div style={{ gridColumn:"1/-1", display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
+        <div className="resp-grid-3" style={{ gridColumn:"1/-1", display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
           <div>
             <label style={lbl}>Nhãn "Người lớn"</label>
             <input value={form.ageLabels.adult} onChange={e=>setAge("adult",e.target.value)}
@@ -442,7 +442,7 @@ function TourGhepProductCard({ product:p, onEdit, onClone, onSelect, orderCount,
           }
         </div>
 
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
+        <div className="resp-grid-2" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
           {canSeeSecret ? (
             <div style={{ padding:"8px 10px", background:"var(--c-danger-bg)", borderRadius:8, fontSize:11 }}>
               <div style={{ color:"var(--c-text-muted)", marginBottom:2 }}>Giá mua NL{hasSchedule&&" (từ)"}</div>

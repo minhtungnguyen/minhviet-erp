@@ -113,7 +113,7 @@ export default function AfterSaleModule({ careTasks=[], onUpdateTasks, orders=[]
       {showForm && (
         <div style={{background:'var(--c-surface)',borderRadius:14,padding:20,marginBottom:16,boxShadow:'0 1px 6px rgba(0,0,0,.07)'}}>
           <h3 style={{marginTop:0,marginBottom:16}}>Task chăm sóc mới</h3>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             <div>
               <label style={{display:'block',marginBottom:4,fontSize:12,fontWeight:600,color:"var(--c-text-2)"}}>Đơn hàng</label>
               <select value={form.orderId} onChange={e=>{const o=orders.find(x=>x.id===e.target.value);setForm(f=>({...f,orderId:e.target.value,customerName:o?.customerName||""}));}} style={{width:'100%',border:'1px solid var(--c-border)',borderRadius:8,padding:'9px 12px',fontSize:13}}>

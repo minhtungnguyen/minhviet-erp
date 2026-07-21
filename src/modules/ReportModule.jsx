@@ -207,7 +207,7 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
       </div>
 
       {/* KPI CARDS */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14,marginBottom:20}}>
+      <div className="resp-grid-4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14,marginBottom:20}}>
         {[
           {label:"Doanh thu",val:fmtM(totalRevenue)+"₫",sub:period!=="all"?`${revGrowth>=0?"▲":"▼"} ${Math.abs(revGrowth).toFixed(0)}% vs kỳ trước`:closedOrders.length+" đơn đã đóng",subColor:revGrowth>=0?"#a7f3d0":"#fecaca",bg:"linear-gradient(135deg,var(--c-primary-mid),var(--c-primary-hover))",icon:"ti-trending-up"},
           {label:"Lợi nhuận",val:fmtM(profit)+"₫",sub:`Biên: ${margin.toFixed(1)}%`,subColor:"rgba(255,255,255,.7)",bg:profit>=0?"linear-gradient(135deg,var(--c-success-mid),#047857)":"linear-gradient(135deg,var(--c-danger-mid),#b91c1c)",icon:"ti-chart-pie"},
@@ -235,7 +235,7 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
 
       {/* ── TAB: TỔNG QUAN ── */}
       {tab==="overview"&&(
-        <div style={{display:"grid",gridTemplateColumns:"minmax(0,2fr) minmax(0,1fr)",gap:16,alignItems:"start"}}>
+        <div className="resp-grid-split" style={{display:"grid",gridTemplateColumns:"minmax(0,2fr) minmax(0,1fr)",gap:16,alignItems:"start"}}>
           <div style={{display:"flex",flexDirection:"column",gap:16}}>
 
             {/* Trend 12 tháng */}
@@ -339,7 +339,7 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
 
       {/* ── TAB: NHÂN VIÊN ── */}
       {tab==="sales"&&(
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
           {/* Ranking doanh thu */}
           <div style={card}>
             <div style={secTitle}><i className="ti ti-trophy" style={{color:"var(--c-warning-mid)",fontSize:18}}/>Ranking doanh thu</div>
@@ -429,7 +429,7 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
 
       {/* ── TAB: KHÁCH HÀNG ── */}
       {tab==="customer"&&(
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
           <div style={card}>
             <div style={secTitle}><i className="ti ti-crown" style={{color:"var(--c-warning-mid)",fontSize:18}}/>Top 10 khách hàng</div>
             {topCustomers.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:32}}>Không có dữ liệu</div>}
@@ -465,7 +465,7 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
 
       {/* ── TAB: THU CHI ── */}
       {tab==="cashflow"&&(
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
           <div style={card}>
             <div style={secTitle}><i className="ti ti-receipt" style={{color:"var(--c-success-mid)",fontSize:18}}/>Tổng hợp thu chi</div>
             {[

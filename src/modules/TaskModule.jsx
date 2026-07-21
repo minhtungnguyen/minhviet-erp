@@ -195,7 +195,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
               onBlur={e=>e.target.style.borderColor="var(--c-border)"}/>
           </div>
           {/* Giao cho + Ưu tiên */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             <div>
               <label style={fieldLbl}>Giao cho</label>
               <select value={form.assignee} onChange={e=>setF("assignee",e.target.value)} style={fieldInp}>
@@ -221,7 +221,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
             <input type="date" value={form.dueDate} onChange={e=>setF("dueDate",e.target.value)} style={fieldInp}/>
           </div>
           {/* Liên kết khách hàng + đơn hàng */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             <div>
               <label style={fieldLbl}>Liên kết khách hàng (tuỳ chọn)</label>
               <select value={form.customerId} onChange={e=>setF("customerId",e.target.value)} style={fieldInp}>
@@ -286,7 +286,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
           {/* Body */}
           <div style={{flex:1,overflowY:"auto",padding:"18px 22px",display:"flex",flexDirection:"column",gap:16}}>
             {/* Info grid */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
               {[
                 ["Giao cho",    t.assignee||"Chưa giao", "ti-user"],
                 ["Deadline",   t.dueDate?`${fmtDate(t.dueDate)}${dl!==null?" ("+( dl===0?"Hôm nay":dl>0?`còn ${dl} ngày`:`trễ ${Math.abs(dl)} ngày`)+")":""}` : "Không có", "ti-calendar"],
@@ -476,7 +476,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
 
   // ── KANBAN VIEW ──────────────────────────────────────────
   const KanbanView = () => (
-    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16,alignItems:"start"}}>
+    <div className="resp-grid-4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16,alignItems:"start"}}>
       {COLUMNS.map(col=>{
         const s = STATUS[col];
         const colTasks = filtered.filter(t=>t.status===col);
@@ -578,7 +578,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
       </div>
 
       {/* KPI CARDS */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14,marginBottom:20}}>
+      <div className="resp-grid-4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14,marginBottom:20}}>
         {[
           {label:"Tổng công việc",  val:tasks.length,      icon:"ti-list",        bg:"linear-gradient(135deg,var(--c-primary),var(--c-primary-mid))",    sub:`${doneThis.length} hoàn thành tháng này`},
           {label:"Đang thực hiện",  val:inProgress.length, icon:"ti-loader",      bg:"linear-gradient(135deg,var(--c-purple),#a78bfa)",    sub:`${filtered.filter(t=>t.status==="new").length} chờ bắt đầu`},

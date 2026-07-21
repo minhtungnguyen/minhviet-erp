@@ -103,7 +103,7 @@ function ServiceMetaFields({ loai, meta={}, onChange }){
   const tog=(arr=[],v)=>arr.includes(v)?arr.filter(x=>x!==v):[...arr,v];
 
   if(["Hàng không"].includes(loai)) return(
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+    <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
       <label style={{gridColumn:"1/-1"}}>
         <div style={lbl}>Hãng bay</div>
         <input value={meta.hang_bay||""} onChange={e=>upd("hang_bay",e.target.value)} style={inp}/>
@@ -127,7 +127,7 @@ function ServiceMetaFields({ loai, meta={}, onChange }){
   );
 
   if(["Khách sạn","Villa","Homestay","Bungalow","Nhà nghỉ"].includes(loai)) return(
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+    <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
       <div style={{gridColumn:"1/-1"}}>
         <div style={lbl}>Hạng sao</div>
         <StarRating value={meta.hang_sao||0} onChange={v=>upd("hang_sao",v)} size={22}/>
@@ -156,7 +156,7 @@ function ServiceMetaFields({ loai, meta={}, onChange }){
   );
 
   if(["Du thuyền ngày","Du thuyền đêm"].includes(loai)) return(
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+    <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
       <label><div style={lbl}>Tên thuyền</div><input value={meta.ten_thuyen||""} onChange={e=>upd("ten_thuyen",e.target.value)} style={inp}/></label>
       <label><div style={lbl}>Hãng thuyền</div><input value={meta.hang_thuyen||""} onChange={e=>upd("hang_thuyen",e.target.value)} style={inp}/></label>
       <label style={{gridColumn:"1/-1"}}><div style={lbl}>Hành trình</div><input value={meta.hanh_trinh||""} onChange={e=>upd("hanh_trinh",e.target.value)} style={inp}/></label>
@@ -167,7 +167,7 @@ function ServiceMetaFields({ loai, meta={}, onChange }){
   );
 
   if(["Nhà hàng"].includes(loai)) return(
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+    <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
       <label><div style={lbl}>Loại ẩm thực</div><input value={meta.loai_am_thuc||""} onChange={e=>upd("loai_am_thuc",e.target.value)} style={inp}/></label>
       <label><div style={lbl}>Sức chứa (khách)</div><input type="number" value={meta.suc_chua_khach||""} onChange={e=>upd("suc_chua_khach",+e.target.value)} style={inp}/></label>
       <label style={{gridColumn:"1/-1"}}><div style={lbl}>Menu set (phẩy phân cách)</div><input value={(meta.menu_set||[]).join(",")} onChange={e=>upd("menu_set",e.target.value.split(",").map(x=>x.trim()).filter(Boolean))} style={inp}/></label>
@@ -175,7 +175,7 @@ function ServiceMetaFields({ loai, meta={}, onChange }){
   );
 
   if(["Hướng dẫn viên"].includes(loai)) return(
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+    <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
       <label><div style={lbl}>Ngôn ngữ (phẩy phân cách)</div><input value={(meta.ngon_ngu||[]).join(",")} onChange={e=>upd("ngon_ngu",e.target.value.split(",").map(x=>x.trim()).filter(Boolean))} style={inp}/></label>
       <label><div style={lbl}>Cấp chứng chỉ</div><input value={meta.cap_chung_chi||""} onChange={e=>upd("cap_chung_chi",e.target.value)} style={inp}/></label>
       <label><div style={lbl}>Kinh nghiệm (năm)</div><input type="number" value={meta.kinh_nghiem_nam||""} onChange={e=>upd("kinh_nghiem_nam",+e.target.value)} style={inp}/></label>
@@ -209,7 +209,7 @@ function ServiceEntryForm({ entry, onSave, onCancel }){
 
   return(
     <div style={{background:"var(--c-surface-2)",borderRadius:"var(--r-lg)",padding:16,border:"1px solid var(--c-border)",marginTop:8}}>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+      <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
         <label style={{gridColumn:"1/-1"}}>
           <div style={lbl}>Loại dịch vụ *</div>
           <select value={form.loai} onChange={e=>{upd("loai",e.target.value);upd("meta",{});}} style={{...inp}}>
@@ -296,7 +296,7 @@ function ServiceEntryForm({ entry, onSave, onCancel }){
         ))}
       </div>
 
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:10}}>
+      <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:10}}>
         <label>
           <div style={lbl}>Mùa cao điểm</div>
           <input value={form.mua_cao_diem||""} onChange={e=>upd("mua_cao_diem",e.target.value)} style={inp}/>
@@ -787,7 +787,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                 {selectedOrder&&(
                   <div style={{padding:"14px 16px",borderRadius:"var(--r-md)",marginBottom:16,background:"var(--c-success-bg)",border:"1px solid var(--c-success-border)"}}>
                     <div style={{fontSize:"var(--text-xs)",fontWeight:600,textTransform:"uppercase",letterSpacing:".6px",color:"var(--c-success)",marginBottom:10}}>Thông tin đơn hàng</div>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+                    <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
                       {[
                         {label:"Khách hàng",val:selectedOrder.customerName},
                         {label:"SĐT",val:selectedOrder.customerPhone||"—"},
@@ -822,7 +822,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                 {selectedNCC&&(
                   <div style={{padding:"12px 16px",borderRadius:"var(--r-md)",marginBottom:16,background:"var(--c-surface-2)",border:"1px solid var(--c-border)"}}>
                     <div style={{fontSize:"var(--text-xs)",fontWeight:600,textTransform:"uppercase",letterSpacing:".6px",color:"var(--c-warning)",marginBottom:8}}>Thông tin NCC</div>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,fontSize:"var(--text-base)"}}>
+                    <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,fontSize:"var(--text-base)"}}>
                       <div><span style={{color:"var(--c-text-3)",fontSize:"var(--text-xs)"}}>Tên: </span><strong>{selectedNCC.name||selectedNCC.ten}</strong></div>
                       <div><span style={{color:"var(--c-text-3)",fontSize:"var(--text-xs)"}}>SĐT: </span><a href={`tel:${selectedNCC.phone||selectedNCC.sdt}`} style={{color:"var(--c-primary-mid)",textDecoration:"none",fontWeight:500}}>{selectedNCC.phone||selectedNCC.sdt||"—"}</a></div>
                       {(selectedNCC.bank||selectedNCC.taiKhoanNganHang)&&(
@@ -834,7 +834,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                 )}
 
                 {/* Bước 3: Chi tiết booking */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
+                <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
                   <div>
                     <label style={lbl}>Dịch vụ booking</label>
                     <input value={bkForm.service||""} onChange={e=>setBkForm(f=>({...f,service:e.target.value}))} placeholder="VD: Vé MB HAN-DAD, Phòng Superior 3 đêm..." style={inp}/>
@@ -1044,7 +1044,7 @@ function SupplierForm({ form, updF, updBank, editingSv, setEditingSv, expandedSv
 
       {/* Section 1 — Thông tin chung */}
       <SectionCard title="1. Thông tin chung">
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <label><div style={lbl}>Mã NCC</div><input value={form.ma_ncc||""} onChange={e=>updF("ma_ncc",e.target.value)} style={inp}/></label>
           <label style={{gridColumn:"1/-1"}}><div style={lbl}>Tên NCC *</div><input value={form.ten||""} onChange={e=>updF("ten",e.target.value)} placeholder="VD: Vietnam Airlines" style={inp}/></label>
           <label><div style={lbl}>Người liên hệ</div><input value={form.nguoi_lien_he||""} onChange={e=>updF("nguoi_lien_he",e.target.value)} style={inp}/></label>
@@ -1096,7 +1096,7 @@ function SupplierForm({ form, updF, updBank, editingSv, setEditingSv, expandedSv
 
       {/* Section 2 — Ngân hàng */}
       <SectionCard title="2. Tài khoản ngân hàng">
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <label><div style={lbl}>Ngân hàng</div><input value={form.tai_khoan_ngan_hang?.ngan_hang||""} onChange={e=>updBank("ngan_hang",e.target.value)} style={inp}/></label>
           <label><div style={lbl}>Số tài khoản</div><input value={form.tai_khoan_ngan_hang?.so_tk||""} onChange={e=>updBank("so_tk",e.target.value)} style={inp}/></label>
           <label style={{gridColumn:"1/-1"}}><div style={lbl}>Chủ tài khoản</div><input value={form.tai_khoan_ngan_hang?.chu_tk||""} onChange={e=>updBank("chu_tk",e.target.value)} style={inp}/></label>

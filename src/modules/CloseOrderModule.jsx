@@ -31,7 +31,7 @@ export default function CloseOrderModule({orders,vouchers,expenses,refunds,onClo
         <div style={{background:"var(--c-surface)",borderRadius:16,padding:24,boxShadow:"0 2px 12px rgba(0,0,0,.08)"}}>
           <h3 style={{margin:"0 0 4px"}}>{selected.id}</h3>
           <div style={{fontSize:13,color:"var(--c-text-3)",marginBottom:20}}>{selected.customerName} · {selected.tourName||selected.service}</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
+          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
             {[["Giá bán",fmtMoney(selected.totalPrice),"var(--c-text-2)"],["Đã thu",fmtMoney(fin.totalPaid),"var(--c-success-mid)"],["Còn nợ",fmtMoney(fin.debt),fin.debt>0?"var(--c-danger-mid)":"var(--c-success-mid)"],["Chi phí NCC",fmtMoney(fin.totalChi),"var(--c-warning-mid)"],["Lợi nhuận ước tính",fmtMoney(fin.profit),fin.profit>=0?"var(--c-purple)":"var(--c-danger-mid)"]].map(([k,v,c])=>(
               <div key={k} style={{background:"var(--c-surface-2)",borderRadius:10,padding:14}}>
                 <div style={{fontSize:12,color:"var(--c-text-3)"}}>{k}</div>
