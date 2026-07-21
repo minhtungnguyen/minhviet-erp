@@ -7,6 +7,7 @@ import { ORDER_STATUS } from "../constants/statuses.js";
 import { NEXT_STATUSES } from "../utils/orderStatus.js";
 import { calcOrderFinancials } from "../utils/orderFinancials.js";
 import { calcPaymentStages } from "../utils/paymentStages.js";
+import { getOrderPlaybookStep, isPlaybookMyTurn } from "../utils/orderPlaybook.js";
 import {
   buildContractAirline, buildContractTour, buildCostStatement,
   buildPaymentRequest, buildLiquidation,
@@ -22,6 +23,8 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
 
   const {totalPaid,totalChi,debt,profit,profitPct,nccDebt}=calcOrderFinancials(order,vouchers,bookings);
   const {depositAmt}=calcPaymentStages(order,vouchers);
+  const playbookStep=getOrderPlaybookStep(order,{totalPaid,debt,nccDebt,depositAmt,bookings,vouchers,expenses});
+  const playbookMyTurn=isPlaybookMyTurn(playbookStep,currentRole);
   const profitStatus=getProfitStatus(profitPct,order?.service);
   const passengerCount=(order?.passengers||[]).length;
   const orderCustomerIds=new Set(customers.filter(c=>c.id===order?.customerId||(c.phone&&c.phone===order?.customerPhone)||c.name?.trim().toLowerCase()===order?.customerName?.trim().toLowerCase()).map(c=>c.id));
@@ -102,6 +105,21 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
             <div style={{display:"flex",gap:10}}>
               <button onClick={()=>setShowDeleteConfirm(false)} style={{flex:1,padding:"11px",border:"1.5px solid var(--c-border)",borderRadius:10,background:"var(--c-surface)",fontWeight:600,fontSize:14,cursor:"pointer",color:"var(--c-text-3)"}}>Hủy</button>
               <button onClick={()=>{setShowDeleteConfirm(false);onDelete(order);}} style={{flex:1,padding:"11px",border:"none",borderRadius:10,background:"var(--c-danger-mid)",color:"var(--c-text-inverse)",fontWeight:700,fontSize:14,cursor:"pointer"}}>Xóa vĩnh viễn</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Playbook — gợi ý bước tiếp theo + ai phụ trách */}
+      {playbookStep&&(
+        <div style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",borderRadius:12,marginBottom:16,background:playbookMyTurn?"var(--c-primary-light)":"var(--c-surface-2)",border:playbookMyTurn?"1.5px solid var(--c-primary-mid)":"1px solid var(--c-border)"}}>
+          <div style={{fontSize:20,flexShrink:0}}>{playbookMyTurn?"👉":"⏳"}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:13,fontWeight:800,color:playbookMyTurn?"var(--c-primary-mid)":"var(--c-text-2)"}}>
+              {playbookMyTurn?"Đến lượt bạn — ":"Bước tiếp theo — "}{playbookStep.title}
+            </div>
+            <div style={{fontSize:12,color:"var(--c-text-3)",marginTop:2}}>
+              {playbookStep.detail}{!playbookMyTurn&&" · Phụ trách: "+playbookStep.roleLabel}
             </div>
           </div>
         </div>
