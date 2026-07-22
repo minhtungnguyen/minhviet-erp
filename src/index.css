@@ -110,6 +110,11 @@ table { border-collapse: collapse; }
   /* Layout 2 cột lệch (nội dung chính + panel phụ) → xếp chồng */
   .resp-grid-split { grid-template-columns: 1fr !important; }
 
+  /* Dòng "tiêu đề module + nút hành động" (justifyContent:space-between,
+     không wrap) — cho phép xuống dòng thay vì đẩy nút tràn ra ngoài màn hình
+     hẹp. Lặp lại ở rất nhiều module (Công việc, CRM, SaleDashboard...). */
+  .resp-header-row { flex-wrap: wrap !important; row-gap: 10px !important; }
+
   /* Tables: horizontal scroll. !important vì 1 số bảng tự đặt overflow:hidden
      inline (để bo góc trên desktop) đè mất rule này nếu không ép. */
   table {
@@ -119,8 +124,13 @@ table { border-collapse: collapse; }
     white-space: nowrap;
   }
 
-  /* Ẩn text dài trên mobile topbar */
+  /* Ẩn text dài trên mobile topbar — header dùng flex nowrap, không co được,
+     nếu không ẩn bớt sẽ rộng hơn viewport và kéo TOÀN BỘ layout bên dưới
+     tràn theo (grid/flex lan truyền kích thước nội dung tối thiểu lên cha). */
   .topbar-search-label { display: none; }
+  .topbar-kbd { display: none; }
+  .topbar-logout-label { display: none; }
+  .topbar-profile-name { max-width: 64px !important; }
 }
 
 /* Tablet */

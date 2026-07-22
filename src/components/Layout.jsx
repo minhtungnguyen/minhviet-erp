@@ -231,7 +231,7 @@ export function TopBar({ currentUser, currentRole, unreadCount, onNotif, onSearc
       <ChromeBtn onClick={onSearch}>
         <i className="ti ti-search" style={{ fontSize: 14 }} />
         <span className="topbar-search-label">Tìm kiếm</span>
-        <kbd style={{ fontSize: 10, background: "rgba(255,255,255,.1)", border: "1px solid rgba(255,255,255,.15)", borderRadius: 4, padding: "1px 5px", color: "rgba(255,255,255,.45)" }}>
+        <kbd className="topbar-kbd" style={{ fontSize: 10, background: "rgba(255,255,255,.1)", border: "1px solid rgba(255,255,255,.15)", borderRadius: 4, padding: "1px 5px", color: "rgba(255,255,255,.45)" }}>
           Ctrl K
         </kbd>
       </ChromeBtn>
@@ -274,7 +274,7 @@ export function TopBar({ currentUser, currentRole, unreadCount, onNotif, onSearc
             : (currentUser?.avatar || currentUser?.name?.[0] || "?")}
         </div>
         <div style={{ lineHeight: 1.25 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#fff", maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <div className="topbar-profile-name" style={{ fontSize: 12, fontWeight: 700, color: "#fff", maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {currentUser?.name?.split("–").pop().trim() ?? ""}
           </div>
           <div style={{ fontSize: 10, color: role.color, fontWeight: 600 }}>{role.label}</div>
@@ -289,7 +289,7 @@ export function TopBar({ currentUser, currentRole, unreadCount, onNotif, onSearc
         }}
       >
         <i className="ti ti-logout" style={{ fontSize: 14 }} />
-        <span>Đăng xuất</span>
+        <span className="topbar-logout-label">Đăng xuất</span>
       </ChromeBtn>
     </header>
   );
@@ -309,7 +309,7 @@ export function AppShell({ sidebar, topbar, children, sidebarOpen, onCloseSideba
       )}
       {sidebar}
       <div className="main-content" style={{
-        flex: 1, marginLeft: "var(--sidebar-w)",
+        flex: 1, marginLeft: "var(--sidebar-w)", minWidth: 0,
         display: "flex", flexDirection: "column", minHeight: "100vh",
         background: "var(--c-bg-alt)",
       }}>

@@ -765,7 +765,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     <div style={{padding:24,background:"var(--c-bg)",minHeight:"100vh"}}>
 
       {/* HEADER */}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+      <div className="resp-header-row" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
         <div>
           <h2 style={{margin:0,fontSize:"var(--text-2xl)",fontWeight:800,color:"var(--c-text)",display:"flex",alignItems:"center",gap:10}}>
             <div style={{width:40,height:40,borderRadius:"var(--r-md)",background:"linear-gradient(135deg,var(--c-primary),var(--c-primary-mid))",display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -801,10 +801,10 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
       {/* TOOLBAR */}
       <div style={{display:"flex",gap:10,marginBottom:16,alignItems:"center",flexWrap:"wrap"}}>
         {/* View tabs */}
-        <div style={{display:"flex",gap:2,background:"var(--c-surface)",borderRadius:"var(--r-md)",padding:4,boxShadow:"var(--sh-sm)"}}>
+        <div style={{display:"flex",gap:2,background:"var(--c-surface)",borderRadius:"var(--r-md)",padding:4,boxShadow:"var(--sh-sm)",overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
           {[{k:"today",icon:"ti-calendar-event",label:"Hôm nay"},{k:"kanban",icon:"ti-layout-kanban",label:"Kanban"},{k:"list",icon:"ti-list",label:"Danh sách"},{k:"mine",icon:"ti-user",label:"Của tôi"}].map(v=>(
             <button key={v.k} onClick={()=>setView(v.k)}
-              style={{padding:"8px 16px",border:"none",borderRadius:"var(--r-sm)",background:view===v.k?"linear-gradient(135deg,var(--c-primary),var(--c-primary-mid))":"transparent",color:view===v.k?"#fff":"var(--c-text-3)",fontWeight:700,fontSize:"var(--text-sm)",cursor:"pointer",display:"flex",alignItems:"center",gap:6,transition:"all .15s"}}>
+              style={{padding:"8px 16px",border:"none",borderRadius:"var(--r-sm)",background:view===v.k?"linear-gradient(135deg,var(--c-primary),var(--c-primary-mid))":"transparent",color:view===v.k?"#fff":"var(--c-text-3)",fontWeight:700,fontSize:"var(--text-sm)",cursor:"pointer",display:"flex",alignItems:"center",gap:6,transition:"all .15s",whiteSpace:"nowrap",flexShrink:0}}>
               <i className={`ti ${v.icon}`} style={{fontSize:16}}/>{v.label}
             </button>
           ))}

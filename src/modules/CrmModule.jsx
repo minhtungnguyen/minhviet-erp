@@ -333,13 +333,13 @@ export default function CrmModule({orders,pushNotif,customers=SEED_CUSTOMERS,onS
       </div>
 
       {/* Tab bar */}
-      <div style={{display:"flex",gap:2,borderBottom:"2px solid var(--c-border)",marginBottom:20}}>
+      <div style={{display:"flex",gap:2,borderBottom:"2px solid var(--c-border)",marginBottom:20,overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
         {MAIN_TABS.map(t=>(
           <button key={t.k} onClick={()=>setMainTab(t.k)} style={{
             padding:"9px 18px",border:"none",cursor:"pointer",fontSize:"var(--text-base)",fontWeight:mainTab===t.k?700:500,
             background:"transparent",color:mainTab===t.k?"var(--c-primary-mid)":"var(--c-text-3)",
             borderBottom:mainTab===t.k?"2.5px solid var(--c-primary-mid)":"2.5px solid transparent",
-            marginBottom:-2,transition:"color .15s"
+            marginBottom:-2,transition:"color .15s",whiteSpace:"nowrap",flexShrink:0
           }}>
             {t.label}
             {t.count!=null&&t.count>0&&<span style={{marginLeft:6,background:mainTab===t.k?"var(--c-primary-pale)":"var(--c-border)",color:mainTab===t.k?"var(--c-primary-hover)":"var(--c-text-2)",borderRadius:"var(--r-pill)",padding:"1px 7px",fontSize:"var(--text-xs)",fontWeight:700}}>{t.count}</span>}
