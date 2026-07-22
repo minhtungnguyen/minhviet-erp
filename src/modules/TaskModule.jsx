@@ -85,15 +85,20 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     resetForm();
   };
 
-  // Tạo hàng loạt N task 1-người, cùng đơn hàng, gắn chung groupId
+  // Tạo hàng loạt N task 1-người, cùng đơn hàng, gắn chung groupId.
+  // form.title/form.description dùng chung với chế độ 1-người, đóng vai trò
+  // "tiêu đề chung"/"ghi chú chung" của cả lô — ghép vào đầu tên mỗi task con
+  // để xem task riêng lẻ ở đâu cũng biết ngay thuộc lô/đơn nào.
   const saveMultiTasks = () => {
+    if (!form.title.trim()) return;
     const validRows = multiRows.filter(r => r.title.trim() && r.assignee);
     if (!validRows.length) return;
     const groupId = "GRP-" + Date.now();
     const now = new Date().toISOString();
     const newTasks = validRows.map((r,i) => ({ ...BLANK,
       id: "T-" + Date.now() + "-" + i,
-      title: r.title.trim(), assignee: r.assignee, dueDate: r.dueDate,
+      title: form.title.trim() + " - " + r.title.trim(), description: form.description,
+      assignee: r.assignee, dueDate: r.dueDate,
       orderId: form.orderId, customerId: form.customerId, groupId,
       createdBy: currentUser?.name, createdAt: now, updatedAt: now,
     }));
@@ -221,6 +226,19 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
           )}
           {formMode==="multi" && !form.id ? (
             <>
+              {/* Tiêu đề chung + ghi chú chung cho cả lô — ghép vào đầu tên mỗi task con */}
+              <div>
+                <label style={fieldLbl}>Tiêu đề chung *</label>
+                <input value={form.title} onChange={e=>setF("title",e.target.value)}
+                  placeholder="VD: Chuẩn bị dịch vụ - Tour Nhật Bản 6N5Đ" autoFocus
+                  style={{...fieldInp,padding:"12px 14px",fontSize:"var(--text-lg)",fontWeight:500}}/>
+              </div>
+              <div>
+                <label style={fieldLbl}>Ghi chú chung (tuỳ chọn)</label>
+                <textarea value={form.description} onChange={e=>setF("description",e.target.value)}
+                  placeholder="Thông tin áp dụng chung cho cả lô việc này..." rows={2}
+                  style={{...fieldInp,padding:"12px 14px",resize:"vertical",fontFamily:"inherit"}}/>
+              </div>
               {/* Liên kết khách hàng + đơn hàng — chọn trước để biết đơn có mấy dịch vụ cần chia */}
               <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                 <div>
@@ -341,7 +359,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
         <div style={{padding:"16px 24px",borderTop:"1px solid var(--c-border)",display:"flex",gap:10,justifyContent:"flex-end",background:"var(--c-surface-2)"}}>
           <Btn variant="secondary" onClick={()=>{setShowForm(false);resetForm();}}>Hủy</Btn>
           {formMode==="multi" && !form.id ? (
-            <Btn disabled={!multiRows.some(r=>r.title.trim()&&r.assignee)} onClick={saveMultiTasks}>
+            <Btn disabled={!form.title.trim()||!multiRows.some(r=>r.title.trim()&&r.assignee)} onClick={saveMultiTasks}>
               Tạo {multiRows.filter(r=>r.title.trim()&&r.assignee).length||""} công việc
             </Btn>
           ) : (
