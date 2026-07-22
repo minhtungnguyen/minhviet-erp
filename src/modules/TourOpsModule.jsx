@@ -10,7 +10,10 @@ export default function TourOpsModule({ orders=[], pushNotif, currentUser, curre
   const [selected,setSelected]=React.useState(null);
   const [assignHdv,setAssignHdv]=React.useState("");
 
-  const activeOrders = orders.filter(o=>['confirmed','in_progress'].includes(o.status));
+  // Chỉ tour trọn gói tự thiết kế mới cần điều hành (tự cử HDV, tự vận hành đoàn) —
+  // Tour ghép mua lại từ đối tác khác vận hành, Combo/vé/khách sạn đơn lẻ không có
+  // đoàn+HDV riêng, nên không thuộc phạm vi module này dù đơn đã xác nhận.
+  const activeOrders = orders.filter(o=>['confirmed','in_progress'].includes(o.status) && o.service==="tour_package");
   const fmtDate=(d)=>d?new Date(d).toLocaleDateString("vi-VN"):"—";
   const daysTo=daysToDepart;
 
