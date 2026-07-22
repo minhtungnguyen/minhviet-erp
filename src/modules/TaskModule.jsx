@@ -2,6 +2,9 @@ import React from "react";
 import { Btn, SearchInp } from "../components/ui.jsx";
 import { canManageTask, isTaskAssignee, isSelfAssignedTask } from "../utils/taskPermissions.js";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
+import { SERVICE_TYPES } from "../constants/serviceTypes.js";
+
+const SERVICE_TYPE_MAP = Object.fromEntries(SERVICE_TYPES.map(s=>[s.id,s]));
 
 export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], customers=[], currentUser, currentRole, userAccounts=[], pushNotif, saveNotification, prefill=null, onPrefillConsumed, openTaskId=null, onOpenTaskConsumed }) {
   const [view, setView] = React.useState("today"); // today | kanban | list | mine
@@ -30,13 +33,15 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
 
   // Tạo task mới
   const BLANK = { id:"", title:"", description:"", priority:"normal", status:"new",
-    assignee:"", dueDate:"", orderId:"", customerId:"", tags:[], comments:[] };
+    assignee:"", dueDate:"", orderId:"", customerId:"", serviceType:"", tags:[], comments:[] };
   const [form, setForm] = React.useState({...BLANK});
   const setF = (k,v) => setForm(f=>({...f,[k]:v}));
   // Tạo nhiều công việc cùng lúc cho 1 đơn hàng (đơn Combo/Tour trọn gói nhiều dịch vụ
   // thường cần chia cho 2-3 người) — mỗi dòng vẫn là 1 task 1-người bình thường,
   // chỉ khác là được tạo hàng loạt và gắn chung groupId để nhận biết cùng 1 lô giao việc.
-  const BLANK_ROW = { title:"", assignee:"", dueDate:"" };
+  // serviceType riêng từng dòng (không dùng chung cho cả lô) vì mỗi dòng đại diện
+  // 1 dịch vụ khác nhau trong cùng đơn (vd dòng "Đặt vé máy bay" ≠ "Đặt khách sạn").
+  const BLANK_ROW = { title:"", serviceType:"", assignee:"", dueDate:"" };
   const [formMode, setFormMode] = React.useState("single"); // single | multi
   const [multiRows, setMultiRows] = React.useState([{...BLANK_ROW}]);
   const resetForm = () => { setForm({...BLANK}); setFormMode("single"); setMultiRows([{...BLANK_ROW}]); };
@@ -98,7 +103,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     const newTasks = validRows.map((r,i) => ({ ...BLANK,
       id: "T-" + Date.now() + "-" + i,
       title: form.title.trim() + " - " + r.title.trim(), description: form.description,
-      assignee: r.assignee, dueDate: r.dueDate,
+      assignee: r.assignee, dueDate: r.dueDate, serviceType: r.serviceType,
       orderId: form.orderId, customerId: form.customerId, groupId,
       createdBy: currentUser?.name, createdAt: now, updatedAt: now,
     }));
@@ -265,14 +270,18 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
                 <label style={fieldLbl}>Danh sách việc cần giao</label>
                 <div style={{display:"flex",flexDirection:"column",gap:8}}>
                   {multiRows.map((r,idx)=>(
-                    <div key={idx} style={{display:"flex",gap:8,alignItems:"center"}}>
+                    <div key={idx} style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
                       <input value={r.title} onChange={e=>updateMultiRow(idx,"title",e.target.value)}
-                        placeholder="VD: Đặt vé máy bay..." style={{...fieldInp,flex:2}}/>
-                      <select value={r.assignee} onChange={e=>updateMultiRow(idx,"assignee",e.target.value)} style={{...fieldInp,flex:1}}>
+                        placeholder="VD: Đặt vé máy bay..." style={{...fieldInp,flex:"2 1 160px"}}/>
+                      <select value={r.serviceType} onChange={e=>updateMultiRow(idx,"serviceType",e.target.value)} style={{...fieldInp,flex:"1 1 120px"}}>
+                        <option value="">-- Loại dịch vụ --</option>
+                        {SERVICE_TYPES.map(s=><option key={s.id} value={s.id}>{s.icon} {s.label}</option>)}
+                      </select>
+                      <select value={r.assignee} onChange={e=>updateMultiRow(idx,"assignee",e.target.value)} style={{...fieldInp,flex:"1 1 120px"}}>
                         <option value="">-- Người phụ trách --</option>
                         {staffList.map(n=><option key={n} value={n}>{n}</option>)}
                       </select>
-                      <input type="date" value={r.dueDate} onChange={e=>updateMultiRow(idx,"dueDate",e.target.value)} style={{...fieldInp,flex:1}}/>
+                      <input type="date" value={r.dueDate} onChange={e=>updateMultiRow(idx,"dueDate",e.target.value)} style={{...fieldInp,flex:"1 1 120px"}}/>
                       <button onClick={()=>removeMultiRow(idx)} disabled={multiRows.length===1}
                         style={{background:"var(--c-danger-bg)",border:"none",borderRadius:"var(--r-md)",width:40,height:44,color:"var(--c-danger-mid)",cursor:multiRows.length===1?"default":"pointer",opacity:multiRows.length===1?.4:1,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
                         <i className="ti ti-trash" style={{fontSize:15}}/>
@@ -326,10 +335,19 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
               </div>
             </div>
           </div>
-          {/* Deadline */}
-          <div>
-            <label style={fieldLbl}>Deadline</label>
-            <input type="date" value={form.dueDate} onChange={e=>setF("dueDate",e.target.value)} style={fieldInp}/>
+          {/* Loại dịch vụ (tag hiển thị, chưa link đơn hàng thật) + Deadline */}
+          <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div>
+              <label style={fieldLbl}>Loại dịch vụ (tuỳ chọn)</label>
+              <select value={form.serviceType} onChange={e=>setF("serviceType",e.target.value)} style={fieldInp}>
+                <option value="">-- Không chọn --</option>
+                {SERVICE_TYPES.map(s=><option key={s.id} value={s.id}>{s.icon} {s.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={fieldLbl}>Deadline</label>
+              <input type="date" value={form.dueDate} onChange={e=>setF("dueDate",e.target.value)} style={fieldInp}/>
+            </div>
           </div>
           {/* Liên kết khách hàng + đơn hàng */}
           <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
@@ -395,6 +413,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
                   <i className={`ti ${p.icon}`} style={{fontSize:12}}/>{p.label}
                 </span>
                 <span style={{background:s.bg,color:s.color,borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"3px 10px",border:`1px solid ${s.border}`}}>{s.label}</span>
+                {t.serviceType&&SERVICE_TYPE_MAP[t.serviceType]&&<span style={{background:"var(--c-surface-2)",color:"var(--c-text-2)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:600,padding:"3px 10px"}}>{SERVICE_TYPE_MAP[t.serviceType].icon} {SERVICE_TYPE_MAP[t.serviceType].label}</span>}
                 {isOverdue&&<span style={{background:"var(--c-danger-bg)",color:"var(--c-danger-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"3px 10px"}}>⚠ Trễ {Math.abs(dl)} ngày</span>}
               </div>
               <div style={{fontSize:"var(--text-xl)",fontWeight:800,color:"var(--c-text)",lineHeight:1.3}}>{t.title}</div>
@@ -566,6 +585,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
         {/* Tags row */}
         <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
           <span style={{background:p.bg,color:p.color,borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"2px 8px"}}>{p.label}</span>
+          {t.serviceType&&SERVICE_TYPE_MAP[t.serviceType]&&<span style={{background:"var(--c-surface-2)",color:"var(--c-text-2)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:600,padding:"2px 8px"}}>{SERVICE_TYPE_MAP[t.serviceType].icon} {SERVICE_TYPE_MAP[t.serviceType].label}</span>}
           {t.orderId&&<span style={{background:"var(--c-primary-light)",color:"var(--c-primary-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:600,padding:"2px 8px",display:"flex",alignItems:"center",gap:3}}><i className="ti ti-file-text" style={{fontSize:11}}/>{t.orderId}</span>}
           {linkedCustomer&&<span style={{background:"var(--c-purple-light,#f3f0ff)",color:"var(--c-purple,#7c3aed)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:600,padding:"2px 8px",display:"flex",alignItems:"center",gap:3}}><i className="ti ti-user" style={{fontSize:11}}/>{linkedCustomer.name}</span>}
           {isOverdue&&<span style={{background:"var(--c-danger-bg)",color:"var(--c-danger-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"2px 8px"}}>Trễ {Math.abs(dl)}n</span>}
@@ -644,7 +664,10 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
                 onMouseEnter={e=>e.currentTarget.style.background="var(--c-primary-light)"}
                 onMouseLeave={e=>e.currentTarget.style.background=idx%2===0?"var(--c-surface)":"var(--c-bg)"}>
                 <td style={{padding:"12px 16px"}}>
-                  <div style={{fontWeight:600,fontSize:"var(--text-md)",color:"var(--c-text)"}}>{t.title}</div>
+                  <div style={{display:"flex",alignItems:"center",gap:6}}>
+                    {t.serviceType&&SERVICE_TYPE_MAP[t.serviceType]&&<span title={SERVICE_TYPE_MAP[t.serviceType].label}>{SERVICE_TYPE_MAP[t.serviceType].icon}</span>}
+                    <div style={{fontWeight:600,fontSize:"var(--text-md)",color:"var(--c-text)"}}>{t.title}</div>
+                  </div>
                   {t.comments?.length>0&&<div style={{fontSize:"var(--text-xs)",color:"var(--c-text-muted)",marginTop:2}}><i className="ti ti-message-circle" style={{fontSize:11}}/> {t.comments.length}</div>}
                 </td>
                 <td style={{padding:"12px 16px"}}>
@@ -718,6 +741,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
                     onMouseEnter={e=>e.currentTarget.style.background="var(--c-primary-light)"}
                     onMouseLeave={e=>e.currentTarget.style.background="var(--c-surface-2)"}>
                     <span style={{width:8,height:8,borderRadius:"50%",background:s.color,flexShrink:0}}/>
+                    {t.serviceType&&SERVICE_TYPE_MAP[t.serviceType]&&<span title={SERVICE_TYPE_MAP[t.serviceType].label}>{SERVICE_TYPE_MAP[t.serviceType].icon}</span>}
                     <span style={{flex:1,fontSize:"var(--text-base)",color:"var(--c-text)",fontWeight:500}}>{t.title}</span>
                     {t.orderId&&<span style={{fontSize:"var(--text-xs)",color:"var(--c-primary-mid)",fontWeight:600}}>{t.orderId}</span>}
                     {t.dueDate&&<span style={{fontSize:"var(--text-xs)",color:isOverdue?"var(--c-danger-mid)":"var(--c-text-muted)",fontWeight:isOverdue?700:400,flexShrink:0}}>{isOverdue?`Trễ ${Math.abs(dl)}n`:fmtDate(t.dueDate)}</span>}
