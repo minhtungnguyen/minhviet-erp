@@ -137,14 +137,7 @@ export function Sidebar({
     >
       {/* Logo */}
       <div style={{ padding: "20px 18px 16px", borderBottom: "1px solid var(--c-sidebar-border)", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: "var(--r-md)",
-          background: "linear-gradient(135deg, var(--c-primary-mid), var(--c-accent))",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 18, flexShrink: 0, boxShadow: "0 4px 14px rgba(37,99,235,.35)",
-        }}>
-          ✈️
-        </div>
+        <img src="/icon-192.png" alt="Minh Việt" style={{ width: 36, height: 36, objectFit: "contain", flexShrink: 0 }} />
         <div>
           <div style={{ fontSize: 14, fontWeight: 800, color: "#fff", letterSpacing: ".4px" }}>MINH VIỆT</div>
           <div style={{ fontSize: 10, color: "var(--c-sidebar-text)", fontWeight: 500, marginTop: 1, letterSpacing: ".3px" }}>Travel ERP</div>
