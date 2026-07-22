@@ -4,7 +4,7 @@ import { canManageTask, isTaskAssignee, isSelfAssignedTask } from "../utils/task
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 
 export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], customers=[], currentUser, currentRole, userAccounts=[], pushNotif, saveNotification, prefill=null, onPrefillConsumed, openTaskId=null, onOpenTaskConsumed }) {
-  const [view, setView] = React.useState("kanban"); // kanban | list | mine
+  const [view, setView] = React.useState("today"); // today | kanban | list | mine
   const [showForm, setShowForm] = React.useState(false);
   const [selectedTask, setSelectedTask] = React.useState(null);
   const [filterAssignee, setFilterAssignee] = React.useState("all");
@@ -676,6 +676,67 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     </div>
   );
 
+  // ── VIEW "HÔM NAY" — gộp theo nhân viên, để chủ liếc nhanh ai đang làm gì,
+  // ai đang rảnh cần giao thêm. Chỉ hiện việc còn active (bỏ qua Hoàn thành).
+  // Khối trễ hạn lên đầu, khối rảnh (0 việc) xuống cuối.
+  const staffBlocks = staffList.map(name => {
+    const myActive = filtered.filter(t => t.assignee===name && t.status!=="done");
+    return { name,
+      tasks: myActive,
+      overdueN: myActive.filter(t => t.dueDate && t.dueDate < today).length,
+      newN: myActive.filter(t => t.status==="new").length,
+      inProgressN: myActive.filter(t => t.status==="in_progress").length,
+      reviewN: myActive.filter(t => t.status==="pending_review").length,
+    };
+  }).sort((a,b) => (b.overdueN-a.overdueN) || (b.tasks.length-a.tasks.length));
+
+  const TodayView = () => (
+    <div style={{display:"flex",flexDirection:"column",gap:12}}>
+      {staffBlocks.map(b=>(
+        <div key={b.name} style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:"16px 18px",boxShadow:"var(--sh-sm)",borderLeft:`4px solid ${b.overdueN>0?"var(--c-danger-mid)":"transparent"}`}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+            <div style={{width:32,height:32,borderRadius:"50%",background:"var(--c-primary-mid)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"var(--text-sm)",fontWeight:800,color:"#fff",flexShrink:0}}>{b.name[0]}</div>
+            <span style={{fontWeight:800,fontSize:"var(--text-lg)",color:"var(--c-text)"}}>{b.name}</span>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginLeft:"auto"}}>
+              {b.overdueN>0&&<span style={{background:"var(--c-danger-bg)",color:"var(--c-danger-mid)",borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"3px 10px"}}>{b.overdueN} trễ hạn</span>}
+              {b.inProgressN>0&&<span style={{background:STATUS.in_progress.bg,color:STATUS.in_progress.color,borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"3px 10px"}}>{b.inProgressN} đang làm</span>}
+              {b.reviewN>0&&<span style={{background:STATUS.pending_review.bg,color:STATUS.pending_review.color,borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"3px 10px"}}>{b.reviewN} chờ duyệt</span>}
+              {b.newN>0&&<span style={{background:STATUS.new.bg,color:STATUS.new.color,borderRadius:"var(--r-pill)",fontSize:"var(--text-xs)",fontWeight:700,padding:"3px 10px"}}>{b.newN} mới</span>}
+            </div>
+          </div>
+          {b.tasks.length===0 ? (
+            <div style={{color:"var(--c-text-muted)",fontSize:"var(--text-base)",padding:"8px 0 0 42px"}}>Chưa có việc nào</div>
+          ) : (
+            <div style={{display:"flex",flexDirection:"column",gap:6,paddingLeft:42,marginTop:10}}>
+              {b.tasks.map(t=>{
+                const dl=daysLeft(t.dueDate);
+                const isOverdue=dl!==null&&dl<0;
+                const s=STATUS[t.status]||STATUS.new;
+                return(
+                  <div key={t.id} onClick={()=>setSelectedTask(t)}
+                    style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",padding:"7px 10px",borderRadius:"var(--r-md)",background:"var(--c-surface-2)"}}
+                    onMouseEnter={e=>e.currentTarget.style.background="var(--c-primary-light)"}
+                    onMouseLeave={e=>e.currentTarget.style.background="var(--c-surface-2)"}>
+                    <span style={{width:8,height:8,borderRadius:"50%",background:s.color,flexShrink:0}}/>
+                    <span style={{flex:1,fontSize:"var(--text-base)",color:"var(--c-text)",fontWeight:500}}>{t.title}</span>
+                    {t.orderId&&<span style={{fontSize:"var(--text-xs)",color:"var(--c-primary-mid)",fontWeight:600}}>{t.orderId}</span>}
+                    {t.dueDate&&<span style={{fontSize:"var(--text-xs)",color:isOverdue?"var(--c-danger-mid)":"var(--c-text-muted)",fontWeight:isOverdue?700:400,flexShrink:0}}>{isOverdue?`Trễ ${Math.abs(dl)}n`:fmtDate(t.dueDate)}</span>}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ))}
+      {staffBlocks.length===0&&(
+        <div style={{textAlign:"center",padding:"48px",color:"var(--c-text-muted)",fontSize:"var(--text-md)",background:"var(--c-surface)",borderRadius:"var(--r-lg)"}}>
+          <i className="ti ti-users" style={{fontSize:36,display:"block",marginBottom:8}}/>
+          Chưa có nhân viên nào
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div style={{padding:24,background:"var(--c-bg)",minHeight:"100vh"}}>
 
@@ -717,7 +778,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
       <div style={{display:"flex",gap:10,marginBottom:16,alignItems:"center",flexWrap:"wrap"}}>
         {/* View tabs */}
         <div style={{display:"flex",gap:2,background:"var(--c-surface)",borderRadius:"var(--r-md)",padding:4,boxShadow:"var(--sh-sm)"}}>
-          {[{k:"kanban",icon:"ti-layout-kanban",label:"Kanban"},{k:"list",icon:"ti-list",label:"Danh sách"},{k:"mine",icon:"ti-user",label:"Của tôi"}].map(v=>(
+          {[{k:"today",icon:"ti-calendar-event",label:"Hôm nay"},{k:"kanban",icon:"ti-layout-kanban",label:"Kanban"},{k:"list",icon:"ti-list",label:"Danh sách"},{k:"mine",icon:"ti-user",label:"Của tôi"}].map(v=>(
             <button key={v.k} onClick={()=>setView(v.k)}
               style={{padding:"8px 16px",border:"none",borderRadius:"var(--r-sm)",background:view===v.k?"linear-gradient(135deg,var(--c-primary),var(--c-primary-mid))":"transparent",color:view===v.k?"#fff":"var(--c-text-3)",fontWeight:700,fontSize:"var(--text-sm)",cursor:"pointer",display:"flex",alignItems:"center",gap:6,transition:"all .15s"}}>
               <i className={`ti ${v.icon}`} style={{fontSize:16}}/>{v.label}
@@ -740,6 +801,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
       </div>
 
       {/* MAIN VIEW */}
+      {(view==="today") && TodayView()}
       {(view==="kanban") && KanbanView()}
       {(view==="list" || view==="mine") && ListView()}
 
