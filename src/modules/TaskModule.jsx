@@ -33,11 +33,22 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     assignee:"", dueDate:"", orderId:"", customerId:"", tags:[], comments:[] };
   const [form, setForm] = React.useState({...BLANK});
   const setF = (k,v) => setForm(f=>({...f,[k]:v}));
+  // Tạo nhiều công việc cùng lúc cho 1 đơn hàng (đơn Combo/Tour trọn gói nhiều dịch vụ
+  // thường cần chia cho 2-3 người) — mỗi dòng vẫn là 1 task 1-người bình thường,
+  // chỉ khác là được tạo hàng loạt và gắn chung groupId để nhận biết cùng 1 lô giao việc.
+  const BLANK_ROW = { title:"", assignee:"", dueDate:"" };
+  const [formMode, setFormMode] = React.useState("single"); // single | multi
+  const [multiRows, setMultiRows] = React.useState([{...BLANK_ROW}]);
+  const resetForm = () => { setForm({...BLANK}); setFormMode("single"); setMultiRows([{...BLANK_ROW}]); };
+  const addMultiRow = () => setMultiRows(rows => [...rows, {...BLANK_ROW}]);
+  const updateMultiRow = (idx,k,v) => setMultiRows(rows => rows.map((r,i)=>i===idx?{...r,[k]:v}:r));
+  const removeMultiRow = (idx) => setMultiRows(rows => rows.length>1 ? rows.filter((_,i)=>i!==idx) : rows);
 
   // Tạo nhanh việc mới cho cùng khách hàng/đơn hàng đang xem (từ CRM hoặc chi tiết đơn)
   React.useEffect(() => {
     if (!prefill) return;
     setForm({...BLANK, customerId: prefill.customerId||"", orderId: prefill.orderId||""});
+    setFormMode("single");
     setShowForm(true);
     onPrefillConsumed && onPrefillConsumed();
   }, [prefill]);
@@ -71,7 +82,27 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
     pushNotif?.(isNew ? `Đã tạo việc: ${t.title}` : `Đã cập nhật: ${t.title}`, "success");
     setShowForm(false);
     setSelectedTask(null);
-    setForm({...BLANK});
+    resetForm();
+  };
+
+  // Tạo hàng loạt N task 1-người, cùng đơn hàng, gắn chung groupId
+  const saveMultiTasks = () => {
+    const validRows = multiRows.filter(r => r.title.trim() && r.assignee);
+    if (!validRows.length) return;
+    const groupId = "GRP-" + Date.now();
+    const now = new Date().toISOString();
+    const newTasks = validRows.map((r,i) => ({ ...BLANK,
+      id: "T-" + Date.now() + "-" + i,
+      title: r.title.trim(), assignee: r.assignee, dueDate: r.dueDate,
+      orderId: form.orderId, customerId: form.customerId, groupId,
+      createdBy: currentUser?.name, createdAt: now, updatedAt: now,
+    }));
+    onUpdateTasks(prev => [...newTasks, ...prev]);
+    newTasks.forEach(t => notifyUser(t.assignee, `📋 Bạn được giao việc mới: ${t.title}`, "info", t.id));
+    pushNotif?.(`Đã tạo ${newTasks.length} công việc`, "success");
+    setShowForm(false);
+    setSelectedTask(null);
+    resetForm();
   };
 
   // Quyền bàn giao: đúng người tạo (giao việc) hoặc Ban Giám đốc mới được duyệt/trả lại/giao lại.
@@ -166,7 +197,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
 
   // ── FORM TẠO/SỬA TASK ──────────────────────────────────
   const TaskForm = () => (
-    <div className="modal-overlay" {...overlayCloseHandlers(()=>{setShowForm(false);setForm({...BLANK});})}>
+    <div className="modal-overlay" {...overlayCloseHandlers(()=>{setShowForm(false);resetForm();})}>
       <div style={{background:"var(--c-surface)",borderRadius:"var(--r-2xl)",width:580,maxWidth:"95vw",maxHeight:"90vh",overflow:"hidden",display:"flex",flexDirection:"column",boxShadow:"var(--sh-modal)"}}>
         {/* Header */}
         <div style={{padding:"20px 24px",background:"linear-gradient(135deg,var(--c-primary),var(--c-primary-mid))",color:"#fff",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -174,9 +205,70 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
             <div style={{fontSize:"var(--text-xl)",fontWeight:800}}>{form.id?"Sửa công việc":"Tạo công việc mới"}</div>
             <div style={{fontSize:"var(--text-base)",color:"rgba(255,255,255,.7)",marginTop:2}}>Giao việc, đặt deadline, theo dõi tiến độ</div>
           </div>
-          <button onClick={()=>{setShowForm(false);setForm({...BLANK});}} style={{background:"rgba(255,255,255,.2)",border:"none",borderRadius:"var(--r-md)",width:36,height:36,color:"#fff",fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
+          <button onClick={()=>{setShowForm(false);resetForm();}} style={{background:"rgba(255,255,255,.2)",border:"none",borderRadius:"var(--r-md)",width:36,height:36,color:"#fff",fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
         </div>
         <div style={{padding:"20px 24px",overflowY:"auto",flex:1,display:"flex",flexDirection:"column",gap:16}}>
+          {/* Chọn kiểu giao việc — chỉ khi tạo mới, không hiện lúc sửa */}
+          {!form.id && (
+            <div style={{display:"flex",gap:8}}>
+              {[["single","👤 1 người"],["multi","👥 Nhiều người"]].map(([k,label])=>(
+                <button key={k} onClick={()=>setFormMode(k)}
+                  style={{flex:1,padding:"10px 8px",borderRadius:"var(--r-md)",border:`2px solid ${formMode===k?"var(--c-primary-mid)":"var(--c-border)"}`,background:formMode===k?"var(--c-primary-light)":"var(--c-surface)",color:formMode===k?"var(--c-primary-mid)":"var(--c-text-muted)",fontWeight:700,fontSize:"var(--text-sm)",cursor:"pointer",transition:"all .15s"}}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+          {formMode==="multi" && !form.id ? (
+            <>
+              {/* Liên kết khách hàng + đơn hàng — chọn trước để biết đơn có mấy dịch vụ cần chia */}
+              <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                <div>
+                  <label style={fieldLbl}>Khách hàng (tuỳ chọn)</label>
+                  <select value={form.customerId} onChange={e=>setF("customerId",e.target.value)} style={fieldInp}>
+                    <option value="">-- Không liên kết --</option>
+                    {customers.map(c=><option key={c.id} value={c.id}>{c.name} · {c.phone}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={fieldLbl}>Đơn hàng</label>
+                  <select value={form.orderId} onChange={e=>{
+                    const oid=e.target.value;
+                    const ord=orders.find(o=>o.id===oid);
+                    setForm(f=>({...f,orderId:oid,customerId:ord?.customerId||f.customerId}));
+                  }} style={fieldInp}>
+                    <option value="">-- Không liên kết --</option>
+                    {orders.slice(0,50).map(o=><option key={o.id} value={o.id}>{o.id} · {o.customerName} · {o.tourName||o.service}</option>)}
+                  </select>
+                </div>
+              </div>
+              {/* Danh sách việc cần giao — mỗi dòng sẽ tạo thành 1 công việc riêng, 1 người phụ trách */}
+              <div>
+                <label style={fieldLbl}>Danh sách việc cần giao</label>
+                <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                  {multiRows.map((r,idx)=>(
+                    <div key={idx} style={{display:"flex",gap:8,alignItems:"center"}}>
+                      <input value={r.title} onChange={e=>updateMultiRow(idx,"title",e.target.value)}
+                        placeholder="VD: Đặt vé máy bay..." style={{...fieldInp,flex:2}}/>
+                      <select value={r.assignee} onChange={e=>updateMultiRow(idx,"assignee",e.target.value)} style={{...fieldInp,flex:1}}>
+                        <option value="">-- Người phụ trách --</option>
+                        {staffList.map(n=><option key={n} value={n}>{n}</option>)}
+                      </select>
+                      <input type="date" value={r.dueDate} onChange={e=>updateMultiRow(idx,"dueDate",e.target.value)} style={{...fieldInp,flex:1}}/>
+                      <button onClick={()=>removeMultiRow(idx)} disabled={multiRows.length===1}
+                        style={{background:"var(--c-danger-bg)",border:"none",borderRadius:"var(--r-md)",width:40,height:44,color:"var(--c-danger-mid)",cursor:multiRows.length===1?"default":"pointer",opacity:multiRows.length===1?.4:1,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                        <i className="ti ti-trash" style={{fontSize:15}}/>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={addMultiRow} style={{marginTop:10,background:"none",border:"none",color:"var(--c-primary-mid)",cursor:"pointer",fontSize:"var(--text-sm)",fontWeight:700,display:"flex",alignItems:"center",gap:4,padding:0}}>
+                  <i className="ti ti-plus" style={{fontSize:14}}/>Thêm dòng
+                </button>
+              </div>
+            </>
+          ) : (
+          <>
           {/* Tiêu đề */}
           <div>
             <label style={fieldLbl}>Tiêu đề công việc *</label>
@@ -242,11 +334,19 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
               </select>
             </div>
           </div>
+          </>
+          )}
         </div>
         {/* Footer */}
         <div style={{padding:"16px 24px",borderTop:"1px solid var(--c-border)",display:"flex",gap:10,justifyContent:"flex-end",background:"var(--c-surface-2)"}}>
-          <Btn variant="secondary" onClick={()=>{setShowForm(false);setForm({...BLANK});}}>Hủy</Btn>
-          <Btn disabled={!form.title.trim()} onClick={saveTask}>{form.id?"Lưu thay đổi":"Tạo công việc"}</Btn>
+          <Btn variant="secondary" onClick={()=>{setShowForm(false);resetForm();}}>Hủy</Btn>
+          {formMode==="multi" && !form.id ? (
+            <Btn disabled={!multiRows.some(r=>r.title.trim()&&r.assignee)} onClick={saveMultiTasks}>
+              Tạo {multiRows.filter(r=>r.title.trim()&&r.assignee).length||""} công việc
+            </Btn>
+          ) : (
+            <Btn disabled={!form.title.trim()} onClick={saveTask}>{form.id?"Lưu thay đổi":"Tạo công việc"}</Btn>
+          )}
         </div>
       </div>
     </div>
@@ -414,7 +514,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
           {/* Footer actions — chỉ người tạo hoặc Ban Giám đốc mới sửa/xóa được */}
           {canManage(t) && (
             <div style={{padding:"14px 22px",borderTop:"1px solid var(--c-border)",display:"flex",gap:8,background:"var(--c-surface-2)"}}>
-              <Btn variant="secondary" style={{flex:1,justifyContent:"center",background:"var(--c-primary-light)",color:"var(--c-primary-mid)"}} onClick={()=>{setForm({...t});setShowForm(true);setSelectedTask(null);}}>
+              <Btn variant="secondary" style={{flex:1,justifyContent:"center",background:"var(--c-primary-light)",color:"var(--c-primary-mid)"}} onClick={()=>{setForm({...t});setFormMode("single");setShowForm(true);setSelectedTask(null);}}>
                 <i className="ti ti-edit" style={{fontSize:16}}/>Sửa
               </Btn>
               <Btn variant="danger" onClick={()=>deleteTask(t.id)}>
@@ -572,7 +672,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
           </h2>
           <div style={{fontSize:"var(--text-md)",color:"var(--c-text-3)",marginTop:4,marginLeft:50}}>{tasks.length} công việc · {inProgress.length} đang thực hiện</div>
         </div>
-        <Btn size="lg" onClick={()=>{setForm({...BLANK});setShowForm(true);}}>
+        <Btn size="lg" onClick={()=>{resetForm();setShowForm(true);}}>
           <i className="ti ti-plus" style={{fontSize:18}}/>
           Tạo công việc
         </Btn>

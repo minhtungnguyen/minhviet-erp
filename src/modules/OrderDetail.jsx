@@ -452,6 +452,12 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
               onMouseLeave={e=>{e.currentTarget.style.background="transparent";}}>
               <span style={{fontWeight:600,fontSize:13}}>{t.title}</span>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
+                {t.groupId && (()=>{
+                  const groupTasks = myTasks.filter(x=>x.groupId===t.groupId);
+                  if(groupTasks.length<2) return null;
+                  const doneN = groupTasks.filter(x=>x.status==="done").length;
+                  return <span title="Cùng 1 lô giao việc cho đơn này" style={{fontSize:11,fontWeight:700,padding:"2px 8px",borderRadius:20,background:"var(--c-purple-light,#f3f0ff)",color:"var(--c-purple,#7c3aed)"}}>🔗 {doneN}/{groupTasks.length}</span>;
+                })()}
                 <span style={{fontSize:12,color:"var(--c-text-3)"}}>{t.assignee||"Chưa giao"}</span>
                 <span style={{fontSize:11,fontWeight:700,padding:"2px 8px",borderRadius:20,background:t.status==="done"?"var(--c-success-bg)":t.status==="in_progress"?"var(--c-primary-light)":"var(--c-surface-2)",color:t.status==="done"?"var(--c-success-mid)":t.status==="in_progress"?"var(--c-primary-mid)":"var(--c-text-3)"}}>
                   {({new:"Mới",in_progress:"Đang làm",pending_review:"Chờ duyệt hoàn thành",done:"Hoàn thành"})[t.status]||t.status}
