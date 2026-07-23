@@ -246,6 +246,8 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                             set("customerType","corporate");
                             set("companyName",c.companyName||"");
                             set("taxCode",c.taxCode||"");
+                            set("companyAddress",c.companyAddress||"");
+                            set("customerProvince",c.province||"");
                           }
                           setCustSearch(customerDisplayName(c));
                           setShowCustDrop(false);

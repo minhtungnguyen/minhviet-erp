@@ -360,7 +360,7 @@ function customerToDb(c) {
     first_order_date:c.firstOrderDate||null, notes:c.notes||null,
     source:c.source||null, events:c.events||[], interactions:c.interactions||[],
     representative_title:c.representativeTitle||null, company_address:c.companyAddress||null,
-    company_bank_account:c.companyBankAccount||null,
+    company_bank_account:c.companyBankAccount||null, tax_code:c.taxCode||null,
     contact_name:c.contactName||null, contact_phone:c.contactPhone||null }
 }
 function dbToCustomer(r) {
@@ -369,7 +369,7 @@ function dbToCustomer(r) {
     email:r.email, dob:r.dob, province:r.province, cccd:r.cccd,
     tags:r.tags||[], assignedSale:r.assigned_sale,
     representativeTitle:r.representative_title, companyAddress:r.company_address,
-    companyBankAccount:r.company_bank_account,
+    companyBankAccount:r.company_bank_account, taxCode:r.tax_code,
     contactName:r.contact_name, contactPhone:r.contact_phone,
     totalOrders:r.total_orders||0, totalRevenue:Number(r.total_revenue)||0,
     totalProfit:Number(r.total_profit)||0, lastOrderDate:r.last_order_date,
