@@ -65,6 +65,14 @@ export async function upsertOrder(o) {
   if (error) throw error
 }
 export async function deleteOrder(id) {
+  // Xóa các bản ghi phụ thuộc trước — vouchers/expenses/refunds/ncc_bookings/tour_ops
+  // khóa ngoại tới orders.id KHÔNG có ON DELETE CASCADE, nên xóa order trước sẽ bị
+  // Postgres từ chối (foreign key violation) nếu đơn còn phiếu thu/chi hoặc dữ liệu vận hành.
+  const childTables = ['vouchers', 'expenses', 'refunds', 'ncc_bookings', 'tour_ops']
+  for (const table of childTables) {
+    const { error } = await supabase.from(table).delete().eq('order_id', id)
+    if (error) throw error
+  }
   const { error } = await supabase.from('orders').delete().eq('id', id)
   if (error) throw error
 }

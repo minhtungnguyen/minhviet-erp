@@ -1115,12 +1115,17 @@ export default function App(){
     if(exp.status==="pending_pay") pushToast("Phiếu chi "+exp.id+" đã duyệt — KT Quỹ cần chuyển tiền","info","cashier");
     if(exp.status==="pending_gd") pushToast("Phiếu chi "+exp.id+" cần GĐ phê duyệt","warn","manager");
   };
-  const handleDeleteOrder = (o) => {
+  const handleDeleteOrder = async (o) => {
     if(!isBanGiamDoc(currentRole)){ pushToast("Chỉ Ban Giám đốc mới được xóa đơn","error"); return; }
-    removeOrder(o.id).catch(e=>{ console.error("[deleteOrder]",e.message); pushToast("Xóa lỗi: "+e.message,"error"); });
-    pushToast("Đã xóa đơn "+o.id,"success");
-    setSelected(null);
-    setView("orders");
+    try{
+      await removeOrder(o.id);
+      pushToast("Đã xóa đơn "+o.id,"success");
+      setSelected(null);
+      setView("orders");
+    }catch(e){
+      console.error("[deleteOrder]",e.message);
+      pushToast("Xóa lỗi: "+e.message,"error");
+    }
   };
   const handleCloseOrder = (o) => {
     saveOrder(o).catch(e=>{ console.error("[closeOrder]",e.message); pushToast("Cảnh báo lưu: "+e.message,"warning"); });

@@ -101,7 +101,7 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
               Giá trị: <strong style={{color:"var(--c-danger-mid)"}}>{fmtMoney(order?.totalPrice)}</strong>
             </div>
             <div style={{fontSize:13,color:"var(--c-danger-mid)",background:"var(--c-danger-bg)",borderRadius:8,padding:"10px 14px",marginBottom:20,fontWeight:600}}>
-              ⚠️ Hành động này KHÔNG thể hoàn tác. Đơn sẽ bị xóa vĩnh viễn khỏi hệ thống.
+              ⚠️ Hành động này KHÔNG thể hoàn tác. Đơn sẽ bị xóa vĩnh viễn khỏi hệ thống, cùng toàn bộ phiếu thu/chi, công nợ NCC và dữ liệu vận hành tour gắn với đơn này.
             </div>
             <div style={{display:"flex",gap:10}}>
               <button onClick={()=>setShowDeleteConfirm(false)} style={{flex:1,padding:"11px",border:"1.5px solid var(--c-border)",borderRadius:10,background:"var(--c-surface)",fontWeight:600,fontSize:14,cursor:"pointer",color:"var(--c-text-3)"}}>Hủy</button>
