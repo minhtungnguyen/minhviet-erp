@@ -17,7 +17,7 @@ import {
 } from "../print/index.jsx";
 import { openPrintWindow, buildConfirmation } from "../print/legacy.jsx";
 
-export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBack,onUpdate,onDelete,onAddVoucher,onApprove,onReject,pushNotif,currentRole,bankAccounts=[],currentUser,hdvList=[],credits=[],onUpdateCredits,bookings=[],customers=[],suppliers=[],onAddSupplier,tasks=[],onViewTasks,onQuickAddTask}){
+export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBack,onUpdate,onDelete,onAddVoucher,onApprove,onReject,pushNotif,currentRole,bankAccounts=[],currentUser,hdvList=[],credits=[],onUpdateCredits,bookings=[],customers=[],suppliers=[],onAddSupplier,tasks=[],onViewTasks,onQuickAddTask,onGotoNccBooking,onGotoTourOps}){
   const [showDeleteConfirm,setShowDeleteConfirm]=React.useState(false);
   const [activeTab,setActiveTab]=React.useState("info");
   const [showStatusMenu,setShowStatusMenu]=React.useState(false);
@@ -153,12 +153,12 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
               return(<button onClick={()=>c?pushNotif?.("Xem hồ sơ KH trong CRM","info"):pushNotif?.("Khách hàng chưa có hồ sơ trong CRM","warn")} style={qlBtn("var(--c-primary-light)","var(--c-primary-mid)")}><i className="ti ti-user" style={{fontSize:14}}/>Hồ sơ KH</button>);
             })()}
             {orderBookings.length===0
-              ?<button onClick={()=>pushNotif?.("Chưa có booking NCC — vào module NCC để tạo","warn")} style={qlBtn("var(--c-danger-bg)","var(--c-danger)")}><i className="ti ti-building-off" style={{fontSize:14}}/>Chưa booking NCC</button>
-              :<span style={{...qlBtn("var(--c-success-bg)","var(--c-success)"),cursor:"default"}}><i className="ti ti-building-check" style={{fontSize:14}}/>{orderBookings.length} NCC đã booking</span>
+              ?<button onClick={()=>onGotoNccBooking?onGotoNccBooking(order.id):pushNotif?.("Chưa có booking NCC — vào module NCC để tạo","warn")} style={qlBtn("var(--c-danger-bg)","var(--c-danger)")}><i className="ti ti-building-off" style={{fontSize:14}}/>Chưa booking NCC — tạo ngay →</button>
+              :<button onClick={()=>onGotoNccBooking?onGotoNccBooking(order.id):pushNotif?.("Xem booking NCC trong module Nhà cung cấp","info")} style={qlBtn("var(--c-success-bg)","var(--c-success)")}><i className="ti ti-building-check" style={{fontSize:14}}/>{orderBookings.length} NCC đã booking</button>
             }
             {order?.hdvId
-              ?<span style={{...qlBtn("var(--c-purple-bg)","var(--c-purple)"),cursor:"default"}}><i className="ti ti-user-check" style={{fontSize:14}}/>HDV: {order.hdvName||(hdvList||[]).find(h=>h.id===order.hdvId)?.name||order.hdvId}</span>
-              :<span style={{...qlBtn("var(--c-surface-2)","var(--c-text-muted)"),cursor:"default"}}><i className="ti ti-user-off" style={{fontSize:14}}/>Chưa có HDV</span>
+              ?<button onClick={()=>onGotoTourOps?.(order.id)} style={qlBtn("var(--c-purple-bg)","var(--c-purple)")}><i className="ti ti-user-check" style={{fontSize:14}}/>HDV: {order.hdvName||(hdvList||[]).find(h=>h.id===order.hdvId)?.name||order.hdvId}</button>
+              :<button onClick={()=>onGotoTourOps?onGotoTourOps(order.id):pushNotif?.("Chưa có HDV — vào module Vận hành tour để phân công","warn")} style={qlBtn("var(--c-surface-2)","var(--c-text-muted)")}><i className="ti ti-user-off" style={{fontSize:14}}/>Chưa có HDV — phân công ngay →</button>
             }
             {pendingExp.length>0&&<span style={{...qlBtn("var(--c-warning-bg)","var(--c-warning)"),cursor:"default"}}><i className="ti ti-clock" style={{fontSize:14}}/>{pendingExp.length} phiếu chi chờ duyệt</span>}
             {pendingExp.length===0&&orderExpenses.length>0&&<span style={{...qlBtn("var(--c-success-bg)","var(--c-success)"),cursor:"default"}}><i className="ti ti-check" style={{fontSize:14}}/>{orderExpenses.length} phiếu chi đã xử lý</span>}

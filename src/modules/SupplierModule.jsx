@@ -412,7 +412,7 @@ function QuickFindModal({ suppliers, onClose, onSelect }){
 // SUPPLIER MODULE (replaces NCCDashboard)
 // ══════════════════════════════════════════════════════════════
 
-export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSupplier, onDeleteSupplier, orders=[], vouchers=[], expenses=[], pushNotif, currentRole, currentUser, bookings:bookingsProp=[], onUpdateBookings, onCreateExpense }){
+export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSupplier, onDeleteSupplier, orders=[], vouchers=[], expenses=[], pushNotif, currentRole, currentUser, bookings:bookingsProp=[], onUpdateBookings, onCreateExpense, prefillOrderId, onPrefillConsumed }){
   // --- State ---
   const [tab,setTab]=React.useState("suppliers");
   const [search,setSearch]=React.useState("");
@@ -434,6 +434,18 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
   const [bkForm,setBkForm]=React.useState({orderId:"",supplierId:"",nccId:"",nccName:"",service:"",amount:"",pnrCode:"",timeLimit:"",note:""});
 
   const syncBookings=(list)=>{onUpdateBookings&&onUpdateBookings(list);};
+
+  // Mở sẵn form tạo booking cho đúng đơn khi được điều hướng tới từ
+  // "Chưa booking NCC" ở Chi tiết đơn hàng
+  React.useEffect(()=>{
+    if(!prefillOrderId) return;
+    const o=orders.find(x=>x.id===prefillOrderId);
+    setTab("bookings");
+    setShowBkForm(true);
+    setBkForm(f=>({...f, orderId:prefillOrderId, service:o?.tourName||o?.serviceName||o?.service||"", amount:o?.costPrice||o?.pricing?.costPrice||""}));
+    if(!o) pushNotif&&pushNotif("Không tìm thấy đơn "+prefillOrderId,"error");
+    onPrefillConsumed&&onPrefillConsumed();
+  },[prefillOrderId]);
 
   React.useEffect(()=>{
     const handler=(e)=>{if((e.ctrlKey||e.metaKey)&&e.key==="k"){e.preventDefault();setShowQuickFind(v=>!v);}if(e.key==="Escape")setShowQuickFind(false);};
@@ -576,7 +588,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
           🔍 Tìm nhanh <kbd style={{background:"var(--c-border)",borderRadius:"var(--r-xs)",padding:"1px 5px",fontSize:"var(--text-xs)"}}>Ctrl+K</kbd>
         </Btn>
         <Btn onClick={()=>{setShowAdd(true);setSelected(null);setEditMode(false);setForm(blankNcc());setEditingSv(null);}}>+ Thêm NCC</Btn>
-        <Btn style={{background:"var(--c-purple)"}} onClick={()=>setShowBkForm(true)}>+ Tạo booking</Btn>
+        <Btn style={{background:"var(--c-purple)"}} onClick={()=>{setTab("bookings");setShowBkForm(true);}}>+ Tạo booking</Btn>
       </div>
 
       {/* Tabs */}

@@ -6,9 +6,18 @@ import { openPrintWindow } from "../print/legacy.jsx";
 import { DEFAULT_CHECKLIST } from "../constants/checklist.js";
 import { getOpsStage, daysToDepart } from "../utils/tourOpsStage.js";
 
-export default function TourOpsModule({ orders=[], pushNotif, currentUser, currentRole, hdvList=[], onUpdateOrder }) {
+export default function TourOpsModule({ orders=[], pushNotif, currentUser, currentRole, hdvList=[], onUpdateOrder, prefillOrderId, onPrefillConsumed }) {
   const [selected,setSelected]=React.useState(null);
   const [assignHdv,setAssignHdv]=React.useState("");
+
+  // Mở sẵn đúng đơn khi được điều hướng tới từ "Chưa có HDV" ở Chi tiết đơn hàng
+  React.useEffect(()=>{
+    if(!prefillOrderId) return;
+    const o=orders.find(x=>x.id===prefillOrderId);
+    if(o) setSelected(o);
+    else pushNotif&&pushNotif("Không tìm thấy đơn "+prefillOrderId,"error");
+    onPrefillConsumed&&onPrefillConsumed();
+  },[prefillOrderId]);
 
   // Chỉ tour trọn gói tự thiết kế mới cần điều hành (tự cử HDV, tự vận hành đoàn) —
   // Tour ghép mua lại từ đối tác khác vận hành, Combo/vé/khách sạn đơn lẻ không có
