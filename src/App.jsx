@@ -753,7 +753,7 @@ export default function App(){
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   // ── Persistence cho collections phụ (quotes/bookings/credits/tasks/careTasks/personalTargets) ──
-  const collSetters = { quotes:setQuotes, credits:setCredits, tasks:setTasks, careTasks:setCareTasks, personalTargets:setPersonalTargets, tourGhepProducts:setTourGhepProducts, hdvList:setHdvList };
+  const collSetters = { quotes:setQuotes, credits:setCredits, tasks:setTasks, careTasks:setCareTasks, personalTargets:setPersonalTargets, tourGhepProducts:setTourGhepProducts, hdvList:setHdvList, tourPrograms:setTourPrograms };
   // Load tất cả collection từ Supabase khi mount
   React.useEffect(()=>{
     if(!import.meta.env.VITE_SUPABASE_URL) return;
@@ -804,6 +804,7 @@ export default function App(){
   },[]);
   // Persisted setters dùng thay cho raw setters khi truyền xuống module
   const setQuotesP        = React.useMemo(()=>makePersistedSetter("quotes",setQuotes),[makePersistedSetter]);
+  const setTourProgramsP  = React.useMemo(()=>makePersistedSetter("tourPrograms",setTourPrograms),[makePersistedSetter]);
   const setCreditsP       = React.useMemo(()=>makePersistedSetter("credits",setCredits),[makePersistedSetter]);
   const setTasksP         = React.useMemo(()=>makePersistedSetter("tasks",setTasks),[makePersistedSetter]);
   const setCareTasksP     = React.useMemo(()=>makePersistedSetter("careTasks",setCareTasks),[makePersistedSetter]);
@@ -1107,7 +1108,7 @@ export default function App(){
 
       {view==="crm"&&<CrmModule orders={orders} pushNotif={pushToast} customers={customers} onSaveCustomer={saveCustomer} onDeleteCustomer={removeCustomer} currentUser={currentUser} currentRole={currentRole} msgHistory={msgHistory} onLogMessage={rec=>setMsgHistory(h=>[rec,...h].slice(0,500))} onCreateOrderFromLead={()=>setView("create")} onViewOrder={(o)=>{setSelected(o);setView("detail");}} tasks={tasks} onViewTasks={()=>setView("tasks")} onQuickAddTask={(prefill)=>{setTaskPrefill(prefill);setView("tasks");}}/>}
       {view==="tourops"&&<TourOpsModule orders={orders} pushNotif={pushToast} currentUser={currentUser} currentRole={currentRole} hdvList={hdvList} onUpdateOrder={handleUpdateOrder} prefillOrderId={tourOpsPrefillOrderId} onPrefillConsumed={()=>setTourOpsPrefillOrderId(null)}/>}
-      {view==="tourprogram"&&<TourProgramModule tourPrograms={tourPrograms} onUpdate={setTourPrograms} currentRole={currentRole} pushNotif={pushToast} currentUser={currentUser}/>}
+      {view==="tourprogram"&&<TourProgramModule tourPrograms={tourPrograms} onUpdate={setTourProgramsP} currentRole={currentRole} pushNotif={pushToast} currentUser={currentUser}/>}
       {view==="hdv"&&<HDVModule hdvList={hdvList} onUpdate={setHdvListP} orders={orders} pushNotif={pushToast} currentRole={currentRole}/>}
       {view==="quotes"&&<QuoteModule quotes={quotes} onUpdate={setQuotesP} orders={orders} tourPrograms={tourPrograms} currentUser={currentUser} pushNotif={pushToast} onCreateOrder={(data)=>{handleCreateOrder(data);}}/>}
       {(view==="accounting"||view==="finance")&&<AccountingDashboard orders={orders} vouchers={vouchers} expenses={expenses} refunds={refunds} bankAccounts={bankAccounts} onUpdateBankAccounts={setBankAccounts} outputInvoices={outputInvoices} onUpdateOutputInvoices={setOutputInvoices} inputInvoices={inputInvoices} onUpdateInputInvoices={setInputInvoices} suppliers={suppliers} pushNotif={pushToast}/>}

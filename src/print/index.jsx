@@ -303,6 +303,95 @@ export function buildConfirmation(order, vouchers, tourOp) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// BÁO GIÁ — gửi khách trước khi chốt đơn (QuoteModule). Khác buildConfirmation:
+// đây là báo giá (chưa ràng buộc), có hiệu lực đến ngày, không phải xác nhận dịch vụ.
+export function buildQuote(q) {
+  const pax = q.pax || {};
+  const pricing = q.pricing || {};
+  const totalPrice = pricing.totalPrice || q.totalPrice || 0;
+  const depositPct = q.depositPct || 30;
+  const depositAmount = q.depositAmount || Math.round(totalPrice * depositPct / 100);
+  const itinerary = q.itinerary || [];
+  const included = q.included || (q.includes ? q.includes.split("\n").filter(Boolean) : []);
+  const excluded = q.excluded || (q.excludes ? q.excludes.split("\n").filter(Boolean) : []);
+
+  return `<div class="page">
+    <div class="header">
+      ${coHeader()}
+      <div class="doc-title">
+        <div class="doc-type">BÁO GIÁ DỊCH VỤ DU LỊCH</div>
+        <div class="doc-id">Số: ${q.id}</div>
+        <div class="doc-date">Ngày lập: ${new Date(q.createdAt || Date.now()).toLocaleDateString("vi-VN")}</div>
+        ${q.validUntil ? `<div class="doc-date" style="color:#dc2626;font-weight:600">Hiệu lực đến: ${new Date(q.validUntil).toLocaleDateString("vi-VN")}</div>` : ""}
+      </div>
+    </div>
+
+    <div class="voucher-hero">
+      <div style="font-size:13px;color:rgba(255,255,255,.75);margin-bottom:4px">Kính gửi Quý khách</div>
+      <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.2">${q.tourName || "—"}</div>
+      <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">
+        ${q.departDate ? `<span class="voucher-tag">📅 ${new Date(q.departDate).toLocaleDateString("vi-VN")}${q.returnDate ? " → " + new Date(q.returnDate).toLocaleDateString("vi-VN") : ""}</span>` : ""}
+        <span class="voucher-tag">👥 ${pax.adults || 0} NL${pax.children ? " · " + pax.children + " TE" : ""}${pax.babies ? " · " + pax.babies + " Em bé" : ""}</span>
+      </div>
+    </div>
+
+    <div class="section-title">Thông tin khách hàng</div>
+    <div class="info-grid">
+      <div class="info-row"><span class="info-label">Họ và tên</span><span class="info-value highlight">${q.customerName || "—"}</span></div>
+      <div class="info-row"><span class="info-label">Số điện thoại</span><span class="info-value">${q.customerPhone || "—"}</span></div>
+      <div class="info-row"><span class="info-label">Email</span><span class="info-value">${q.customerEmail || "—"}</span></div>
+    </div>
+
+    ${itinerary.length > 0 ? `
+    <div class="section-title">Lịch trình dự kiến</div>
+    ${itinerary.map(d => `
+      <div class="itinerary-day">
+        <div class="day-badge">N${d.day}</div>
+        <div class="day-content">
+          <div class="day-title">${d.title || ""}${d.meals ? " · " + d.meals : ""}</div>
+          <div class="day-acts">${(d.activities || []).map(a => `${a.time ? `<strong>${a.time}</strong> ` : ""}${a.desc || ""}`).join("<br>")}</div>
+        </div>
+      </div>`).join("")}` : ""}
+
+    <div class="section-title">Bảng giá dự kiến</div>
+    <table class="items">
+      <thead><tr><th>Đối tượng</th><th class="text-right">Số lượng</th><th class="text-right">Đơn giá</th><th class="text-right">Thành tiền</th></tr></thead>
+      <tbody>
+        ${pax.adults ? `<tr><td>Người lớn</td><td class="text-right">${pax.adults}</td><td class="text-right">${(pricing.adultPrice || 0).toLocaleString("vi-VN")} đ</td><td class="text-right">${((pax.adults || 0) * (pricing.adultPrice || 0)).toLocaleString("vi-VN")} đ</td></tr>` : ""}
+        ${pax.children ? `<tr><td>Trẻ em</td><td class="text-right">${pax.children}</td><td class="text-right">${(pricing.childPrice || 0).toLocaleString("vi-VN")} đ</td><td class="text-right">${((pax.children || 0) * (pricing.childPrice || 0)).toLocaleString("vi-VN")} đ</td></tr>` : ""}
+        ${pax.babies ? `<tr><td>Em bé</td><td class="text-right">${pax.babies}</td><td class="text-right">${(pricing.babyPrice || 0).toLocaleString("vi-VN")} đ</td><td class="text-right">${((pax.babies || 0) * (pricing.babyPrice || 0)).toLocaleString("vi-VN")} đ</td></tr>` : ""}
+        <tr class="total-row"><td colspan="3">Tổng báo giá</td><td class="text-right">${totalPrice.toLocaleString("vi-VN")} đ</td></tr>
+      </tbody>
+    </table>
+    <div class="notice-box">💳 Đặt cọc <strong>${depositPct}%</strong> để giữ chỗ: <strong>${depositAmount.toLocaleString("vi-VN")} đ</strong>${q.paymentDeadline ? ` · Thanh toán phần còn lại trước ngày <strong>${new Date(q.paymentDeadline).toLocaleDateString("vi-VN")}</strong>` : ""}</div>
+
+    ${(included.length > 0 || excluded.length > 0) ? `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0">
+      ${included.length > 0 ? `<div>
+        <div style="font-size:11px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;border-left:3px solid #059669;padding-left:8px">✓ Bao gồm</div>
+        <div style="font-size:12px;line-height:1.85;color:#334155">${included.map(x => `• ${x}`).join("<br>")}</div>
+      </div>` : "<div></div>"}
+      ${excluded.length > 0 ? `<div>
+        <div style="font-size:11px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;border-left:3px solid #dc2626;padding-left:8px">✗ Không bao gồm</div>
+        <div style="font-size:12px;line-height:1.85;color:#334155">${excluded.map(x => `• ${x}`).join("<br>")}</div>
+      </div>` : "<div></div>"}
+    </div>` : ""}
+
+    ${q.cancelPolicy ? `<div class="notice-box">⚠️ <strong>Chính sách hủy/đổi:</strong> ${q.cancelPolicy}</div>` : ""}
+    ${q.note ? `<div class="notice-box">📝 <strong>Ghi chú:</strong> ${q.note}</div>` : ""}
+
+    <div class="sign-row" style="grid-template-columns:1fr 1fr;margin-top:20px">
+      <div class="sign-box"><div class="sign-title">Khách hàng</div><div class="sign-name">${q.customerName || "—"}</div></div>
+      <div class="sign-box"><div class="sign-title">Đại diện Minh Việt Travel</div><div class="sign-name">Sale: ${q.sale || "—"}</div></div>
+    </div>
+    <div class="footer">
+      <span>Báo giá số ${q.id} · MST: ${COMPANY.taxCode} · ${COMPANY.website}</span>
+      <span>In lúc: ${new Date().toLocaleString("vi-VN")}</span>
+    </div>
+  </div>`;
+}
+
+// ─────────────────────────────────────────────────────────────
 // VOUCHER KHUYẾN MÃI — tặng khách hàng
 // ─────────────────────────────────────────────────────────────
 export function buildVoucherGift({ code, discount, fixedAmount, services, expiry, customerName, issuedBy, note }) {

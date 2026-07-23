@@ -1,8 +1,11 @@
 import React from "react";
 import { NumberInput, DateInput } from "../components/ui.jsx";
+import { ItineraryEditor, BulletListEditor } from "../components/ItineraryEditor.jsx";
 import { calcQuoteTotal, calcDepositAmount, daysLeft } from "../utils/quoteCalc.js";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 import { SERVICE_TYPES } from "../constants/serviceTypes.js";
+import { openPrintWindow } from "../print/legacy.jsx";
+import { buildQuote, downloadAsWord } from "../print/index.jsx";
 
 export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, currentUser, pushNotif, onCreateOrder }){
   const BLANK_FORM={
@@ -11,7 +14,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
     departDate:"",returnDate:"",
     pax:{adults:1,children:0,babies:0},
     pricing:{adultPrice:0,childPrice:0,babyPrice:0,totalPrice:0},
-    includes:"",excludes:"",cancelPolicy:"",
+    itinerary:[],included:[],excluded:[],cancelPolicy:"",
     validUntil:"",depositPct:30,paymentDeadline:"",
     note:"",sale:currentUser?.name||""
   };
@@ -105,7 +108,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
       totalPrice:totalPrc,
       depositAmount:q.depositAmount||calcDepositAmount(totalPrc,q.depositPct||30),
       paymentDeadline:q.paymentDeadline,
-      includes:q.includes,excludes:q.excludes,cancelPolicy:q.cancelPolicy,
+      includes:(q.included||[]).join("\n")||q.includes,excludes:(q.excluded||[]).join("\n")||q.excludes,cancelPolicy:q.cancelPolicy,
       note:q.note,
       source:"Báo giá "+q.id,quoteId:q.id,
       sale:q.sale||currentUser?.name,
@@ -140,10 +143,21 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
             </select>
           </div>
 
-          {/* Chọn tour program */}
+          {/* Chọn tour program — kéo theo lịch trình/bao gồm/giá tham khảo, sửa tự do bên dưới */}
           <div>
-            <label style={lbl}>Chương trình có sẵn</label>
-            <select value={form.tourProgramId} onChange={e=>{const t=(tourPrograms||[]).find(x=>x.id===e.target.value);setForm(f=>({...f,tourProgramId:e.target.value,tourName:t?t.name:f.tourName}));}} style={inp}>
+            <label style={lbl}>Chương trình có sẵn<span style={{fontSize:11,fontWeight:400,color:"var(--c-text-3)",marginLeft:6}}>(kéo lịch trình + giá, sửa lại tuỳ ý)</span></label>
+            <select value={form.tourProgramId} onChange={e=>{
+              const t=(tourPrograms||[]).find(x=>x.id===e.target.value);
+              if(!t){ setForm(f=>({...f,tourProgramId:""})); return; }
+              const opt=(t.priceOptions||[])[0];
+              setForm(f=>{
+                const pricing=opt?{...f.pricing,adultPrice:opt.adultPrice||0,childPrice:opt.childPrice||0,babyPrice:opt.babyPrice||0}:f.pricing;
+                pricing.totalPrice=calcTotal({...f,pricing});
+                return {...f,tourProgramId:t.id,tourName:t.name,
+                  itinerary:t.itinerary||[],included:t.included||[],excluded:t.excluded||[],
+                  pricing};
+              });
+            }} style={inp}>
               <option value="">-- Chọn hoặc nhập tay --</option>
               {(tourPrograms||[]).map(t=><option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
@@ -162,7 +176,14 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
 
         {/* Giá theo loại khách */}
         <div style={{marginTop:14,padding:"14px 16px",background:"var(--c-surface-2)",borderRadius:10,border:"1px solid var(--c-border)"}}>
-          <div style={{fontSize:12,fontWeight:700,color:"var(--c-text-2)",marginBottom:10}}>Giá dịch vụ (₫/người)</div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--c-text-2)"}}>Giá dịch vụ (₫/người)</div>
+            {(()=>{const t=(tourPrograms||[]).find(x=>x.id===form.tourProgramId);return t&&(t.priceOptions||[]).length>1&&(
+              <select onChange={e=>{const opt=t.priceOptions[Number(e.target.value)];if(!opt)return;setForm(f=>{const pricing={...f.pricing,adultPrice:opt.adultPrice||0,childPrice:opt.childPrice||0,babyPrice:opt.babyPrice||0};pricing.totalPrice=calcTotal({...f,pricing});return{...f,pricing};});}} style={{fontSize:11,border:"1px solid var(--c-border)",borderRadius:6,padding:"4px 8px"}}>
+                {t.priceOptions.map((o,i)=><option key={o.id||i} value={i}>{o.name}</option>)}
+              </select>
+            );})()}
+          </div>
           <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
             <div><label style={{...lbl,fontSize:11}}>Người lớn</label><NumberInput value={form.pricing.adultPrice||0} onChange={v=>setPrice("adultPrice",v)} placeholder="VD: 1.500.000" style={inp}/></div>
             <div><label style={{...lbl,fontSize:11}}>Trẻ em</label><NumberInput value={form.pricing.childPrice||0} onChange={v=>setPrice("childPrice",v)} placeholder="VD: 1.000.000" style={inp}/></div>
@@ -174,11 +195,24 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
           </div>
         </div>
 
-        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14}}>
-          {/* Điều kiện */}
-          <div style={{gridColumn:"1/-1"}}><label style={lbl}>Bao gồm dịch vụ</label><textarea rows={2} value={form.includes} onChange={e=>setForm(f=>({...f,includes:e.target.value}))} placeholder="Ăn sáng, xe đưa đón, HDV, bảo hiểm..." style={{...inp,resize:"vertical"}}/></div>
-          <div style={{gridColumn:"1/-1"}}><label style={lbl}>Không bao gồm</label><textarea rows={2} value={form.excludes} onChange={e=>setForm(f=>({...f,excludes:e.target.value}))} placeholder="Vé máy bay, visa, chi phí cá nhân..." style={{...inp,resize:"vertical"}}/></div>
+        {/* Lịch trình theo ngày — kéo từ chương trình mẫu hoặc tự soạn nếu khách hỏi tour chưa có mẫu */}
+        <div style={{marginTop:14}}>
+          <div style={{fontWeight:700,fontSize:13,marginBottom:8,color:"var(--c-text-2)"}}>🗓️ Lịch trình theo ngày <span style={{fontSize:11,fontWeight:400,color:"var(--c-text-3)"}}>(không bắt buộc)</span></div>
+          <ItineraryEditor itinerary={form.itinerary||[]} onChange={v=>setForm(f=>({...f,itinerary:v}))}/>
+        </div>
 
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginTop:14}}>
+          <div>
+            <div style={{fontWeight:700,fontSize:13,marginBottom:8,color:"var(--c-success-mid)"}}>✅ Bao gồm</div>
+            <BulletListEditor items={form.included||[]} onChange={v=>setForm(f=>({...f,included:v}))} placeholder="VD: Xe đưa đón đời mới"/>
+          </div>
+          <div>
+            <div style={{fontWeight:700,fontSize:13,marginBottom:8,color:"var(--c-danger-mid)"}}>❌ Không bao gồm</div>
+            <BulletListEditor items={form.excluded||[]} onChange={v=>setForm(f=>({...f,excluded:v}))} placeholder="VD: Chi phí cá nhân"/>
+          </div>
+        </div>
+
+        <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14}}>
           {/* Thời hạn & cọc */}
           <div>
             <label style={lbl}>Hiệu lực đến ngày * <span style={{color:"var(--c-danger-mid)"}}>(bắt buộc)</span></label>
@@ -242,7 +276,9 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
                   )}
                 </div>
               </div>
-              <div style={{display:"flex",gap:6,marginTop:10}}>
+              <div style={{display:"flex",gap:6,marginTop:10,flexWrap:"wrap"}}>
+                <button onClick={()=>openPrintWindow(buildQuote(q))} style={{background:"var(--c-primary-light)",color:"var(--c-primary-mid)",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:12,fontWeight:600}}>🖨 In báo giá</button>
+                <button onClick={()=>downloadAsWord(buildQuote(q),"BaoGia-"+q.id)} style={{background:"var(--c-primary-light)",color:"var(--c-primary-mid)",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:12,fontWeight:600}}>📝 Word</button>
                 {q.status==="draft"&&<button onClick={()=>sendQuote(q)} style={{background:"var(--c-primary-mid)",color:"var(--c-text-inverse)",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:12,fontWeight:600}}>Gửi KH</button>}
                 {(q.status==="draft"||q.status==="sent"||q.status==="negotiating")&&<button onClick={()=>convertToOrder(q)} style={{background:"var(--c-success-mid)",color:"var(--c-text-inverse)",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:12,fontWeight:600}}>Chốt đơn</button>}
                 {(q.status==="sent"||q.status==="negotiating")&&<button onClick={()=>{setReviseModal(q);setRevisePrice(String(totalPrc));}} style={{background:"var(--c-warning-mid)",color:"var(--c-text-inverse)",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:12,fontWeight:600}}>Sửa giá & Gửi lại</button>}

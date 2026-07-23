@@ -29,6 +29,7 @@ const NAV_GROUPS = [
       { k: "crm",       label: "Khách hàng",   icon: "ti-users",             perm: "crm" },
       { k: "quotes",    label: "Báo giá",      icon: "ti-file-description",  perm: "quotes",
         badge: ctx => ctx.currentRole === "sale" ? ctx.expiringQuotes : 0, badgeColor: "var(--c-warning-mid)" },
+      { k: "tourprogram", label: "Chương trình mẫu", icon: "ti-map", perm: "quotes" },
       { k: "ncc",       label: "Nhà cung cấp", icon: "ti-building",          perm: "ncc" },
       { k: "orders",    label: "Đơn hàng",     icon: "ti-file-text",         perm: "orders",
         badge: ctx => ctx.currentRole === "sale" ? ctx.activeOrders : 0, badgeColor: "var(--c-success-mid)" },
