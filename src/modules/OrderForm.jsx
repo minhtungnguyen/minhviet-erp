@@ -1,6 +1,7 @@
 import React from "react";
 import { NumberInput, Btn } from "../components/ui.jsx";
 import { SERVICE_TYPES } from "../constants/serviceTypes.js";
+import { customerDisplayName } from "../utils/customers.js";
 
 const SALE_STAFF = ["Nguyễn Thị Hoa","Trần Văn Nam","Lê Thị Mai","Phạm Quốc Hùng","Đỗ Thị Lan"];
 
@@ -76,7 +77,12 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
   const filteredCust=React.useMemo(()=>{
     if(!custSearch.trim()) return [];
     const q=custSearch.toLowerCase();
-    return customers.filter(c=>c.name?.toLowerCase().includes(q)||c.phone?.includes(q)).slice(0,6);
+    return customers.filter(c=>
+      c.name?.toLowerCase().includes(q)||
+      c.companyName?.toLowerCase().includes(q)||
+      c.contactName?.toLowerCase().includes(q)||
+      c.phone?.includes(q)
+    ).slice(0,6);
   },[customers,custSearch]);
 
   const dupOrder=React.useMemo(()=>{
@@ -228,13 +234,29 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
                 <input value={custSearch} onChange={e=>{setCustSearch(e.target.value);setShowCustDrop(true);}} onFocus={()=>setShowCustDrop(true)} placeholder="Nhập tên hoặc SĐT..." style={inputStyle("search")}/>
                 {showCustDrop&&filteredCust.length>0&&(
                   <div style={{position:"absolute",top:"100%",left:0,right:0,background:"var(--c-surface)",border:"1px solid var(--c-border)",borderRadius:"var(--r-sm)",boxShadow:"var(--sh-md)",zIndex:100,maxHeight:200,overflowY:"auto"}}>
-                    {filteredCust.map(c=>(
-                      <div key={c.id} onClick={()=>{set("customerName",c.name);set("customerPhone",c.phone);set("customerEmail",c.email||"");set("customerId",c.id);setCustSearch(c.name);setShowCustDrop(false);}}
-                        style={{padding:"10px 14px",cursor:"pointer",fontSize:"var(--text-base)",borderBottom:"1px solid var(--c-border)",display:"flex",justifyContent:"space-between"}}
-                        onMouseEnter={e=>e.currentTarget.style.background="var(--c-surface-2)"} onMouseLeave={e=>e.currentTarget.style.background=""}>
-                        <span style={{fontWeight:600}}>{c.name}</span><span style={{color:"var(--c-text-3)"}}>{c.phone}</span>
-                      </div>
-                    ))}
+                    {filteredCust.map(c=>{
+                      const isCorp=c.type==="corp"||c.type==="corporate";
+                      return (
+                        <div key={c.id} onClick={()=>{
+                          set("customerName",isCorp?(c.contactName||c.name||""):(c.name||""));
+                          set("customerPhone",isCorp?(c.contactPhone||c.phone||""):(c.phone||""));
+                          set("customerEmail",c.email||"");
+                          set("customerId",c.id);
+                          if(isCorp){
+                            set("customerType","corporate");
+                            set("companyName",c.companyName||"");
+                            set("taxCode",c.taxCode||"");
+                          }
+                          setCustSearch(customerDisplayName(c));
+                          setShowCustDrop(false);
+                        }}
+                          style={{padding:"10px 14px",cursor:"pointer",fontSize:"var(--text-base)",borderBottom:"1px solid var(--c-border)",display:"flex",justifyContent:"space-between"}}
+                          onMouseEnter={e=>e.currentTarget.style.background="var(--c-surface-2)"} onMouseLeave={e=>e.currentTarget.style.background=""}>
+                          <span style={{fontWeight:600}}>{isCorp?"🏢 ":""}{customerDisplayName(c)}</span>
+                          <span style={{color:"var(--c-text-3)"}}>{isCorp&&c.name?c.name+" · ":""}{isCorp?(c.contactPhone||c.phone):c.phone}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
