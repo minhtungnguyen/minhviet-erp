@@ -113,7 +113,7 @@ export default function AccountingDashboard({orders=[],vouchers=[],expenses=[],r
             <div key={k.label} style={{background:k.bg,borderRadius:14,padding:"18px 20px",boxShadow:"0 4px 14px rgba(0,0,0,.13)",position:"relative",overflow:"hidden"}}>
               <div style={{position:"absolute",right:14,top:12,fontSize:30,opacity:.2}}><i className={`ti ${k.icon}`}/></div>
               <div style={{fontSize:12,color:"rgba(255,255,255,.75)",fontWeight:600,marginBottom:6}}>{k.label}</div>
-              <div style={{fontSize:24,fontWeight:800,color:"#fff"}}>{k.val}</div>
+              <div style={{fontSize:24,fontWeight:800,color:"#fff",overflowWrap:"break-word"}}>{k.val}</div>
             </div>
           ))}
         </div>

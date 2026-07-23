@@ -230,7 +230,7 @@ export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quo
           <div key={k.label} style={{ background:k.bg, borderRadius:"var(--r-xl)", padding:"20px 22px", boxShadow:"var(--sh-md)", position:"relative", overflow:"hidden" }}>
             <div style={{ position:"absolute", right:16, top:14, fontSize:30, opacity:.22 }}>{k.icon}</div>
             <div style={{ fontSize:"var(--text-sm)", color:"rgba(255,255,255,.75)", fontWeight:500, marginBottom:6 }}>{k.label}</div>
-            <div style={{ fontSize:"var(--text-3xl)", fontWeight:800, color:"#fff", lineHeight:1, marginBottom:4 }}>{k.val}</div>
+            <div style={{ fontSize:"var(--text-3xl)", fontWeight:800, color:"#fff", lineHeight:1, marginBottom:4, overflowWrap:"break-word" }}>{k.val}</div>
             <div style={{ fontSize:"var(--text-sm)", color:"rgba(255,255,255,.65)" }}>{k.sub}</div>
             {k.label.includes("Doanh thu") && targetAmt>0 && (
               <div style={{ background:"rgba(255,255,255,.2)", borderRadius:"var(--r-pill)", height:5, marginTop:10 }}>
@@ -337,7 +337,7 @@ export default function SaleDashboard({ currentUser, orders=[], vouchers=[], quo
           {/* Chỉ tiêu tháng */}
           <div style={{ background:"linear-gradient(135deg,var(--c-primary),var(--c-primary-hover))", borderRadius:"var(--r-lg)", padding:22, boxShadow:"0 4px 14px rgba(30,58,138,.3)" }}>
             <div style={{ fontSize:"var(--text-base)", color:"rgba(255,255,255,.7)", marginBottom:6 }}>Chỉ tiêu {thisMonthStr}</div>
-            <div style={{ fontSize:"var(--text-3xl)", fontWeight:800, color:"#fff", marginBottom:4 }}>{fmtM(revenue)}</div>
+            <div style={{ fontSize:"var(--text-3xl)", fontWeight:800, color:"#fff", marginBottom:4, overflowWrap:"break-word" }}>{fmtM(revenue)}</div>
             <div style={{ fontSize:"var(--text-base)", color:"rgba(255,255,255,.6)", marginBottom:14 }}>/ {targetAmt>0?fmtM(targetAmt):"Chưa set chỉ tiêu"}</div>
             <div style={{ background:"rgba(255,255,255,.2)", borderRadius:"var(--r-pill)", height:10 }}>
               <div style={{ background:"#fff", height:10, borderRadius:"var(--r-pill)", width:Math.min(100,targetPct)+"%", transition:"width .5s" }}/>

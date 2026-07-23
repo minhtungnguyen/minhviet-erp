@@ -217,7 +217,7 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
           <div key={k.label} style={{background:k.bg,borderRadius:"var(--r-lg)",padding:"18px 22px",boxShadow:"var(--sh-md)",position:"relative",overflow:"hidden"}}>
             <div style={{position:"absolute",right:16,top:14,fontSize:30,opacity:.2}}><i className={`ti ${k.icon}`}/></div>
             <div style={{fontSize:"var(--text-sm)",color:"rgba(255,255,255,.75)",fontWeight:600,marginBottom:6,textTransform:"uppercase",letterSpacing:.5}}>{k.label}</div>
-            <div style={{fontSize:"var(--text-2xl)",fontWeight:800,color:"#fff",lineHeight:1,marginBottom:4}}>{k.val}</div>
+            <div style={{fontSize:"var(--text-2xl)",fontWeight:800,color:"#fff",lineHeight:1,marginBottom:4,overflowWrap:"break-word"}}>{k.val}</div>
             <div style={{fontSize:"var(--text-sm)",color:k.subColor||"rgba(255,255,255,.65)",fontWeight:500}}>{k.sub}</div>
           </div>
         ))}

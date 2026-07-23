@@ -219,7 +219,7 @@ export default function DirectorDashboard({ orders=[], vouchers=[], expenses=[],
           <div key={k.label} onClick={k.onClick} style={{background:k.bg,borderRadius:"var(--r-lg)",padding:"20px 22px",cursor:k.onClick?"pointer":"default",boxShadow:"var(--sh-md)",position:"relative",overflow:"hidden"}}>
             <div style={{position:"absolute",right:16,top:16,fontSize:28,opacity:.25}}>{k.icon}</div>
             <div style={{fontSize:"var(--text-sm)",color:"rgba(255,255,255,.75)",fontWeight:500,marginBottom:6}}>{k.label}</div>
-            <div style={{fontSize:"var(--text-2xl)",fontWeight:800,color:"#fff",lineHeight:1,marginBottom:4}}>{k.val}</div>
+            <div style={{fontSize:"var(--text-2xl)",fontWeight:800,color:"#fff",lineHeight:1,marginBottom:4,overflowWrap:"break-word"}}>{k.val}</div>
             {k.growth!==null&&k.growth!==undefined&&(
               <span style={{fontSize:"var(--text-xs)",fontWeight:700,background:k.growth>=0?"rgba(255,255,255,.2)":"rgba(0,0,0,.2)",color:"#fff",padding:"2px 8px",borderRadius:"var(--r-pill)",marginRight:6}}>
                 {k.growth>=0?"▲":"▼"}{Math.abs(k.growth)}%
@@ -234,7 +234,7 @@ export default function DirectorDashboard({ orders=[], vouchers=[], expenses=[],
           <div key={k.label} onClick={k.onClick} style={{background:k.bg,borderRadius:"var(--r-lg)",padding:"20px 22px",cursor:k.onClick?"pointer":"default",boxShadow:"var(--sh-md)",position:"relative",overflow:"hidden"}}>
             <div style={{position:"absolute",right:16,top:16,fontSize:28,opacity:.25}}>{k.icon}</div>
             <div style={{fontSize:"var(--text-sm)",color:"rgba(255,255,255,.75)",fontWeight:500,marginBottom:6}}>{k.label}</div>
-            <div style={{fontSize:"var(--text-2xl)",fontWeight:800,color:"#fff",lineHeight:1,marginBottom:4}}>{k.val}</div>
+            <div style={{fontSize:"var(--text-2xl)",fontWeight:800,color:"#fff",lineHeight:1,marginBottom:4,overflowWrap:"break-word"}}>{k.val}</div>
             <div style={{fontSize:"var(--text-xs)",color:"rgba(255,255,255,.6)",marginTop:4}}>{k.sub}</div>
           </div>
         ))}
