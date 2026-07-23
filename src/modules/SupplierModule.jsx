@@ -1,5 +1,5 @@
 import React from "react";
-import { NumberInput, Btn, SearchInp, PageHeader, Sel } from "../components/ui.jsx";
+import { NumberInput, Btn, SearchInp, PageHeader, Sel, DateInput } from "../components/ui.jsx";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 
 const PROVINCES = [
@@ -288,8 +288,8 @@ function ServiceEntryForm({ entry, onSave, onCancel }){
         {(form.bang_gia_theo_mua||[]).map(g=>(
           <div key={g.id} style={{display:"grid",gridTemplateColumns:"1.2fr 1fr 1fr 1fr 1fr auto",gap:8,alignItems:"end",marginBottom:8,padding:"8px",background:"var(--c-surface-2)",borderRadius:"var(--r-sm)"}}>
             <label><div style={lbl}>Tên giai đoạn</div><input value={g.ten_giai_doan} onChange={e=>updGiaMua(g.id,"ten_giai_doan",e.target.value)} placeholder="VD: Tết Nguyên Đán" style={inp}/></label>
-            <label><div style={lbl}>Từ ngày</div><input type="date" value={g.tu_ngay} onChange={e=>updGiaMua(g.id,"tu_ngay",e.target.value)} style={inp}/></label>
-            <label><div style={lbl}>Đến ngày</div><input type="date" value={g.den_ngay} onChange={e=>updGiaMua(g.id,"den_ngay",e.target.value)} style={inp}/></label>
+            <label><div style={lbl}>Từ ngày</div><DateInput value={g.tu_ngay} onChange={v=>updGiaMua(g.id,"tu_ngay",v)} style={inp}/></label>
+            <label><div style={lbl}>Đến ngày</div><DateInput value={g.den_ngay} onChange={v=>updGiaMua(g.id,"den_ngay",v)} style={inp}/></label>
             <label><div style={lbl}>Giá từ</div><input type="number" value={g.tu||""} onChange={e=>updGiaMua(g.id,"tu",e.target.value)} style={inp}/></label>
             <label><div style={lbl}>Giá đến</div><input type="number" value={g.den||""} onChange={e=>updGiaMua(g.id,"den",e.target.value)} style={inp}/></label>
             <button type="button" onClick={()=>delGiaMua(g.id)} style={{background:"var(--c-surface)",color:"var(--c-danger-mid)",border:"1px solid var(--c-danger-border)",borderRadius:"var(--r-xs)",padding:"8px 10px",cursor:"pointer",fontSize:"var(--text-sm)"}}>🗑</button>

@@ -1,5 +1,5 @@
 import React from "react";
-import { NumberInput } from "../components/ui.jsx";
+import { NumberInput, DateInput } from "../components/ui.jsx";
 import { downloadAsWord } from "../print/index.jsx";
 import { openPrintWindow, buildPhieuThu, buildPhieuChi } from "../print/legacy.jsx";
 import { calcPaymentTimeline } from "../utils/paymentTimeline.js";
@@ -240,7 +240,7 @@ export default function FinancePanel({order,vouchers,onAddVoucher,onApprove,onRe
                 </div>
                 <div>
                   <label style={{fontSize:12,fontWeight:600,display:"block",marginBottom:4}}>Ngày</label>
-                  <input type="date" value={vForm.date} onChange={e=>setVForm(f=>({...f,date:e.target.value}))} style={inp11}/>
+                  <DateInput value={vForm.date} onChange={v=>setVForm(f=>({...f,date:v}))} style={inp11}/>
                 </div>
                 <div style={{gridColumn:"1/-1"}}>
                   <label style={{fontSize:12,fontWeight:600,display:"block",marginBottom:4}}>Ghi chú</label>

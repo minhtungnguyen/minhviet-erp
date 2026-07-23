@@ -1,5 +1,5 @@
 import React from "react";
-import { NumberInput, Btn } from "../components/ui.jsx";
+import { NumberInput, Btn, DateInput } from "../components/ui.jsx";
 import { SERVICE_TYPES } from "../constants/serviceTypes.js";
 import { customerDisplayName } from "../utils/customers.js";
 
@@ -510,10 +510,10 @@ export default function OrderForm({onSave,onCancel,pushNotif,defaultSale=SALE_ST
               <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:16}}>
                 <div>
                   <label style={labelStyle}>Ngày khởi hành *</label>
-                  <input type="date" value={form.departDate} onChange={e=>set("departDate",e.target.value)} style={inputStyle("departDate")}/>
+                  <DateInput value={form.departDate} onChange={v=>set("departDate",v)} style={inputStyle("departDate")}/>
                   {errors.departDate&&<div style={{color:"var(--c-danger-mid)",fontSize:"var(--text-xs)",marginTop:3}}>{errors.departDate}</div>}
                 </div>
-                <div><label style={labelStyle}>Ngày về</label><input type="date" value={form.returnDate} onChange={e=>set("returnDate",e.target.value)} style={inputStyle("returnDate")}/></div>
+                <div><label style={labelStyle}>Ngày về</label><DateInput value={form.returnDate} onChange={v=>set("returnDate",v)} style={inputStyle("returnDate")}/></div>
                 <div>
                   <label style={labelStyle}>Nhân viên phụ trách</label>
                   <select value={form.sale} onChange={e=>set("sale",e.target.value)} style={inputStyle("sale")}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Btn, SearchInp } from "../components/ui.jsx";
+import { Btn, SearchInp, DateInput } from "../components/ui.jsx";
 import { canManageTask, isTaskAssignee, isSelfAssignedTask } from "../utils/taskPermissions.js";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 import { SERVICE_TYPES } from "../constants/serviceTypes.js";
@@ -281,7 +281,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
                         <option value="">-- Người phụ trách --</option>
                         {staffList.map(n=><option key={n} value={n}>{n}</option>)}
                       </select>
-                      <input type="date" value={r.dueDate} onChange={e=>updateMultiRow(idx,"dueDate",e.target.value)} style={{...fieldInp,flex:"1 1 120px"}}/>
+                      <DateInput value={r.dueDate} onChange={v=>updateMultiRow(idx,"dueDate",v)} style={{...fieldInp,flex:"1 1 120px"}}/>
                       <button onClick={()=>removeMultiRow(idx)} disabled={multiRows.length===1}
                         style={{background:"var(--c-danger-bg)",border:"none",borderRadius:"var(--r-md)",width:40,height:44,color:"var(--c-danger-mid)",cursor:multiRows.length===1?"default":"pointer",opacity:multiRows.length===1?.4:1,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
                         <i className="ti ti-trash" style={{fontSize:15}}/>
@@ -346,7 +346,7 @@ export default function TaskModule({ tasks=[], onUpdateTasks, orders=[], custome
             </div>
             <div>
               <label style={fieldLbl}>Deadline</label>
-              <input type="date" value={form.dueDate} onChange={e=>setF("dueDate",e.target.value)} style={fieldInp}/>
+              <DateInput value={form.dueDate} onChange={v=>setF("dueDate",v)} style={fieldInp}/>
             </div>
           </div>
           {/* Liên kết khách hàng + đơn hàng */}

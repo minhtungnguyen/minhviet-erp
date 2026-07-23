@@ -1,5 +1,6 @@
 import React from "react";
 import { daysToExpiry, computeCreditStatus, calcCreditAmount, isValidCreditUsage } from "../utils/creditCalc.js";
+import { DateInput } from "../components/ui.jsx";
 
 export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdateCredits, currentUser }) {
   const [showForm,setShowForm]=React.useState(false);
@@ -158,7 +159,7 @@ export default function CreditModule({ orders=[], pushNotif, credits=[], onUpdat
             </div>
             <div>
               <label style={labelStyle}>Hạn sử dụng *</label>
-              <input type="date" value={form.expiryDate} onChange={e=>set("expiryDate",e.target.value)} style={fieldStyle}/>
+              <DateInput value={form.expiryDate} onChange={v=>set("expiryDate",v)} style={fieldStyle}/>
             </div>
           </div>
           {form.originalAmount&&<div style={{marginTop:10,fontSize:13,color:"var(--c-primary)",fontWeight:600}}>Giá trị bảo lưu thực tế: {fmtMoney(calcCreditAmount(Number(form.originalAmount)||0,Number(form.feeDeducted)||0))}</div>}

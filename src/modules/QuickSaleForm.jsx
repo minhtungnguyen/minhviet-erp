@@ -1,5 +1,5 @@
 import React from "react";
-import { NumberInput } from "../components/ui.jsx";
+import { NumberInput, DateInput } from "../components/ui.jsx";
 import { SERVICE_TYPES } from "../constants/serviceTypes.js";
 import { canSeeTourGhepSensitive } from "../utils/permissions.js";
 
@@ -162,7 +162,7 @@ export default function QuickSaleForm({onSave,onCancel,customers=[],suppliers=[]
         </div>
 
         <div className="resp-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14}}>
-          <div><label style={lbl}>Ngày khởi hành/sử dụng</label><input type="date" value={f.departDate} onChange={e=>set("departDate",e.target.value)} style={inp}/></div>
+          <div><label style={lbl}>Ngày khởi hành/sử dụng</label><DateInput value={f.departDate} onChange={v=>set("departDate",v)} style={inp}/></div>
           <div><label style={lbl}>Số khách</label><input type="number" min={1} value={f.guests} onChange={e=>{const g=e.target.value; if(f.service==="tour_ghep"&&selectedTgp){applyTgp(selectedTgp,f.tgpDepId,g);}else{set("guests",g);}}} style={inp}/></div>
           <div>
             <label style={lbl}>Nhà cung cấp <span style={{color:"var(--c-text-muted)",fontWeight:400,textTransform:"none"}}>({filteredSuppliers.length})</span></label>

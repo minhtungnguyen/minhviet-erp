@@ -1,5 +1,5 @@
 import React from "react";
-import { NumberInput } from "../components/ui.jsx";
+import { NumberInput, DateInput } from "../components/ui.jsx";
 import { calcQuoteTotal, calcDepositAmount, daysLeft } from "../utils/quoteCalc.js";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 import { SERVICE_TYPES } from "../constants/serviceTypes.js";
@@ -151,8 +151,8 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
           <div><label style={lbl}>Tên dịch vụ / Tour *</label><input value={form.tourName} onChange={e=>setForm(f=>({...f,tourName:e.target.value}))} style={inp}/></div>
 
           {/* Ngày */}
-          <div><label style={lbl}>Ngày khởi hành</label><input type="date" value={form.departDate} onChange={e=>setForm(f=>({...f,departDate:e.target.value}))} style={inp}/></div>
-          <div><label style={lbl}>Ngày về</label><input type="date" value={form.returnDate} onChange={e=>setForm(f=>({...f,returnDate:e.target.value}))} style={inp}/></div>
+          <div><label style={lbl}>Ngày khởi hành</label><DateInput value={form.departDate} onChange={v=>setForm(f=>({...f,departDate:v}))} style={inp}/></div>
+          <div><label style={lbl}>Ngày về</label><DateInput value={form.returnDate} onChange={v=>setForm(f=>({...f,returnDate:v}))} style={inp}/></div>
 
           {/* Số khách */}
           <div><label style={lbl}>Người lớn</label><input type="number" min={0} value={form.pax.adults} onChange={e=>{setPax("adults",e.target.value);setForm(f=>{const p={...f.pricing};p.totalPrice=calcTotal({...f,pax:{...f.pax,adults:Number(e.target.value)||0}});return{...f,pax:{...f.pax,adults:Number(e.target.value)||0},pricing:p};})}} style={inp}/></div>
@@ -182,7 +182,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
           {/* Thời hạn & cọc */}
           <div>
             <label style={lbl}>Hiệu lực đến ngày * <span style={{color:"var(--c-danger-mid)"}}>(bắt buộc)</span></label>
-            <input type="date" value={form.validUntil} onChange={e=>setForm(f=>({...f,validUntil:e.target.value}))} min={new Date().toISOString().slice(0,10)} style={inp}/>
+            <DateInput value={form.validUntil} onChange={v=>setForm(f=>({...f,validUntil:v}))} min={new Date().toISOString().slice(0,10)} style={inp}/>
           </div>
           <div>
             <label style={lbl}>% Đặt cọc</label>
@@ -190,7 +190,7 @@ export default function QuoteModule({ quotes, onUpdate, orders, tourPrograms, cu
           </div>
           <div>
             <label style={lbl}>Hạn thanh toán còn lại</label>
-            <input type="date" value={form.paymentDeadline} onChange={e=>setForm(f=>({...f,paymentDeadline:e.target.value}))} style={inp}/>
+            <DateInput value={form.paymentDeadline} onChange={v=>setForm(f=>({...f,paymentDeadline:v}))} style={inp}/>
           </div>
 
           {/* Ghi chú */}

@@ -1,6 +1,6 @@
 import React from "react";
 import { downloadCSV } from "../utils/csv.js";
-import { Btn } from "../components/ui.jsx";
+import { Btn, DateInput } from "../components/ui.jsx";
 
 export default function ReportModule({ orders, vouchers, expenses, personalTargets=[], currentRole, hdvList=[], customers=[], userAccounts=[], bookings=[] }){
   const [tab,setTab]=React.useState("overview");
@@ -198,9 +198,9 @@ export default function ReportModule({ orders, vouchers, expenses, personalTarge
           ))}
           {period==="custom"&&(
             <div style={{display:"flex",gap:6,alignItems:"center"}}>
-              <input type="date" value={customFrom} onChange={e=>setCustomFrom(e.target.value)} style={{border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-md)",padding:"7px 10px",fontSize:"var(--text-base)",outline:"none"}}/>
+              <DateInput value={customFrom} onChange={v=>setCustomFrom(v)} style={{border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-md)",fontSize:"var(--text-base)"}}/>
               <span style={{color:"var(--c-text-muted)"}}>→</span>
-              <input type="date" value={customTo} onChange={e=>setCustomTo(e.target.value)} style={{border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-md)",padding:"7px 10px",fontSize:"var(--text-base)",outline:"none"}}/>
+              <DateInput value={customTo} onChange={v=>setCustomTo(v)} style={{border:"1.5px solid var(--c-border-mid)",borderRadius:"var(--r-md)",fontSize:"var(--text-base)"}}/>
             </div>
           )}
         </div>

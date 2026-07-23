@@ -7,7 +7,7 @@ import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 import { isBanGiamDoc } from "../utils/permissions.js";
 import { vietnameseGivenName } from "../utils/customers.js";
 import { SEED_CUSTOMERS } from "../seeds/index.js";
-import { Btn, SearchInp, PageHeader, TabBar } from "../components/ui.jsx";
+import { Btn, SearchInp, PageHeader, TabBar, DateInput } from "../components/ui.jsx";
 
 const CRM_TAGS = [
   {id:"vip",      label:"VIP",            color:"#7a5a00", bg:"#fef9e7"},
@@ -637,7 +637,7 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
               </div>
               <div>
                 <label style={lbl}>Ngày thành lập Công ty</label>
-                <input type="date" value={form.dob||""} onChange={e=>setForm(f=>({...f,dob:e.target.value}))} style={inp}/>
+                <DateInput value={form.dob||""} onChange={v=>setForm(f=>({...f,dob:v}))} style={inp}/>
               </div>
             </>
           ):(
@@ -664,7 +664,7 @@ function CustomerFormModal({form,setForm,onSave,onClose,title}){
               </div>
               <div>
                 <label style={lbl}>Ngày sinh</label>
-                <input type="date" value={form.dob||""} onChange={e=>setForm(f=>({...f,dob:e.target.value}))} style={inp}/>
+                <DateInput value={form.dob||""} onChange={v=>setForm(f=>({...f,dob:v}))} style={inp}/>
               </div>
             </>
           )}

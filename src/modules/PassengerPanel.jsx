@@ -1,6 +1,6 @@
 import React from "react";
 import { parsePassengersFromFile, downloadPassengerTemplate, exportPassengersToExcel } from "../utils/importExcel.js";
-import { Btn } from "../components/ui.jsx";
+import { Btn, DateInput } from "../components/ui.jsx";
 
 export default function PassengerPanel({order,onUpdate,pushNotif,customers=[]}){
   const EMPTY={name:"",dob:"",cccd:"",cccdImg:"",phone:"",type:"adult",gender:"",nationality:"Việt Nam",note:"",heightGroup:""};
@@ -214,9 +214,9 @@ export default function PassengerPanel({order,onUpdate,pushNotif,customers=[]}){
             </div>
             <div>
               <label style={{display:"block",fontSize:"var(--text-xs)",fontWeight:600,marginBottom:3,color:"var(--c-text-2)"}}>Ngày sinh</label>
-              <input type="date" value={form.dob} onChange={e=>{
-                set("dob",e.target.value);
-                const suggested=suggestType(e.target.value);
+              <DateInput value={form.dob} onChange={v=>{
+                set("dob",v);
+                const suggested=suggestType(v);
                 if(suggested&&suggested!==form.type) set("type",suggested);
               }} style={inp}/>
             </div>

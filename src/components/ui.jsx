@@ -1,6 +1,6 @@
 // Shared UI atoms — tất cả dùng CSS vars từ theme.css
 // Import: import { Btn, Inp, Card, ... } from "../components/ui"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
 
 /* ──────────────────────────────────────────────────────────
@@ -716,5 +716,143 @@ export const NumberInput = ({value, onChange, placeholder="0", style={}, disable
         onChange(num);
       }}
     />
+  );
+};
+
+/* ──────────────────────────────────────────────────────────
+   DATE INPUT — ô nhập ngày dd/mm/yyyy cố định, không phụ thuộc
+   locale trình duyệt/hệ điều hành (input type="date" gốc bị lệ
+   thuộc "Regional format" của Windows — máy để định dạng Mỹ thì
+   gõ ngày Việt Nam sẽ ra sai ngày/tháng). value/onChange dùng
+   chuỗi ISO "YYYY-MM-DD" y hệt input type="date" để thay thế 1-1.
+   ────────────────────────────────────────────────────────── */
+const isoToDigits = (iso) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+  return m ? m[3] + m[2] + m[1] : "";
+};
+const digitsToIso = (buf) => {
+  if (buf.length !== 8) return null;
+  const d = +buf.slice(0, 2), mo = +buf.slice(2, 4), y = +buf.slice(4, 8);
+  if (mo < 1 || mo > 12) return null;
+  const daysInMonth = new Date(y, mo, 0).getDate();
+  if (d < 1 || d > daysInMonth) return null;
+  return `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+};
+const WEEKDAYS_VN = ["T2","T3","T4","T5","T6","T7","CN"];
+
+const DateCalendarPopup = ({ iso, min, max, onPick }) => {
+  const base = iso ? new Date(iso + "T00:00:00") : new Date();
+  const [vy, setVy] = useState(base.getFullYear());
+  const [vm, setVm] = useState(base.getMonth());
+  // Đồng bộ tháng/năm đang xem theo ngày vừa gõ tay (khi popup vẫn đang mở, không unmount)
+  useEffect(()=>{
+    if(!iso) return;
+    const d = new Date(iso + "T00:00:00");
+    setVy(d.getFullYear());
+    setVm(d.getMonth());
+  },[iso]);
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const cellIso = (d) => `${vy}-${pad2(vm + 1)}-${pad2(d)}`;
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const firstDow = new Date(vy, vm, 1).getDay();
+  const leading = (firstDow + 6) % 7;
+  const daysInMonth = new Date(vy, vm + 1, 0).getDate();
+  const cells = [...Array(leading).fill(null), ...Array.from({length: daysInMonth}, (_, i) => i + 1)];
+  const navBtn = {background:"var(--c-surface-2)",border:"none",borderRadius:6,width:24,height:24,cursor:"pointer",fontSize:14,color:"var(--c-text-2)"};
+  return (
+    <div onMouseDown={e=>e.stopPropagation()} style={{
+      position:"absolute", top:"calc(100% + 4px)", left:0, zIndex:200,
+      background:"var(--c-surface)", border:"1px solid var(--c-border)",
+      borderRadius:"var(--r-md)", boxShadow:"var(--sh-md)", padding:10, width:230,
+    }}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+        <button type="button" style={navBtn} onClick={()=>{ if(vm===0){setVy(vy-1);setVm(11);} else setVm(vm-1); }}>‹</button>
+        <div style={{fontSize:13,fontWeight:700,color:"var(--c-text)"}}>Tháng {vm+1}/{vy}</div>
+        <button type="button" style={navBtn} onClick={()=>{ if(vm===11){setVy(vy+1);setVm(0);} else setVm(vm+1); }}>›</button>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:4}}>
+        {WEEKDAYS_VN.map(w=><div key={w} style={{textAlign:"center",fontSize:10,color:"var(--c-text-muted)",fontWeight:700}}>{w}</div>)}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2}}>
+        {cells.map((d,i)=>{
+          if(d===null) return <div key={i}/>;
+          const di = cellIso(d);
+          const disabled = (min && di < min) || (max && di > max);
+          const isSel = di === iso, isToday = di === todayIso;
+          return (
+            <button key={i} type="button" disabled={disabled} onClick={()=>onPick(di)} style={{
+              padding:"5px 0", borderRadius:6,
+              border: isToday ? "1px solid var(--c-primary-mid)" : "1px solid transparent",
+              background: isSel ? "var(--c-primary-mid)" : "transparent",
+              color: isSel ? "#fff" : disabled ? "var(--c-text-muted)" : "var(--c-text)",
+              fontSize:12, cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? .4 : 1,
+            }}>{d}</button>
+          );
+        })}
+      </div>
+      <button type="button" onClick={()=>onPick(todayIso)} style={{marginTop:8,width:"100%",padding:"5px 0",fontSize:12,fontWeight:600,border:"none",borderRadius:6,background:"var(--c-primary-light)",color:"var(--c-primary-mid)",cursor:"pointer"}}>Hôm nay</button>
+    </div>
+  );
+};
+
+export const DateInput = ({ value, onChange, placeholder="dd/mm/yyyy", style={}, disabled=false, min, max }) => {
+  const [digits, setDigits] = useState(()=>isoToDigits(value));
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+
+  useEffect(()=>{ setDigits(isoToDigits(value)); },[value]);
+
+  useEffect(()=>{
+    if(!open) return;
+    const onDocDown = (e) => { if(wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", onDocDown);
+    return ()=>document.removeEventListener("mousedown", onDocDown);
+  },[open]);
+
+  const display = digits.length>4
+    ? `${digits.slice(0,2)}/${digits.slice(2,4)}/${digits.slice(4,8)}`
+    : digits.length>2
+      ? `${digits.slice(0,2)}/${digits.slice(2,4)}`
+      : digits;
+  const isComplete = digits.length===8;
+  const validIso = isComplete ? digitsToIso(digits) : null;
+  const invalid = isComplete && !validIso;
+
+  return (
+    <div ref={wrapRef} style={{width:"100%", ...style, position:"relative"}}>
+      <input
+        type="text" inputMode="numeric" autoComplete="off"
+        value={display} placeholder={placeholder} disabled={disabled}
+        onFocus={()=>!disabled && setOpen(true)}
+        onChange={e=>{
+          const buf = e.target.value.replace(/\D/g,"").slice(0,8);
+          setDigits(buf);
+          if(buf==="") { onChange(""); return; }
+          const iso = digitsToIso(buf);
+          if(iso) onChange(iso);
+        }}
+        style={{
+          width:"100%", boxSizing:"border-box", padding:"9px 34px 9px 12px",
+          border:`1.5px solid ${invalid?"var(--c-danger-border)":"var(--c-border-mid)"}`,
+          borderRadius:"var(--r-sm)", fontSize:"var(--text-base)",
+          background: disabled?"var(--c-surface-2)":"var(--c-surface)",
+          color:"var(--c-text)", outline:"none",
+          ...style,
+          boxSizing:"border-box", paddingRight:34,
+        }}
+      />
+      <button type="button" tabIndex={-1} disabled={disabled} onClick={()=>setOpen(o=>!o)} style={{
+        position:"absolute", right:6, top:"50%", transform:"translateY(-50%)",
+        background:"none", border:"none", cursor: disabled?"default":"pointer",
+        fontSize:14, color:"var(--c-text-muted)", padding:4, lineHeight:1,
+      }}>📅</button>
+      {open && !disabled && (
+        <DateCalendarPopup iso={validIso||""} min={min} max={max} onPick={(iso)=>{
+          setDigits(isoToDigits(iso));
+          onChange(iso);
+          setOpen(false);
+        }}/>
+      )}
+    </div>
   );
 };

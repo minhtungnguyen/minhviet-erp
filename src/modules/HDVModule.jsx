@@ -1,5 +1,6 @@
 import React from "react";
 import { overlayCloseHandlers } from "../utils/modalOverlay.js";
+import { DateInput } from "../components/ui.jsx";
 
 export default function HDVModule({ hdvList=[], onUpdate, orders=[], pushNotif, currentRole }) {
   const EMPTY={name:'',phone:'',speciality:'',lang:[],available:true,cardNo:'',cardType:'domestic',cardExpiry:'',cccd:'',cccdDate:'',cccdPlace:'Cục Cảnh sát QLHCVTTXH',cccdImg:null,cardImg:null,taxCode:'',photo:null,facebook:'',zalo:'',email:'',dob:'',address:'',dailyRate:0,type:'freelance',notes:'',ratings:[]};
@@ -304,12 +305,12 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
                 {CARD_TYPE_OPTS.map(([k,v])=><option key={k} value={k}>{v}</option>)}
               </select>
             </div>
-            <div><label style={lbl}>Ngày hết hạn thẻ</label><input type="date" value={form.cardExpiry||''} onChange={e=>set('cardExpiry',e.target.value)} style={inp}/></div>
+            <div><label style={lbl}>Ngày hết hạn thẻ</label><DateInput value={form.cardExpiry||''} onChange={v=>set('cardExpiry',v)} style={inp}/></div>
             <div><label style={lbl}>Số CCCD</label><input value={form.cccd||''} onChange={e=>set('cccd',e.target.value)} style={inp}/></div>
-            <div><label style={lbl}>Ngày cấp CCCD</label><input type="date" value={form.cccdDate||''} onChange={e=>set('cccdDate',e.target.value)} style={inp}/></div>
+            <div><label style={lbl}>Ngày cấp CCCD</label><DateInput value={form.cccdDate||''} onChange={v=>set('cccdDate',v)} style={inp}/></div>
             <div><label style={lbl}>Nơi cấp CCCD</label><input value={form.cccdPlace||''} onChange={e=>set('cccdPlace',e.target.value)} placeholder="Cục Cảnh sát QLHCVTTXH" style={inp}/></div>
             <div><label style={lbl}>Mã số thuế cá nhân (MST)</label><input value={form.taxCode||''} onChange={e=>set('taxCode',e.target.value)} placeholder="VD: 8012345678" style={inp}/></div>
-            <div><label style={lbl}>Ngày sinh</label><input type="date" value={form.dob||''} onChange={e=>set('dob',e.target.value)} style={inp}/></div>
+            <div><label style={lbl}>Ngày sinh</label><DateInput value={form.dob||''} onChange={v=>set('dob',v)} style={inp}/></div>
             <div style={{gridColumn:"1/-1"}}><label style={lbl}>Địa chỉ thường trú</label><input value={form.address||''} onChange={e=>set('address',e.target.value)} placeholder="VD: Thôn Trà Lâm, Thuận Thành, Bắc Ninh" style={inp}/></div>
             <div><label style={lbl}>Email</label><input value={form.email||''} onChange={e=>set('email',e.target.value)} style={inp}/></div>
             <div><label style={lbl}>Loại hợp tác</label>
@@ -381,8 +382,8 @@ ${cf.notes?`<div class="note-box"><strong>Ghi chú:</strong> ${cf.notes}</div>`:
               <div style={{gridColumn:"1/-1"}}><label style={lbl}>Đoàn khách (tên công ty / nhóm)</label>
                 <input value={cf.groupName||''} onChange={e=>setCfField('groupName',e.target.value)} placeholder="VD: Công ty CP Đông Dương Logistics" style={inp}/>
               </div>
-              <div><label style={lbl}>Ngày bắt đầu</label><input type="date" value={cf.startDate} onChange={e=>setCfField('startDate',e.target.value)} style={inp}/></div>
-              <div><label style={lbl}>Ngày kết thúc</label><input type="date" value={cf.endDate} onChange={e=>setCfField('endDate',e.target.value)} style={inp}/></div>
+              <div><label style={lbl}>Ngày bắt đầu</label><DateInput value={cf.startDate} onChange={v=>setCfField('startDate',v)} style={inp}/></div>
+              <div><label style={lbl}>Ngày kết thúc</label><DateInput value={cf.endDate} onChange={v=>setCfField('endDate',v)} style={inp}/></div>
               <div style={{gridColumn:"1/-1"}}><label style={lbl}>Tuyến điểm</label>
                 <input value={cf.route||''} onChange={e=>setCfField('route',e.target.value)} placeholder="VD: Hải Phòng - Hòa Bình - Mai Châu - Hải Phòng" style={inp}/>
               </div>

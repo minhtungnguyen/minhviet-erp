@@ -1,5 +1,5 @@
 import React from "react";
-import { NumberInput } from "../components/ui.jsx";
+import { NumberInput, DateInput } from "../components/ui.jsx";
 import { downloadCSV } from "../utils/csv.js";
 
 export default function AccountingDashboard({orders=[],vouchers=[],expenses=[],refunds=[],bankAccounts=[],onUpdateBankAccounts,
@@ -268,7 +268,7 @@ export default function AccountingDashboard({orders=[],vouchers=[],expenses=[],r
                 <div><label style={{display:"block",fontSize:12,fontWeight:600,marginBottom:4,color:"var(--c-text-2)"}}>Thuế VAT (%)</label>
                 <select value={form.vatRate} onChange={e=>set("vatRate",e.target.value)} style={{width:"100%",border:"1px solid var(--c-border)",borderRadius:8,padding:"9px 12px",fontSize:13}}><option value={0}>0%</option><option value={5}>5%</option><option value={8}>8%</option><option value={10}>10%</option></select></div>
                 <div><label style={{display:"block",fontSize:12,fontWeight:600,marginBottom:4,color:"var(--c-text-2)"}}>Ngày xuất</label>
-                <input type="date" value={form.date} onChange={e=>set("date",e.target.value)} style={{width:"100%",border:"1px solid var(--c-border)",borderRadius:8,padding:"9px 12px",fontSize:13,boxSizing:"border-box"}}/></div>
+                <DateInput value={form.date} onChange={v=>set("date",v)} style={{border:"1px solid var(--c-border)",borderRadius:8,fontSize:13}}/></div>
               </div>
               {form.amount>0&&<div style={{marginTop:10,fontSize:13,color:"var(--c-text-3)"}}>Tổng cộng (gồm VAT): <b style={{color:"var(--c-text)"}}>{fmtMoney(Number(form.amount)*(1+Number(form.vatRate)/100))}</b></div>}
               <div style={{display:"flex",gap:8,marginTop:14}}>
