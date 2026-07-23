@@ -144,6 +144,9 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
       {(()=>{
         const qlBtn=(bg,color)=>({display:"inline-flex",alignItems:"center",gap:5,padding:"5px 12px",borderRadius:20,fontSize:12,fontWeight:500,background:bg,color,border:"none",cursor:"pointer"});
         const orderBookings=(bookings||[]).filter(b=>b.orderId===order?.id&&b.status!=="cancelled");
+        const bookedTotal=orderBookings.reduce((s,b)=>s+(b.totalNet||b.amount||0),0);
+        const estimatedCost=order?.costPrice||order?.pricing?.costPrice||0;
+        const stillShort=estimatedCost>0&&bookedTotal<estimatedCost;
         const orderExpenses=(expenses||[]).filter(e=>e.orderId===order?.id);
         const pendingExp=orderExpenses.filter(e=>["pending_kt","pending_gd","pending_pay"].includes(e.status));
         return(
@@ -154,7 +157,7 @@ export default function OrderDetail({order,vouchers,expenses=[],refunds=[],onBac
             })()}
             {orderBookings.length===0
               ?<button onClick={()=>onGotoNccBooking?onGotoNccBooking(order.id):pushNotif?.("Chưa có booking NCC — vào module NCC để tạo","warn")} style={qlBtn("var(--c-danger-bg)","var(--c-danger)")}><i className="ti ti-building-off" style={{fontSize:14}}/>Chưa booking NCC — tạo ngay →</button>
-              :<button onClick={()=>onGotoNccBooking?onGotoNccBooking(order.id):pushNotif?.("Xem booking NCC trong module Nhà cung cấp","info")} style={qlBtn("var(--c-success-bg)","var(--c-success)")}><i className="ti ti-building-check" style={{fontSize:14}}/>{orderBookings.length} NCC đã booking</button>
+              :<button onClick={()=>onGotoNccBooking?onGotoNccBooking(order.id):pushNotif?.("Xem booking NCC trong module Nhà cung cấp","info")} style={qlBtn(stillShort?"var(--c-warning-bg)":"var(--c-success-bg)",stillShort?"var(--c-warning)":"var(--c-success)")}><i className="ti ti-building-check" style={{fontSize:14}}/>{orderBookings.length} NCC · đã book {bookedTotal.toLocaleString("vi-VN")}đ{estimatedCost>0?"/"+estimatedCost.toLocaleString("vi-VN")+"đ dự kiến":""}{stillShort?" — thêm NCC →":""}</button>
             }
             {order?.hdvId
               ?<button onClick={()=>onGotoTourOps?.(order.id)} style={qlBtn("var(--c-purple-bg)","var(--c-purple)")}><i className="ti ti-user-check" style={{fontSize:14}}/>HDV: {order.hdvName||(hdvList||[]).find(h=>h.id===order.hdvId)?.name||order.hdvId}</button>

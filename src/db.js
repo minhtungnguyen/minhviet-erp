@@ -86,8 +86,10 @@ function orderToDb(o) {
     infant:   o.infantQty  || 0,
     passengers: o.passengers || [],
   }
-  // Pack pricing fields into JSONB object
-  const pricing = (o.pricing && typeof o.pricing === 'object' && !Array.isArray(o.pricing)) ? o.pricing : {
+  // Pack pricing fields into JSONB object. costPrice luôn lấy từ field phẳng o.costPrice
+  // đè lên (dù đang ở nhánh dùng lại o.pricing có sẵn) — tránh lặp lại lỗi đã từng xảy ra:
+  // costPrice không có trong danh sách field mặc định ban đầu nên chưa bao giờ được lưu.
+  const pricingBase = (o.pricing && typeof o.pricing === 'object' && !Array.isArray(o.pricing)) ? o.pricing : {
     adultPrice:    o.adultPrice    || 0,
     child10Price:  o.child10Price  || 0,
     child5Price:   o.child5Price   || 0,
@@ -99,6 +101,7 @@ function orderToDb(o) {
     balance:       o.balance       || 0,
     surcharges:    o.surcharges    || [],
   }
+  const pricing = { ...pricingBase, costPrice: o.costPrice!=null ? o.costPrice : (pricingBase.costPrice||0) }
   // Pack customer fields into JSONB object
   const customer = (o.customer && typeof o.customer === 'object' && !Array.isArray(o.customer)) ? o.customer : {
     name:    o.customerName    || null,
@@ -178,6 +181,7 @@ function dbToOrder(r) {
     child2Price:    pricing.child2Price  || 0,
     infantPrice:    pricing.infantPrice  || 0,
     totalPrice:     pricing.totalPrice   || 0,
+    costPrice:      pricing.costPrice    || 0,
     depositAmount:  pricing.depositAmount|| 0,
     depositPct:     pricing.depositPct   || 0,
     balance:        pricing.balance      || 0,
@@ -250,13 +254,13 @@ function expenseToDb(e) {
   return { id:e.id, order_id:e.orderId||null, ncc:e.ncc||e.nccName||null, ncc_id:e.nccId||null,
     amount:e.amount, budget_line:e.budgetLine||0, method:e.method||null,
     note:e.note||null, status:e.status||'pending_kt', type:e.type||'chi',
-    booking_id:e.bookingId||null,
+    booking_id:e.bookingId||null, payment_type:e.paymentType||null,
     created_by:e.createdBy||null, audit_log:e.auditLog||[] }
 }
 function dbToExpense(r) {
   return { id:r.id, type:r.type, orderId:r.order_id, ncc:r.ncc, nccId:r.ncc_id,
     amount:Number(r.amount), budgetLine:Number(r.budget_line)||0,
-    method:r.method, note:r.note, status:r.status, bookingId:r.booking_id,
+    method:r.method, note:r.note, status:r.status, bookingId:r.booking_id, paymentType:r.payment_type,
     createdBy:r.created_by, auditLog:r.audit_log||[], createdAt:r.created_at }
 }
 
@@ -322,6 +326,48 @@ export async function deleteSupplierDb(id) {
 export async function fetchNccList() { return fetchSuppliers() }
 export async function upsertNcc(n) { return upsertSupplier(n) }
 export async function deleteNcc(id) { return deleteSupplierDb(id) }
+
+// ─────────────────────────────────────────
+// NCC BOOKINGS — 1 đơn hàng có thể có nhiều booking (mỗi NCC 1 dòng:
+// khách sạn, xe, du thuyền...), mỗi booking tách cọc/còn lại riêng
+// để khớp cách trả tiền NCC ngoài thực tế (cọc giữ chỗ trước, trả nốt sau).
+// ─────────────────────────────────────────
+export async function fetchNccBookings() {
+  const { data, error } = await supabase.from('ncc_bookings').select('*').order('created_at', { ascending: false })
+  if (error) throw error
+  return data.map(dbToBooking)
+}
+export async function upsertNccBooking(b) {
+  const { error } = await supabase.from('ncc_bookings').upsert(bookingToDb(b))
+  if (error) throw error
+}
+export async function deleteNccBooking(id) {
+  const { error } = await supabase.from('ncc_bookings').delete().eq('id', id)
+  if (error) throw error
+}
+function bookingToDb(b) {
+  return {
+    id: b.id, order_id: b.orderId || null, ncc_id: b.nccId || null, ncc_name: b.nccName || null,
+    service_type: b.serviceType || null, service_name: b.serviceName || b.service || null,
+    pnr_code: b.pnrCode || null,
+    total_net: b.totalNet || 0, deposit: b.deposit || 0, remaining: b.remaining || 0,
+    deposit_paid: b.depositPaid === true,
+    time_limit: b.timeLimit || null, status: b.status || 'pending',
+    payments: b.payments || [], notes: b.notes || b.note || null,
+  }
+}
+function dbToBooking(r) {
+  return {
+    id: r.id, orderId: r.order_id, nccId: r.ncc_id, nccName: r.ncc_name,
+    serviceType: r.service_type, serviceName: r.service_name, service: r.service_name,
+    pnrCode: r.pnr_code,
+    totalNet: Number(r.total_net) || 0, deposit: Number(r.deposit) || 0, remaining: Number(r.remaining) || 0,
+    depositPaid: r.deposit_paid === true,
+    timeLimit: r.time_limit, status: r.status,
+    payments: r.payments || [], notes: r.notes, note: r.notes,
+    createdAt: r.created_at,
+  }
+}
 function dbToNcc(r) {
   return { id:r.id, ten:r.name||'', name:r.name||'', loai_hinh:[],
     khu_vuc_hoat_dong:[], sdt:r.phone||'', email:'', nguoi_lien_he:r.contact||'',

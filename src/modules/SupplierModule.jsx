@@ -63,7 +63,7 @@ const NCC_SERVICE_GROUPS = {
 
 const ALL_NCC_SERVICE_TYPES = Object.values(NCC_SERVICE_TYPES);
 
-const BK_STATUS={pending:{bg:"var(--c-warning-bg)",c:"var(--c-warning)",label:"Chờ xác nhận"},confirmed:{bg:"var(--c-primary-light)",c:"var(--c-primary-mid)",label:"Đã xác nhận"},paid:{bg:"var(--c-success-bg)",c:"var(--c-success)",label:"Đã thanh toán"},cancelled:{bg:"var(--c-danger-bg)",c:"var(--c-danger-mid)",label:"Đã hủy"}};
+const BK_STATUS={pending:{bg:"var(--c-warning-bg)",c:"var(--c-warning)",label:"Chưa cọc"},deposit_paid:{bg:"var(--c-primary-light)",c:"var(--c-primary-mid)",label:"Đã cọc — chờ trả nốt"},confirmed:{bg:"var(--c-primary-light)",c:"var(--c-primary-mid)",label:"Đã xác nhận"},paid:{bg:"var(--c-success-bg)",c:"var(--c-success)",label:"Đã thanh toán đủ"},cancelled:{bg:"var(--c-danger-bg)",c:"var(--c-danger-mid)",label:"Đã hủy"}};
 
 function StarRating({ value=0, onChange, size=18 }){
   const [hover,setHover]=React.useState(0);
@@ -412,7 +412,7 @@ function QuickFindModal({ suppliers, onClose, onSelect }){
 // SUPPLIER MODULE (replaces NCCDashboard)
 // ══════════════════════════════════════════════════════════════
 
-export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSupplier, onDeleteSupplier, orders=[], vouchers=[], expenses=[], pushNotif, currentRole, currentUser, bookings:bookingsProp=[], onUpdateBookings, onCreateExpense, prefillOrderId, onPrefillConsumed }){
+export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSupplier, onDeleteSupplier, orders=[], vouchers=[], expenses=[], pushNotif, currentRole, currentUser, bookings:bookingsProp=[], onSaveBooking, onCreateExpense, prefillOrderId, onPrefillConsumed }){
   // --- State ---
   const [tab,setTab]=React.useState("suppliers");
   const [search,setSearch]=React.useState("");
@@ -429,20 +429,23 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
   const [showQuickFind,setShowQuickFind]=React.useState(false);
   const bookings=bookingsProp||[];
 
-  // Booking state (preserved from old NCCDashboard)
+  // Booking state — 1 đơn hàng (đặc biệt Tour trọn gói) thường cần NHIỀU booking,
+  // mỗi booking là 1 NCC phụ trách 1 hạng mục riêng (khách sạn, xe, du thuyền...),
+  // nên KHÔNG tự điền tên/tiền của cả đơn vào 1 booking — mỗi booking tự khai báo
+  // dịch vụ + tổng tiền + tiền cọc riêng của chính nó.
   const [showBkForm,setShowBkForm]=React.useState(false);
-  const [bkForm,setBkForm]=React.useState({orderId:"",supplierId:"",nccId:"",nccName:"",service:"",amount:"",pnrCode:"",timeLimit:"",note:""});
-
-  const syncBookings=(list)=>{onUpdateBookings&&onUpdateBookings(list);};
+  const blankBkForm=()=>({orderId:"",nccId:"",nccName:"",serviceType:"",serviceName:"",totalNet:"",deposit:"",pnrCode:"",timeLimit:"",note:""});
+  const [bkForm,setBkForm]=React.useState(blankBkForm());
 
   // Mở sẵn form tạo booking cho đúng đơn khi được điều hướng tới từ
-  // "Chưa booking NCC" ở Chi tiết đơn hàng
+  // "Chưa booking NCC" ở Chi tiết đơn hàng — chỉ điền sẵn đơn hàng, KHÔNG điền
+  // sẵn tên dịch vụ/số tiền vì đơn có thể cần nhiều booking khác nhau.
   React.useEffect(()=>{
     if(!prefillOrderId) return;
     const o=orders.find(x=>x.id===prefillOrderId);
     setTab("bookings");
     setShowBkForm(true);
-    setBkForm(f=>({...f, orderId:prefillOrderId, service:o?.tourName||o?.serviceName||o?.service||"", amount:o?.costPrice||o?.pricing?.costPrice||""}));
+    setBkForm(f=>({...blankBkForm(), orderId:prefillOrderId}));
     if(!o) pushNotif&&pushNotif("Không tìm thấy đơn "+prefillOrderId,"error");
     onPrefillConsumed&&onPrefillConsumed();
   },[prefillOrderId]);
@@ -521,7 +524,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
 
   const deleteNcc=(s)=>{
     if(s.cong_no>0) return pushNotif&&pushNotif("Không thể xóa: còn công nợ "+fmtMoney(s.cong_no),"error");
-    const hasActive=bookings.some(b=>b.supplierId===s.id&&!["cancelled","paid"].includes(b.status));
+    const hasActive=bookings.some(b=>b.nccId===s.id&&!["cancelled","paid"].includes(b.status));
     if(hasActive) return pushNotif&&pushNotif("Không thể xóa: còn booking đang active","error");
     onDeleteSupplier&&onDeleteSupplier(s.id);
     if(selected?.id===s.id){setSelected(null);setEditMode(false);}
@@ -538,34 +541,49 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
   const deleteSv=(id)=>setForm(f=>({...f,dich_vu:f.dich_vu.filter(d=>d.id!==id)}));
   const togSvExpand=(id)=>setExpandedSv(p=>({...p,[id]:!p[id]}));
 
-  // ── Booking save ──
+  // ── Booking save — 1 booking = 1 NCC phụ trách 1 hạng mục của đơn.
+  // Tạo booking chỉ phát sinh phiếu chi cho phần CỌC (không phải toàn bộ totalNet),
+  // khớp cách trả tiền NCC ngoài thực tế: cọc giữ chỗ trước, trả nốt phần còn lại sau.
   const saveBooking=()=>{
-    const nccId=bkForm.supplierId||bkForm.nccId;
+    const nccId=bkForm.nccId;
     const sup=suppliers.find(s=>s.id===nccId);
+    const totalNet=Number(bkForm.totalNet)||0;
+    const deposit=Number(bkForm.deposit)||0;
     const bk={
       id:"BK"+String(Date.now()).slice(-4),
       orderId:bkForm.orderId,
       nccId,
       nccName:bkForm.nccName||sup?.name||sup?.ten||nccId,
-      service:bkForm.service,
-      amount:Number(bkForm.amount)||0,
+      serviceType:bkForm.serviceType,
+      serviceName:bkForm.serviceName,
+      totalNet, deposit, remaining:Math.max(0,totalNet-deposit), depositPaid:false,
       pnrCode:bkForm.pnrCode,
       timeLimit:bkForm.timeLimit,
       note:bkForm.note,
       status:"pending",
+      payments:[],
       createdBy:currentUser?.name||"",
       createdAt:new Date().toISOString(),
     };
-    syncBookings([bk,...bookings]);
-    if(onCreateExpense){
-      onCreateExpense({id:"EXP"+Date.now(),orderId:bkForm.orderId,type:"chi",amount:bk.amount,note:"NCC: "+(bk.nccName)+" - "+bk.service,status:"pending_kt",method:"transfer",createdBy:currentUser?.name,createdAt:new Date().toISOString(),nccName:bk.nccName,nccId,bookingId:bk.id});
+    onSaveBooking&&onSaveBooking(bk);
+    if(onCreateExpense&&deposit>0){
+      onCreateExpense({id:"EXP"+Date.now(),orderId:bkForm.orderId,type:"chi",amount:deposit,paymentType:"deposit",note:"Cọc NCC: "+(bk.nccName)+" - "+bk.serviceName,status:"pending_kt",method:"transfer",createdBy:currentUser?.name,createdAt:new Date().toISOString(),nccName:bk.nccName,nccId,bookingId:bk.id});
     }
-    setBkForm({orderId:"",supplierId:"",nccId:"",nccName:"",service:"",amount:"",pnrCode:"",timeLimit:"",note:""});
+    setBkForm(blankBkForm());
     setShowBkForm(false);
-    pushNotif&&pushNotif("Đã tạo booking "+bk.id,"success");
+    pushNotif&&pushNotif("Đã tạo booking "+bk.id+(deposit>0?" — phiếu chi cọc đã gửi kế toán duyệt":""),"success");
   };
 
-  const updateBkStatus=(id,status)=>syncBookings(bookings.map(b=>b.id===id?{...b,status}:b));
+  const updateBkStatus=(id,status)=>{const b=bookings.find(x=>x.id===id);if(b)onSaveBooking&&onSaveBooking({...b,status});};
+
+  // Thanh toán phần còn lại (sau khi đã cọc) — tạo phiếu chi riêng cho đúng phần remaining
+  const payRemaining=(b)=>{
+    if(!(b.remaining>0)) return;
+    if(onCreateExpense){
+      onCreateExpense({id:"EXP"+Date.now(),orderId:b.orderId,type:"chi",amount:b.remaining,paymentType:"remaining",note:"Trả nốt NCC: "+(b.nccName)+" - "+b.serviceName,status:"pending_kt",method:"transfer",createdBy:currentUser?.name,createdAt:new Date().toISOString(),nccName:b.nccName,nccId:b.nccId,bookingId:b.id});
+    }
+    pushNotif&&pushNotif("Đã gửi phiếu chi phần còn lại của "+b.id+" cho kế toán duyệt","success");
+  };
 
   // ─────────────────────────────────────────
   // RENDER
@@ -780,15 +798,22 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
           </div>
           {showBkForm&&(()=>{
             const selectedOrder=orders.find(o=>o.id===bkForm.orderId);
-            const selectedNCC=(suppliers||[]).find(s=>s.id===bkForm.supplierId||s.id===bkForm.nccId);
+            const selectedNCC=(suppliers||[]).find(s=>s.id===bkForm.nccId);
+            const orderBookings=bookings.filter(b=>b.orderId===bkForm.orderId&&b.status!=="cancelled");
+            const bookedSoFar=orderBookings.reduce((s,b)=>s+(b.totalNet||0),0);
+            const estimatedCost=selectedOrder?(selectedOrder.costPrice||selectedOrder.pricing?.costPrice||0):0;
+            const totalNetNum=Number(bkForm.totalNet)||0;
+            const depositNum=Number(bkForm.deposit)||0;
+            const remainingNum=Math.max(0,totalNetNum-depositNum);
             return (
               <div style={{background:"var(--c-surface)",borderRadius:"var(--r-lg)",padding:24,marginBottom:20,border:"1px solid var(--c-border)",boxShadow:"var(--sh-sm)"}}>
-                <div style={{fontWeight:600,fontSize:"var(--text-lg)",marginBottom:20,color:"var(--c-text-2)"}}>Tạo booking NCC mới</div>
+                <div style={{fontWeight:600,fontSize:"var(--text-lg)",marginBottom:4,color:"var(--c-text-2)"}}>Tạo booking NCC mới</div>
+                <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginBottom:20}}>1 đơn (đặc biệt Tour trọn gói) thường cần nhiều booking — mỗi NCC (khách sạn, xe, du thuyền...) tạo 1 booking riêng, lặp lại "+ Tạo booking" cho từng NCC.</div>
 
                 {/* Bước 1: Chọn đơn hàng */}
                 <div style={{marginBottom:16}}>
                   <label style={lbl}>Chọn đơn hàng *<span style={{fontSize:"var(--text-xs)",fontWeight:400,color:"var(--c-text-3)",marginLeft:6}}>(chọn đơn để xem thông tin và gắn booking)</span></label>
-                  <select value={bkForm.orderId||""} onChange={e=>{const o=orders.find(x=>x.id===e.target.value);setBkForm(f=>({...f,orderId:e.target.value,service:o?.tourName||o?.serviceName||o?.service||"",amount:o?.costPrice||o?.pricing?.costPrice||""}));}} style={{...inp,fontSize:"var(--text-base)"}}>
+                  <select value={bkForm.orderId||""} onChange={e=>setBkForm(f=>({...blankBkForm(),orderId:e.target.value}))} style={{...inp,fontSize:"var(--text-base)"}}>
                     <option value="">— Chọn đơn hàng —</option>
                     {orders.filter(o=>!["closed","cancelled"].includes(o.status)).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).map(o=>(
                       <option key={o.id} value={o.id}>{o.id} · {o.customerName} · {o.tourName||o.service} · {o.departDate?new Date(o.departDate).toLocaleDateString("vi-VN"):"Chưa có ngày"}</option>
@@ -796,7 +821,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                   </select>
                 </div>
 
-                {/* Panel thông tin đơn */}
+                {/* Panel thông tin đơn + tiến độ booking so với giá vốn dự kiến */}
                 {selectedOrder&&(
                   <div style={{padding:"14px 16px",borderRadius:"var(--r-md)",marginBottom:16,background:"var(--c-success-bg)",border:"1px solid var(--c-success-border)"}}>
                     <div style={{fontSize:"var(--text-xs)",fontWeight:600,textTransform:"uppercase",letterSpacing:".6px",color:"var(--c-success)",marginBottom:10}}>Thông tin đơn hàng</div>
@@ -807,9 +832,6 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                         {label:"Dịch vụ",val:selectedOrder.tourName||selectedOrder.serviceName||selectedOrder.service},
                         {label:"Ngày khởi hành",val:selectedOrder.departDate?new Date(selectedOrder.departDate).toLocaleDateString("vi-VN"):"—"},
                         {label:"Ngày về",val:selectedOrder.returnDate?new Date(selectedOrder.returnDate).toLocaleDateString("vi-VN"):"—"},
-                        {label:"Số khách",val:`${selectedOrder.paxAdults||selectedOrder.pax?.adults||0} NL`+(selectedOrder.paxChildren||selectedOrder.pax?.children?` · ${selectedOrder.paxChildren||selectedOrder.pax?.children} TE`:"")},
-                        {label:"Doanh thu",val:(selectedOrder.totalPrice||0).toLocaleString("vi-VN")+"đ",color:"var(--c-success)"},
-                        {label:"Giá vốn",val:(selectedOrder.costPrice||selectedOrder.pricing?.costPrice||0).toLocaleString("vi-VN")+"đ",color:"var(--c-danger)"},
                         {label:"Sale phụ trách",val:selectedOrder.sale||"—"},
                       ].map(item=>(
                         <div key={item.label}>
@@ -819,16 +841,34 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                       ))}
                     </div>
                     {selectedOrder.note&&<div style={{marginTop:8,fontSize:"var(--text-sm)",color:"var(--c-warning)",padding:"6px 10px",background:"var(--c-warning-bg)",borderRadius:"var(--r-sm)",borderLeft:"2px solid var(--c-warning-border)"}}>Ghi chú: {selectedOrder.note}</div>}
+                    <div style={{marginTop:12,paddingTop:12,borderTop:"1px solid var(--c-success-border)",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+                      <div><div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>Giá vốn dự kiến</div><div style={{fontWeight:700}}>{estimatedCost.toLocaleString("vi-VN")}đ</div></div>
+                      <div><div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>Đã booking ({orderBookings.length} NCC)</div><div style={{fontWeight:700,color:"var(--c-primary-mid)"}}>{bookedSoFar.toLocaleString("vi-VN")}đ</div></div>
+                      <div><div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>Còn lại chưa book</div><div style={{fontWeight:700,color:estimatedCost-bookedSoFar>0?"var(--c-danger-mid)":"var(--c-success-mid)"}}>{Math.max(0,estimatedCost-bookedSoFar).toLocaleString("vi-VN")}đ</div></div>
+                    </div>
                   </div>
                 )}
 
-                {/* Bước 2: Chọn NCC */}
-                <div style={{marginBottom:16}}>
-                  <label style={lbl}>Nhà cung cấp (NCC) *<span style={{fontSize:"var(--text-xs)",fontWeight:400,color:"var(--c-text-3)",marginLeft:6}}>(NCC sẽ cung cấp dịch vụ cho đơn này)</span></label>
-                  <select value={bkForm.supplierId||bkForm.nccId||""} onChange={e=>{const s=(suppliers||[]).find(x=>x.id===e.target.value);setBkForm(f=>({...f,supplierId:e.target.value,nccId:e.target.value,nccName:s?.name||s?.ten||""}));}} style={{...inp,fontSize:"var(--text-base)"}}>
-                    <option value="">— Chọn NCC —</option>
-                    {(suppliers||[]).map(s=><option key={s.id} value={s.id}>{s.name||s.ten}{s.phone||s.sdt?` · ${s.phone||s.sdt}`:""}</option>)}
-                  </select>
+                {/* Bước 2: Chọn NCC + loại dịch vụ */}
+                <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
+                  <div>
+                    <label style={lbl}>Nhà cung cấp (NCC) *<span style={{fontSize:"var(--text-xs)",fontWeight:400,color:"var(--c-text-3)",marginLeft:6}}>(NCC phụ trách hạng mục này)</span></label>
+                    <select value={bkForm.nccId||""} onChange={e=>{const s=(suppliers||[]).find(x=>x.id===e.target.value);setBkForm(f=>({...f,nccId:e.target.value,nccName:s?.name||s?.ten||"",serviceType:f.serviceType||(s?.loai_hinh||[])[0]||""}));}} style={{...inp,fontSize:"var(--text-base)"}}>
+                      <option value="">— Chọn NCC —</option>
+                      {(suppliers||[]).map(s=><option key={s.id} value={s.id}>{s.name||s.ten}{s.phone||s.sdt?` · ${s.phone||s.sdt}`:""}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={lbl}>Loại dịch vụ NCC cung cấp</label>
+                    <select value={bkForm.serviceType||""} onChange={e=>setBkForm(f=>({...f,serviceType:e.target.value}))} style={{...inp,fontSize:"var(--text-base)"}}>
+                      <option value="">— Chọn loại dịch vụ —</option>
+                      {Object.entries(NCC_SERVICE_GROUPS).map(([grp,types])=>(
+                        <optgroup key={grp} label={grp}>
+                          {types.map(t=><option key={t} value={t}>{t}</option>)}
+                        </optgroup>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 {/* Panel thông tin NCC */}
@@ -846,18 +886,29 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                   </div>
                 )}
 
-                {/* Bước 3: Chi tiết booking */}
+                {/* Bước 3: Chi tiết booking — hạng mục cụ thể + tổng tiền + cọc/còn lại */}
                 <div className="resp-grid-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
-                  <div>
-                    <label style={lbl}>Dịch vụ booking</label>
-                    <input value={bkForm.service||""} onChange={e=>setBkForm(f=>({...f,service:e.target.value}))} placeholder="VD: Vé MB HAN-DAD, Phòng Superior 3 đêm..." style={inp}/>
-                    {selectedOrder&&bkForm.service!==(selectedOrder.tourName||selectedOrder.service)&&(
-                      <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginTop:3}}>Từ đơn: {selectedOrder.tourName||selectedOrder.service}<button type="button" onClick={()=>setBkForm(f=>({...f,service:selectedOrder.tourName||selectedOrder.service||""}))} style={{marginLeft:6,fontSize:"var(--text-xs)",color:"var(--c-primary-mid)",background:"none",border:"none",cursor:"pointer",padding:0}}>← Dùng lại</button></div>
-                    )}
+                  <div style={{gridColumn:"1/-1"}}>
+                    <label style={lbl}>Tên dịch vụ cụ thể *<span style={{fontSize:"var(--text-xs)",fontWeight:400,color:"var(--c-text-3)",marginLeft:6}}>(hạng mục riêng của NCC này, không phải tên cả tour)</span></label>
+                    <input value={bkForm.serviceName||""} onChange={e=>setBkForm(f=>({...f,serviceName:e.target.value}))} placeholder="VD: Phòng Superior × 2 đêm, Xe 45 chỗ HN-Cát Bà khứ hồi..." style={inp}/>
                   </div>
                   <div>
-                    <label style={lbl}>Số tiền *{selectedOrder&&(selectedOrder.costPrice||selectedOrder.pricing?.costPrice)&&(<button type="button" onClick={()=>setBkForm(f=>({...f,amount:selectedOrder.costPrice||selectedOrder.pricing?.costPrice||0}))} style={{marginLeft:8,fontSize:"var(--text-xs)",color:"var(--c-primary-mid)",background:"none",border:"none",cursor:"pointer",fontWeight:400,textDecoration:"underline"}}>Gợi ý: {(selectedOrder.costPrice||selectedOrder.pricing?.costPrice||0).toLocaleString("vi-VN")}đ</button>)}</label>
-                    <NumberInput value={bkForm.amount||0} onChange={v=>setBkForm(f=>({...f,amount:v}))} placeholder="VD: 2.500.000" style={{...inp,textAlign:"right"}}/>
+                    <label style={lbl}>Tổng tiền dịch vụ (NCC) *</label>
+                    <NumberInput value={bkForm.totalNet||0} onChange={v=>setBkForm(f=>({...f,totalNet:v}))} placeholder="VD: 15.000.000" style={{...inp,textAlign:"right"}}/>
+                  </div>
+                  <div>
+                    <label style={lbl}>Tiền cọc{totalNetNum>0&&(
+                      <span style={{marginLeft:8}}>
+                        {[30,50,100].map(pct=>(
+                          <button key={pct} type="button" onClick={()=>setBkForm(f=>({...f,deposit:Math.round(totalNetNum*pct/100)}))} style={{fontSize:"var(--text-xs)",color:"var(--c-primary-mid)",background:"none",border:"none",cursor:"pointer",textDecoration:"underline",marginRight:6}}>{pct}%</button>
+                        ))}
+                      </span>
+                    )}</label>
+                    <NumberInput value={bkForm.deposit||0} onChange={v=>setBkForm(f=>({...f,deposit:v}))} placeholder="VD: 4.500.000" style={{...inp,textAlign:"right"}}/>
+                  </div>
+                  <div style={{gridColumn:"1/-1",padding:"8px 12px",background:"var(--c-surface-2)",borderRadius:"var(--r-sm)",display:"flex",justifyContent:"space-between",fontSize:"var(--text-sm)"}}>
+                    <span style={{color:"var(--c-text-3)"}}>Còn lại (trả nốt sau)</span>
+                    <strong style={{color:remainingNum>0?"var(--c-warning)":"var(--c-success)"}}>{remainingNum.toLocaleString("vi-VN")}đ</strong>
                   </div>
                   <div>
                     <label style={lbl}>Mã PNR / Booking code</label>
@@ -874,8 +925,8 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                 </div>
 
                 <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
-                  <Btn variant="secondary" onClick={()=>{setShowBkForm(false);setBkForm({orderId:"",supplierId:"",nccId:"",nccName:"",service:"",amount:"",pnrCode:"",timeLimit:"",note:"",});}}>Hủy</Btn>
-                  <Btn style={{background:"var(--c-purple)"}} onClick={()=>{if(!bkForm.orderId)return pushNotif?.("Chọn đơn hàng","error");if(!bkForm.supplierId&&!bkForm.nccId)return pushNotif?.("Chọn NCC","error");if(!(bkForm.amount>0))return pushNotif?.("Nhập số tiền","error");saveBooking();}}>Lưu booking</Btn>
+                  <Btn variant="secondary" onClick={()=>{setShowBkForm(false);setBkForm(blankBkForm());}}>Hủy</Btn>
+                  <Btn style={{background:"var(--c-purple)"}} onClick={()=>{if(!bkForm.orderId)return pushNotif?.("Chọn đơn hàng","error");if(!bkForm.nccId)return pushNotif?.("Chọn NCC","error");if(!bkForm.serviceName?.trim())return pushNotif?.("Nhập tên dịch vụ cụ thể","error");if(!(totalNetNum>0))return pushNotif?.("Nhập tổng tiền dịch vụ","error");saveBooking();}}>Lưu booking</Btn>
                 </div>
               </div>
             );
@@ -883,7 +934,7 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
           <div style={{background:"var(--c-surface)",borderRadius:"var(--r-md)",boxShadow:"var(--sh-xs)",border:"1px solid var(--c-border)",overflow:"hidden"}}>
             {bookings.length===0&&<div style={{textAlign:"center",color:"var(--c-text-muted)",padding:48}}>Chưa có booking nào</div>}
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:"var(--text-base)"}}>
-              {bookings.length>0&&<thead><tr style={{background:"var(--c-surface-2)"}}>{["Mã","NCC / Dịch vụ","Đơn hàng","Số tiền","PNR","Time Limit","Trạng thái",""].map(h=><th key={h} style={{padding:"10px 12px",textAlign:"left",fontWeight:700,color:"var(--c-text-2)",fontSize:"var(--text-sm)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>}
+              {bookings.length>0&&<thead><tr style={{background:"var(--c-surface-2)"}}>{["Mã","NCC / Dịch vụ","Đơn hàng","Tổng tiền","Cọc","Còn lại","PNR","Trạng thái",""].map(h=><th key={h} style={{padding:"10px 12px",textAlign:"left",fontWeight:700,color:"var(--c-text-2)",fontSize:"var(--text-sm)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>}
               <tbody>
                 {bookings.map(b=>{
                   const bs=BK_STATUS[b.status]||BK_STATUS.pending;
@@ -892,19 +943,22 @@ export default function SupplierModule({ suppliers=[], onAddSupplier, onUpdateSu
                   return(
                     <tr key={b.id} style={{borderTop:"1px solid var(--c-border)"}}>
                       <td style={{padding:"10px 12px",fontWeight:700}}>{b.id}</td>
-                      <td style={{padding:"10px 12px"}}><div style={{fontWeight:600}}>{b.nccName||"—"}</div><div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{b.service||""}</div></td>
+                      <td style={{padding:"10px 12px"}}><div style={{fontWeight:600}}>{b.nccName||"—"}</div><div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)"}}>{b.serviceType?b.serviceType+" · ":""}{b.serviceName||b.service||""}</div></td>
                       <td style={{padding:"10px 12px"}}>{b.orderId||"—"}</td>
-                      <td style={{padding:"10px 12px",fontWeight:700,color:"var(--c-danger-mid)"}}>{(b.amount||0).toLocaleString("vi-VN")}₫</td>
+                      <td style={{padding:"10px 12px",fontWeight:700}}>{(b.totalNet||b.amount||0).toLocaleString("vi-VN")}₫</td>
+                      <td style={{padding:"10px 12px",fontSize:"var(--text-sm)",color:b.depositPaid?"var(--c-success-mid)":"var(--c-text-3)"}}>{(b.deposit||0).toLocaleString("vi-VN")}₫{b.depositPaid?" ✓":""}</td>
+                      <td style={{padding:"10px 12px",fontSize:"var(--text-sm)",fontWeight:(b.remaining||0)>0?700:400,color:(b.remaining||0)>0?"var(--c-warning)":"var(--c-text-3)"}}>{(b.remaining||0).toLocaleString("vi-VN")}₫</td>
                       <td style={{padding:"10px 12px",fontSize:"var(--text-sm)"}}>{b.pnrCode||"—"}</td>
-                      <td style={{padding:"10px 12px",fontSize:"var(--text-sm)",color:tlExpired?"var(--c-danger-mid)":"var(--c-success-mid)"}}>{tl?tl.toLocaleDateString("vi-VN"):"—"}</td>
-                      <td style={{padding:"10px 12px"}}><span style={{background:bs.bg,color:bs.c,borderRadius:"var(--r-pill)",padding:"2px 8px",fontSize:"var(--text-xs)",fontWeight:700}}>{bs.label}</span></td>
+                      <td style={{padding:"10px 12px"}}><span style={{background:bs.bg,color:bs.c,borderRadius:"var(--r-pill)",padding:"2px 8px",fontSize:"var(--text-xs)",fontWeight:700,whiteSpace:"nowrap"}}>{bs.label}</span></td>
                       <td style={{padding:"10px 12px"}}>
-                        {b.status==="pending"&&<select value={b.status} onChange={e=>updateBkStatus(b.id,e.target.value)} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-xs)",padding:"3px 6px",fontSize:"var(--text-xs)",fontFamily:"inherit"}}>
-                          <option value="pending">Cập nhật</option>
-                          <option value="confirmed">Xác nhận</option>
-                          <option value="paid">Đã thanh toán</option>
-                          <option value="cancelled">Hủy</option>
-                        </select>}
+                        <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                          {b.depositPaid&&(b.remaining||0)>0&&<Btn size="xs" style={{background:"var(--c-primary-mid)"}} onClick={()=>payRemaining(b)}>Thanh toán còn lại</Btn>}
+                          {b.status!=="cancelled"&&b.status!=="paid"&&<select value={b.status} onChange={e=>updateBkStatus(b.id,e.target.value)} style={{border:"1px solid var(--c-border)",borderRadius:"var(--r-xs)",padding:"3px 6px",fontSize:"var(--text-xs)",fontFamily:"inherit"}}>
+                            <option value={b.status}>Cập nhật</option>
+                            {b.status!=="pending"&&<option value="pending">Chưa cọc</option>}
+                            <option value="cancelled">Hủy</option>
+                          </select>}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -984,13 +1038,13 @@ function SupplierDetail({ supplier:s, onEdit, onDelete, fmtMoney, expenses=[], b
               return(
                 <div key={b.id} style={{padding:"10px 14px",borderTop:i>0?"1px solid var(--c-border)":"none",display:"flex",justifyContent:"space-between",alignItems:"center",gap:10}}>
                   <div style={{minWidth:0,flex:1}}>
-                    <div style={{fontWeight:700,fontSize:"var(--text-base)"}}>{b.service||"—"}</div>
+                    <div style={{fontWeight:700,fontSize:"var(--text-base)"}}>{b.serviceName||b.service||"—"}</div>
                     <div style={{fontSize:"var(--text-xs)",color:"var(--c-text-3)",marginTop:2}}>
                       {b.id} · {b.orderId||"—"}{o?.customerName?" · "+o.customerName:""}{b.pnrCode?" · PNR "+b.pnrCode:""} · {b.createdAt?new Date(b.createdAt).toLocaleDateString("vi-VN"):"—"}
                     </div>
                   </div>
                   <div style={{textAlign:"right",flexShrink:0}}>
-                    <div style={{fontWeight:700,color:"var(--c-danger-mid)"}}>{fmtMoney(b.amount)}</div>
+                    <div style={{fontWeight:700,color:"var(--c-danger-mid)"}}>{fmtMoney(b.totalNet||b.amount)}</div>
                     <span style={{background:bs.bg,color:bs.c,borderRadius:"var(--r-pill)",padding:"2px 8px",fontSize:"var(--text-xs)",fontWeight:700}}>{bs.label}</span>
                   </div>
                 </div>

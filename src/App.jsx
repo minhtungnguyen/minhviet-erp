@@ -522,106 +522,6 @@ const SEED_INPUT_INVOICES = [
 ];
 const HDV_LIST = [];
 
-const SEED_NCC_BOOKINGS = [
-
-  {
-
-    id:"BK001", orderId:"DH0012", nccId:"NCC004", nccName:"KS Vinpearl PQ",
-
-    serviceType:"khach_san", serviceName:"Phòng Superior Sea View × 2 đêm",
-
-    pnrCode:"VPQ-2025-001", checkIn:"2025-07-15", checkOut:"2025-07-17",
-
-    netPrice:3200000, totalNet:6400000,
-
-    deposit:3200000, depositDate:"2025-06-02", depositPaid:true,
-
-    remaining:3200000, deadline:"2025-07-08",
-
-    timeLimit:"2025-06-08T17:00:00",
-
-    status:"confirmed", notes:"Yêu cầu tầng cao, view biển",
-
-    createdBy:"Nguyễn Thị Hoa", createdAt:"2025-06-02T10:00:00",
-
-    payments:[{date:"2025-06-02",amount:3200000,method:"transfer",note:"Cọc 50%",voucherId:"PC-2025-002"}],
-
-  },
-
-  {
-
-    id:"BK002", orderId:"DH0011", nccId:"NCC001", nccName:"Vietnam Airlines",
-
-    serviceType:"hang_bay", serviceName:"VN123 HAN→SGN 20/07 + VN124 SGN→HAN 25/07",
-
-    pnrCode:"VN-2024-ABC123", checkIn:"2025-07-20", checkOut:"2025-07-25",
-
-    netPrice:2600000, totalNet:2600000,
-
-    deposit:2600000, depositDate:"2025-06-04", depositPaid:true,
-
-    remaining:0, deadline:"2025-07-10",
-
-    timeLimit:"2025-06-05T23:59:00",
-
-    status:"ticketed", notes:"",
-
-    createdBy:"Trần Văn Nam", createdAt:"2025-06-04T09:00:00",
-
-    payments:[{date:"2025-06-04",amount:2600000,method:"transfer",note:"Thanh toán 100% vé",voucherId:"PC-2025-001"}],
-
-  },
-
-  {
-
-    id:"BK003", orderId:"DH0009", nccId:"NCC006", nccName:"Booking.com",
-
-    serviceType:"khach_san", serviceName:"Anantara Riverside Bangkok × 3 đêm",
-
-    pnrCode:"BKK-25-XYZ", checkIn:"2025-08-01", checkOut:"2025-08-04",
-
-    netPrice:4000000, totalNet:12000000,
-
-    deposit:4000000, depositDate:"2025-06-06", depositPaid:false,
-
-    remaining:8000000, deadline:"2025-07-25",
-
-    timeLimit:"2025-06-08T12:00:00",
-
-    status:"hold", notes:"",
-
-    createdBy:"Phạm Quốc Hùng", createdAt:"2025-06-06T08:00:00",
-
-    payments:[],
-
-  },
-
-  {
-
-    id:"BK004", orderId:"DH0009", nccId:"NCC002", nccName:"Vietjet Air",
-
-    serviceType:"hang_bay", serviceName:"VJ890 HAN→BKK 01/08 + VJ891 BKK→HAN 04/08",
-
-    pnrCode:"VJ-2025-BKK001", checkIn:"2025-08-01", checkOut:"2025-08-04",
-
-    netPrice:3200000, totalNet:6400000,
-
-    deposit:0, depositDate:null, depositPaid:false,
-
-    remaining:6400000, deadline:"2025-07-20",
-
-    timeLimit:"2025-06-06T11:15:00",
-
-    status:"hold", notes:"Chưa đặt cọc",
-
-    createdBy:"Phạm Quốc Hùng", createdAt:"2025-06-06T09:30:00",
-
-    payments:[],
-
-  },
-
-];
-
 const loadSession = () => { try { const s = sessionStorage.getItem("mv_user"); return s ? JSON.parse(s) : null; } catch(e){ return null; } };
 const saveSession = (u) => { try { if(u) sessionStorage.setItem("mv_user", JSON.stringify(u)); else sessionStorage.removeItem("mv_user"); } catch(e){} };
 
@@ -733,11 +633,12 @@ export default function App(){
   const [currentUser, setCurrentUser] = React.useState(() => loadSession ? loadSession() : null);
   const [view, setView] = React.useState("dashboard");
   const {
-    orders, vouchers, expenses, refunds, customers,
+    orders, vouchers, expenses, refunds, customers, bookings,
     users: userAccounts,
     dbNotifs,
     setOrders, setVouchers, setExpenses, setRefunds, setCustomers, setUsers: setUserAccounts,
     saveOrder, removeOrder, saveVoucher, saveExpense, saveRefund, saveCustomer, removeCustomer, saveUser, removeUser, saveNotification, markNotifRead,
+    saveBooking, removeBooking,
     verifyLogin,
     loading: dbLoading,
   } = useSupabase();
@@ -747,7 +648,6 @@ export default function App(){
   const [personalTargets, setPersonalTargets] = React.useState(SEED_PERSONAL_TARGETS);
   const [outputInvoices, setOutputInvoices] = React.useState(SEED_OUTPUT_INVOICES);
   const [inputInvoices, setInputInvoices] = React.useState(SEED_INPUT_INVOICES);
-  const [bookings, setBookings] = React.useState(SEED_NCC_BOOKINGS);
   const [suppliers, setSuppliers] = React.useState(SEED_SUPPLIERS);
 
   // Load suppliers từ Supabase khi app khởi động
@@ -853,7 +753,7 @@ export default function App(){
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   // ── Persistence cho collections phụ (quotes/bookings/credits/tasks/careTasks/personalTargets) ──
-  const collSetters = { quotes:setQuotes, bookings:setBookings, credits:setCredits, tasks:setTasks, careTasks:setCareTasks, personalTargets:setPersonalTargets, tourGhepProducts:setTourGhepProducts, hdvList:setHdvList };
+  const collSetters = { quotes:setQuotes, credits:setCredits, tasks:setTasks, careTasks:setCareTasks, personalTargets:setPersonalTargets, tourGhepProducts:setTourGhepProducts, hdvList:setHdvList };
   // Load tất cả collection từ Supabase khi mount
   React.useEffect(()=>{
     if(!import.meta.env.VITE_SUPABASE_URL) return;
@@ -904,7 +804,6 @@ export default function App(){
   },[]);
   // Persisted setters dùng thay cho raw setters khi truyền xuống module
   const setQuotesP        = React.useMemo(()=>makePersistedSetter("quotes",setQuotes),[makePersistedSetter]);
-  const setBookingsP      = React.useMemo(()=>makePersistedSetter("bookings",setBookings),[makePersistedSetter]);
   const setCreditsP       = React.useMemo(()=>makePersistedSetter("credits",setCredits),[makePersistedSetter]);
   const setTasksP         = React.useMemo(()=>makePersistedSetter("tasks",setTasks),[makePersistedSetter]);
   const setCareTasksP     = React.useMemo(()=>makePersistedSetter("careTasks",setCareTasks),[makePersistedSetter]);
@@ -1110,9 +1009,19 @@ export default function App(){
         updateSupplier(nccId,{cong_no:newDebt});
       }
     }
-    // Khi paid → đồng bộ trạng thái booking liên kết (nếu không, "Công nợ NCC" trên OrderDetail vẫn tính booking là chưa trả)
+    // Khi paid → đồng bộ trạng thái booking liên kết (nếu không, "Công nợ NCC" trên OrderDetail vẫn tính booking là chưa trả).
+    // paymentType phân biệt đây là phiếu chi cho tiền cọc hay phần còn lại — 1 booking có thể có cả 2.
     if(exp.status==="paid"&&exp.bookingId){
-      setBookingsP(prev=>(prev||[]).map(b=>b.id===exp.bookingId?{...b,status:"paid"}:b));
+      const bk=(bookings||[]).find(b=>b.id===exp.bookingId);
+      if(bk){
+        const payments=[...(bk.payments||[]),{date:new Date().toISOString().slice(0,10),amount:exp.amount,type:exp.paymentType||"deposit",expenseId:exp.id}];
+        if(exp.paymentType==="remaining"){
+          saveBooking({...bk,payments,remaining:0,status:"paid"});
+        }else{
+          const stillOwes=(bk.remaining||0)>0;
+          saveBooking({...bk,payments,depositPaid:true,status:stillOwes?"deposit_paid":"paid"});
+        }
+      }
     }
     if(exp.status==="pending_pay") pushToast("Phiếu chi "+exp.id+" đã duyệt — KT Quỹ cần chuyển tiền","info","cashier");
     if(exp.status==="pending_gd") pushToast("Phiếu chi "+exp.id+" cần GĐ phê duyệt","warn","manager");
@@ -1202,7 +1111,7 @@ export default function App(){
       {view==="hdv"&&<HDVModule hdvList={hdvList} onUpdate={setHdvListP} orders={orders} pushNotif={pushToast} currentRole={currentRole}/>}
       {view==="quotes"&&<QuoteModule quotes={quotes} onUpdate={setQuotesP} orders={orders} tourPrograms={tourPrograms} currentUser={currentUser} pushNotif={pushToast} onCreateOrder={(data)=>{handleCreateOrder(data);}}/>}
       {(view==="accounting"||view==="finance")&&<AccountingDashboard orders={orders} vouchers={vouchers} expenses={expenses} refunds={refunds} bankAccounts={bankAccounts} onUpdateBankAccounts={setBankAccounts} outputInvoices={outputInvoices} onUpdateOutputInvoices={setOutputInvoices} inputInvoices={inputInvoices} onUpdateInputInvoices={setInputInvoices} suppliers={suppliers} pushNotif={pushToast}/>}
-      {view==="ncc"&&<SupplierModule suppliers={suppliers} onAddSupplier={addSupplier} onUpdateSupplier={updateSupplier} onDeleteSupplier={deleteSupplier} orders={orders} vouchers={vouchers} expenses={expenses} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser} bookings={bookings} onUpdateBookings={setBookingsP} onCreateExpense={(exp)=>{saveExpense(exp);pushToast("Phiếu chi "+exp.id+" chờ KT duyệt","warning");}} prefillOrderId={nccBookingPrefillOrderId} onPrefillConsumed={()=>setNccBookingPrefillOrderId(null)}/>}
+      {view==="ncc"&&<SupplierModule suppliers={suppliers} onAddSupplier={addSupplier} onUpdateSupplier={updateSupplier} onDeleteSupplier={deleteSupplier} orders={orders} vouchers={vouchers} expenses={expenses} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser} bookings={bookings} onSaveBooking={saveBooking} onRemoveBooking={removeBooking} onCreateExpense={(exp)=>{saveExpense(exp);pushToast("Phiếu chi "+exp.id+" chờ KT duyệt","warning");}} prefillOrderId={nccBookingPrefillOrderId} onPrefillConsumed={()=>setNccBookingPrefillOrderId(null)}/>}
       {view==="approvals"&&<ApprovalsModule orders={orders} expenses={expenses} vouchers={vouchers} onExpenseUpdate={handleExpenseUpdate} onVoucherUpdate={(v)=>{ if(v.status==="approved") handleApprove(v.id); else if(v.status==="rejected") handleReject(v.id); else saveVoucher(v); }} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser} approvalThreshold={approvalThreshold}/>}
       {view==="refunds"&&<RefundModule orders={orders} vouchers={vouchers} refunds={refunds} onRefundUpdate={handleRefundUpdate} onRefundCreate={handleRefundCreate} pushNotif={pushToast} currentRole={currentRole} currentUser={currentUser}/>}
       {view==="credits"&&<CreditModule orders={orders} pushNotif={pushToast} credits={credits} onUpdateCredits={setCreditsP} currentUser={currentUser}/>}

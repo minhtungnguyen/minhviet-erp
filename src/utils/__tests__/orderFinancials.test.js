@@ -67,6 +67,14 @@ describe('calcNccDebt', () => {
     const bookings = [makeBooking({ amount: undefined }), makeBooking({ amount: 1000000 })];
     expect(calcNccDebt(bookings, 'DH0001')).toBe(1000000);
   });
+
+  it('booking đã cọc 1 phần: công nợ tính theo remaining (còn thiếu), không phải tổng tiền dịch vụ', () => {
+    const bookings = [
+      makeBooking({ totalNet: 15000000, deposit: 4500000, remaining: 10500000, depositPaid: true, status: 'deposit_paid' }),
+      makeBooking({ totalNet: 6000000, deposit: 6000000, remaining: 0, depositPaid: true, status: 'paid' }),
+    ];
+    expect(calcNccDebt(bookings, 'DH0001')).toBe(10500000); // booking đã paid không tính dù remaining=0
+  });
 });
 
 describe('calcOrderFinancials — công nợ & lợi nhuận đơn hàng', () => {

@@ -11,11 +11,13 @@ export function calcVoucherTotals(vouchers, orderId) {
   return { totalPaid, totalChi };
 }
 
-// Công nợ nhà cung cấp: booking chưa hủy và chưa thanh toán xong.
+// Công nợ nhà cung cấp: phần CÒN THIẾU của booking chưa hủy/chưa thanh toán xong
+// (không phải tổng giá trị booking — 1 booking có thể đã cọc 1 phần, remaining là
+// phần thực sự còn nợ NCC). Fallback về amount cho dữ liệu cũ chưa có remaining.
 export function calcNccDebt(bookings, orderId) {
   return (bookings || [])
     .filter((b) => b.orderId === orderId && b.status !== "cancelled" && b.status !== "paid")
-    .reduce((s, b) => s + (b.amount || 0), 0);
+    .reduce((s, b) => s + (b.remaining != null ? b.remaining : (b.amount || 0)), 0);
 }
 
 // Bộ số liệu tài chính đầy đủ của 1 đơn: công nợ khách, lợi nhuận, công nợ NCC.

@@ -15,6 +15,7 @@ import * as DB from './db.js'
 import {
   SEED_ORDERS, SEED_VOUCHERS, SEED_EXPENSES,
   SEED_REFUNDS, SEED_NCC_MASTER, SEED_CUSTOMERS, USER_ACCOUNTS,
+  SEED_NCC_BOOKINGS,
 } from './seeds/index.js'
 
 const SUPABASE_READY = !!(
@@ -30,6 +31,7 @@ export function useSupabase() {
   const [expenses,      setExpenses]      = useState(SEED_EXPENSES)
   const [refunds,       setRefunds]       = useState(SEED_REFUNDS)
   const [nccList,       setNccList]       = useState(SEED_NCC_MASTER)
+  const [bookings,      setBookings]      = useState(SEED_NCC_BOOKINGS)
   const [customers,     setCustomers]     = useState(SEED_CUSTOMERS)
   const [users,         setUsers]         = useState(USER_ACCOUNTS)
   const [dbNotifs,      setDbNotifs]      = useState([])
@@ -56,6 +58,7 @@ export function useSupabase() {
         safe(DB.fetchExpenses,      setExpenses,  'expenses'),
         safe(DB.fetchRefunds,       setRefunds,   'refunds'),
         safe(DB.fetchNccList,       setNccList,   'ncc_list'),
+        safe(DB.fetchNccBookings,   setBookings,  'ncc_bookings'),
         safe(DB.fetchCustomers,     setCustomers, 'customers'),
         safe(DB.fetchUsers,         setUsers,     'user_profiles'),
         safe(DB.fetchNotifications, setDbNotifs,  'notifications'),
@@ -73,6 +76,7 @@ export function useSupabase() {
       DB.subscribeTable('expenses',      ()=>DB.fetchExpenses().then(setExpenses)),
       DB.subscribeTable('refunds',       ()=>DB.fetchRefunds().then(setRefunds)),
       DB.subscribeTable('ncc_list',      ()=>DB.fetchNccList().then(setNccList)),
+      DB.subscribeTable('ncc_bookings',  ()=>DB.fetchNccBookings().then(setBookings)),
       DB.subscribeTable('customers',     ()=>DB.fetchCustomers().then(setCustomers)),
       DB.subscribeTable('notifications', ()=>DB.fetchNotifications().then(setDbNotifs)),
     ]
@@ -137,6 +141,19 @@ export function useSupabase() {
     if(SUPABASE_READY){ try{ await DB.deleteNcc(id) }catch(e){ console.error(e) } }
   },[])
 
+  const saveBooking = useCallback(async(b)=>{
+    setBookings(prev=>{
+      const exists = prev.find(x=>x.id===b.id)
+      return exists ? prev.map(x=>x.id===b.id?b:x) : [b,...prev]
+    })
+    if(SUPABASE_READY){ try{ await DB.upsertNccBooking(b) }catch(e){ console.error('[saveBooking failed]',e); throw e } }
+  },[])
+
+  const removeBooking = useCallback(async(id)=>{
+    setBookings(prev=>prev.filter(x=>x.id!==id))
+    if(SUPABASE_READY){ try{ await DB.deleteNccBooking(id) }catch(e){ console.error('[removeBooking failed]',e); throw e } }
+  },[])
+
   const saveCustomer = useCallback(async(c)=>{
     setCustomers(prev=>{
       const exists = prev.find(x=>x.id===c.id)
@@ -195,12 +212,12 @@ export function useSupabase() {
 
   return {
     // Data
-    orders, vouchers, expenses, refunds, nccList, customers, users, dbNotifs,
+    orders, vouchers, expenses, refunds, nccList, bookings, customers, users, dbNotifs,
     // State setters (cho local operations không cần DB)
-    setOrders, setVouchers, setExpenses, setRefunds, setNccList, setCustomers, setUsers,
+    setOrders, setVouchers, setExpenses, setRefunds, setNccList, setBookings, setCustomers, setUsers,
     // DB-synced savers
     saveOrder, removeOrder, saveVoucher, saveExpense, saveRefund,
-    saveNcc, removeNcc, saveCustomer, removeCustomer, saveUser, removeUser,
+    saveNcc, removeNcc, saveBooking, removeBooking, saveCustomer, removeCustomer, saveUser, removeUser,
     saveNotification, markNotifRead, verifyLogin,
     // Meta
     loading, error,
